@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "Document.cpp"
+#include "Document.hpp"
 
 int main(int argc, char* argv[]) {
     std::vector<int> numbers = {};
