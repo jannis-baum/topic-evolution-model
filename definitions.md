@@ -37,3 +37,41 @@ Words within the following tuning parameter bounds are classified as important,
   \alpha$ is classified as a *flood word*
 - $\beta$ : lower bound for $energy$
 - $\gamma$: lower bound for $ENR$
+
+## Semantic graph construction
+
+Let $n_W$ be the number of documents in $D_t$ that contain all words $w \in W$.
+Then $c_{k,z}^t$ is the *term correlation* between words (terms) $k$ and $z$ at
+a time $t$.
+
+$$
+  c_{k,z}^t = \log\left(
+    \frac{
+      n_{\left\{ k, z \right\}} / (n_{\left\{ k \right\}} - n_{\left\{ k, z \right\}})
+    }{
+      (n_{\left\{ z \right\}} - n_{\left\{ k, z \right\}}) /
+        (\left\lvert D_t \right\rvert
+          - n_{\left\{ z \right\}}
+          - n_{\left\{ k \right\}}
+          + n_{\left\{ k, z \right\}})
+    }
+  \right) \cdot \left\lvert 
+    \frac{n_{\left\{ k, z \right\}}}{n_{\left\{ z \right\}}} - \frac{
+        n_{\left\{ z \right\}} - n_{\left\{ k, z \right\}}
+    }{
+        \left\lvert D_t \right\rvert - n_{\left\{ k \right\}}
+      }
+  \right\rvert
+$$
+
+In the graph, terms are nodes. The weighted edge at time $t$ between two nodes
+$(u, v)$ will be $c_{u, v}^t$.
+
+Graphs are thinned out (removing edges) according
+to the tuning parameter $\delta$. An edge $(u, v)$ is kept only if their weight
+
+$$
+c_{u, v}^t > \mu_c + \sigma_c \cdot \delta
+$$
+
+where $\mu_c$ and $\sigma_c$ are the correlation median and standard deviation.
