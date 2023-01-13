@@ -27,3 +27,13 @@
   - $ENR(w) = \frac{energy(w)}{nutrition(w)}$
   - describes if a word's rate of growth is accelerating, constant, or
     decelerating
+
+## Emerging terms
+
+Words within the following tuning parameter bounds are classified as important,
+*emerging terms*
+
+- $\alpha$: upper bound for $nutrition$ so that a word $w$ with $nutrition(w) >
+  \alpha$ is classified as a *flood word*
+- $\beta$ : lower bound for $energy$
+- $\gamma$: lower bound for $ENR$
