@@ -4,9 +4,11 @@
 #include <utility>
 #include <vector>
 
+#include "types.hpp"
+
 class SemanticNode {
-    int word;
-    std::vector<std::pair<float, SemanticNode*>> neighbors;
+    word_t word;
+    std::vector<std::pair<dec_t, SemanticNode*>> neighbors;
 };
 
 #endif

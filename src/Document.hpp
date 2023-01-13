@@ -3,8 +3,10 @@
 
 #include <vector>
 
+#include "types.hpp"
+
 class Document {
-    std::vector<int> words;
+    std::vector<word_t> words;
 };
 
 #endif
