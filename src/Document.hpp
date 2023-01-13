@@ -1,6 +1,7 @@
 #ifndef DOCUMENT_HPP
 #define DOCUMENT_HPP
 
+#include <ostream>
 #include <unordered_map>
 #include <vector>
 
@@ -14,6 +15,11 @@ class Document {
     public:
         Document(std::vector<word_t> words);
         dec_t nutrition(word_t word, dec_t c);
+
+        friend std::ostream& operator<<(std::ostream& os, Document const &document) {
+            for (const auto word : document.words) os << word << " ";
+            return os;
+        };
 };
 
 #endif
