@@ -7,6 +7,10 @@
 
 class Corpus {
     std::vector<CorpusPeriod> periods;
+
+    public:
+        Corpus(std::vector<CorpusPeriod> periods);
+        dec_t energy(word_t word, int s, dec_t c);
 };
 
 #endif
