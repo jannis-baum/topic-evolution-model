@@ -20,7 +20,7 @@
   - $nutrition(w)_t$ is sum of nutritions over $D_t$
   - *describes relative word frequency in $[1-c, 1]$*
 - **energy** describes change in a word's nutrition over time
-  - $energy(w) = \sum_{t=1}^s (nutrition(w)_t^2 - \frac{1}{i} \cdot
+  - $energy(w) = \sum_{t=1}^s \frac{1}{i} (nutrition(w)_t^2 -
     nutrition(w)_{t-i}^2)$
   - $s$ is the number of time periods before $t$
 - **Energy-Nutrition Ratio**
