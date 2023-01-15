@@ -15,3 +15,7 @@ dec_t Corpus::energy(word_t word, int s, dec_t c) {
     }
     return energy;
 }
+
+dec_t Corpus::enr(word_t word, int s, dec_t c) {
+    return this->energy(word, s, c) / this->periods[s].nutrition(word, c);
+}

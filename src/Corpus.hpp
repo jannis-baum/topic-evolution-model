@@ -11,6 +11,7 @@ class Corpus {
     public:
         Corpus(std::vector<CorpusPeriod> periods);
         dec_t energy(word_t word, int s, dec_t c);
+        dec_t enr(word_t word, int s, dec_t c);
 };
 
 #endif
