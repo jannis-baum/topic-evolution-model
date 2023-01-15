@@ -27,5 +27,7 @@ int main(int argc, char* argv[]) {
     }
 
     Corpus corpus(structuredCorpus);
+    std::cout << corpus;
+
     return 0;
 }

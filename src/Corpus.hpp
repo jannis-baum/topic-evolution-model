@@ -15,6 +15,11 @@ class Corpus {
 
         dec_t energy(word_t word, int s, dec_t c);
         dec_t enr(word_t word, int s, dec_t c);
+
+        friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {
+            for (const auto period : corpus.periods) os << period << std::endl;
+            return os;
+        };
 };
 
 #endif
