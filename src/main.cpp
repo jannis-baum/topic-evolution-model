@@ -1,19 +1,31 @@
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
+#include "Corpus.hpp"
 #include "Document.hpp"
 
 int main(int argc, char* argv[]) {
-    std::vector<int> numbers = {};
 
-    for (int i = 1; i < argc; i++) {
-        numbers.push_back(atoi(argv[i]));
+    std::vector<std::vector<std::vector<std::string>>> structuredCorpus = {{}};
+
+    for (std::string line; std::getline(std::cin, line);) {
+        if (line.empty()) {
+            structuredCorpus.push_back({});
+            continue;
+        }
+
+        auto *currentPeriod = &structuredCorpus.back();
+        std::stringstream lineStream(line);
+        
+        std::vector<std::string> words = {};
+        std::string word;
+        while (getline(lineStream, word, ' ')) words.push_back(word);
+
+        currentPeriod->push_back(words);
     }
 
-    Document doc(numbers);
-
-    std::cout << doc << std::endl;
-
-    std::cout << "nutrition for 2: " << doc.nutrition(2, 1) << std::endl;
+    Corpus corpus(structuredCorpus);
+    return 0;
 }
