@@ -7,6 +7,10 @@
 #include "Document.hpp"
 
 int main(int argc, char* argv[]) {
+    // reads corpus from stdin
+    // - corpus periods are separated by emtpy lines
+    // - documents in periods are lines
+    // - words in documents are separated by spaces
 
     std::vector<std::vector<std::vector<std::string>>> structuredCorpus = {{}};
 
