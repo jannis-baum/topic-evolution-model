@@ -7,18 +7,21 @@ Corpus::Corpus(std::vector<CorpusPeriod> periods)
 : periods(periods) {}
 
 Corpus::Corpus(std::vector<std::vector<std::vector<std::string>>> structuredCorpus)
-: periods({}) {
-    std::unordered_map<std::string, word_t> lookup = {};
+: periods({})
+, wtostr({}) {
+    std::unordered_map<std::string, word_t> strtow = {};
     
     for (const auto period : structuredCorpus) {
         std::vector<Document> documents = {};
         for (const auto document : period) {
             std::vector<word_t> words = {};
             for (const auto word : document) {
-                if (!lookup.contains(word)) {
-                    lookup[word] = lookup.size();
+                if (!strtow.contains(word)) {
+                    int newIndex = strtow.size();
+                    strtow[word] = newIndex;
+                    wtostr[newIndex] = word;
                 }
-                words.push_back(lookup[word]);
+                words.push_back(strtow[word]);
             }
             documents.push_back(Document(words));
         }
