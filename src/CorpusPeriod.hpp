@@ -8,11 +8,11 @@
 #include "types.hpp"
 
 class CorpusPeriod {
-    std::vector<Document> documents;
+    const std::vector<Document> documents;
 
     public:
-        CorpusPeriod(std::vector<Document> documents);
-        dec_t nutrition(word_t word, dec_t c);
+        CorpusPeriod(const std::vector<Document> documents);
+        dec_t nutrition(const word_t word, const dec_t c) const;
 
         friend std::ostream& operator<<(std::ostream& os, CorpusPeriod const &period) {
             for (const auto document : period.documents) os << document << std::endl;

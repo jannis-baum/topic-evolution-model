@@ -3,10 +3,10 @@
 #include <numeric>
 #include <unordered_map>
 
-Corpus::Corpus(std::vector<CorpusPeriod> periods)
+Corpus::Corpus(const std::vector<CorpusPeriod> periods)
 : periods(periods) {}
 
-Corpus::Corpus(std::vector<std::vector<std::vector<std::string>>> structuredCorpus)
+Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus)
 : periods({})
 , wtostr({}) {
     std::unordered_map<std::string, word_t> strtow = {};
@@ -29,7 +29,7 @@ Corpus::Corpus(std::vector<std::vector<std::vector<std::string>>> structuredCorp
     }
 }
 
-dec_t Corpus::energy(word_t word, int s, dec_t c) {
+dec_t Corpus::energy(const word_t word, const int s, const dec_t c) const {
     dec_t energy = 0;
     for (int i = 1; i <= s; i++) {
         energy += (dec_t)1 / i * (
@@ -40,6 +40,6 @@ dec_t Corpus::energy(word_t word, int s, dec_t c) {
     return energy;
 }
 
-dec_t Corpus::enr(word_t word, int s, dec_t c) {
+dec_t Corpus::enr(const word_t word, const int s, dec_t c) const {
     return this->energy(word, s, c) / this->periods[s].nutrition(word, c);
 }
