@@ -23,7 +23,7 @@ Corpus::Corpus(std::vector<std::vector<std::vector<std::string>>> structuredCorp
                 }
                 words.push_back(strtow[word]);
             }
-            documents.push_back(Document(words));
+            documents.push_back(Document(words, this->wtostr));
         }
         this->periods.push_back(CorpusPeriod(documents));
     }

@@ -5,8 +5,9 @@
 #include "Document.hpp"
 #include "types.hpp"
 
-Document::Document(std::vector<word_t> words)
-: words(words)
+Document::Document(std::vector<word_t> words, std::unordered_map<word_t, std::string> &wtostr)
+: wtostr(wtostr)
+, words(words)
 , words_tf({})
 , tf_max(0) {
     std::for_each(this->words.begin(), this->words.end(), [this](word_t word) {
