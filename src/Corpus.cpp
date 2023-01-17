@@ -43,3 +43,16 @@ dec_t Corpus::energy(const word_t word, const int s, const dec_t c) const {
 dec_t Corpus::enr(const word_t word, const int s, dec_t c) const {
     return this->energy(word, s, c) / this->periods[s].nutrition(word, c);
 }
+
+bool Corpus::isEmerging(
+    const word_t word,
+    const int s,
+    const dec_t c,
+    const dec_t alpha,
+    const dec_t beta,
+    const dec_t gamma
+) const {
+    return this->periods[s].nutrition(word, c) < alpha
+        && this->energy(word, s, c) > beta
+        && this->enr(word, s, c) > gamma;
+}
