@@ -55,8 +55,8 @@ $$
           - n_{\left\{ k \right\}}
           + n_{\left\{ k, z \right\}})
     }
-  \right) \cdot \left\lvert 
-    \frac{n_{\left\{ k, z \right\}}}{n_{\left\{ z \right\}}} - \frac{
+  \right) \cdot \left\lvert
+    \frac{n_{\left\{ k, z \right\}}}{n_{\left\{ k \right\}}} - \frac{
         n_{\left\{ z \right\}} - n_{\left\{ k, z \right\}}
     }{
         \left\lvert D_t \right\rvert - n_{\left\{ k \right\}}
