@@ -3,16 +3,20 @@
 
 #include <initializer_list>
 #include <iostream>
+#include <unordered_map>
 #include <vector>
 
 #include "Document.hpp"
 #include "types.hpp"
 
 class CorpusPeriod {
+    // reference to Corpus' mapping to resolve word_t (aka int) to string
+    const std::unordered_map<word_t, std::string> &wtostr;
     const std::vector<Document> documents;
 
     public:
-        CorpusPeriod(const std::vector<Document> documents);
+        CorpusPeriod(const std::vector<Document> documents, const std::unordered_map<word_t, std::string> &wtostr)
+        : documents(documents), wtostr(wtostr) {};
         // see definitions.md or paper
         dec_t nutrition(const word_t word, const dec_t c) const;
         // number of documents that contain all given words
