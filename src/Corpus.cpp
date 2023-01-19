@@ -9,6 +9,7 @@ Corpus::Corpus(const std::vector<CorpusPeriod> periods)
 Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus)
 : periods({})
 , wtostr({}) {
+    // string to word_t (aka int) mapping
     std::unordered_map<std::string, word_t> strtow = {};
     
     for (const auto period : structuredCorpus) {
