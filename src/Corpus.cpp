@@ -29,7 +29,7 @@ Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structur
             }
             documents.push_back(Document(words, this->wtostr));
         }
-        this->periods.push_back(CorpusPeriod(documents));
+        this->periods.push_back(CorpusPeriod(documents, this->wtostr));
     }
 }
 

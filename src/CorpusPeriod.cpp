@@ -1,11 +1,10 @@
+#include <algorithm>
 #include <cmath>
 #include <exception>
 #include <numeric>
 
 #include "CorpusPeriod.hpp"
-
-CorpusPeriod::CorpusPeriod(const std::vector<Document> documents)
-: documents(documents) {}
+#include "SemanticGraph.hpp"
 
 dec_t CorpusPeriod::nutrition(const word_t word, const dec_t c) const {
     dec_t total = 0;
@@ -48,4 +47,53 @@ dec_t CorpusPeriod::termCorrelation(const word_t k, const word_t z) const {
         (dec_t)n_kz / n_k -
         (dec_t)(n_z - n_kz) / (d_t - n_k)
     );
+}
+
+std::vector<SemanticNode> CorpusPeriod::semanticGraph(const dec_t delta) const {
+    // construct node for each word
+    std::vector<SemanticNode> graph;
+    for (const auto & [word, str] : this->wtostr) {
+        graph.push_back(SemanticNode(word, {}));
+    }
+    // find term corralations between all word pairs as matrix (2d-vector),
+    // as list of values,
+    // and find mean value
+    std::vector<std::vector<dec_t>> correlationMatrix;
+    std::vector<dec_t> correlationValues;
+    dec_t mean = 0;
+    for (const auto & node1 : graph) {
+        correlationMatrix.push_back({});
+        for (const auto & node2 : graph) {
+            const dec_t correlation = this->termCorrelation(node1.word, node2.word);
+            correlationMatrix.back().push_back(correlation);
+            correlationValues.push_back(correlation);
+            mean += correlation;
+        }
+    }
+    mean /= correlationValues.size();
+
+    // compute correlation value median
+    size_t nth = correlationValues.size() / 2;
+    // sort so that all values up to nth are in correct order
+    std::nth_element(correlationValues.begin(), correlationValues.begin() + nth, correlationValues.end());
+    dec_t median = correlationValues[nth];
+
+    // compute standard deviation
+    dec_t standardDeviation = 0;
+    for (const auto correlation : correlationValues) {
+        standardDeviation += std::pow(correlation - mean, 2);
+    }
+    standardDeviation = std::sqrt(standardDeviation / correlationValues.size());
+
+    // add neighbors for nodes by threshold
+    dec_t threshold = mean + standardDeviation * delta;
+    for (int i = 0; i < graph.size(); i++) {
+        for (int j = 0; j < graph.size(); j++) {
+            const dec_t correlation = correlationMatrix[i][j];
+            if (correlation > threshold) {
+                graph[i].neighbors.push_back({ correlation, &graph[j] });
+            }
+        }
+    }
+    return graph;
 }

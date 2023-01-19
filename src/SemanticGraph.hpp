@@ -7,8 +7,12 @@
 #include "types.hpp"
 
 class SemanticNode {
-    word_t word;
-    std::vector<std::pair<dec_t, SemanticNode*>> neighbors;
+    public:
+        word_t word;
+        std::vector<std::pair<dec_t, SemanticNode*>> neighbors;
+
+        SemanticNode(word_t word, std::vector<std::pair<dec_t, SemanticNode*>> neighbors)
+        : word(word), neighbors(neighbors) {};
 };
 
 #endif
