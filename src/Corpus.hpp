@@ -15,8 +15,17 @@ class Corpus {
         Corpus(const std::vector<CorpusPeriod> periods);
         Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus);
 
-        dec_t energy(const word_t word, const int s, dec_t c) const;
-        dec_t enr(const word_t word, const int s, dec_t c) const;
+        dec_t energy(const word_t word, const int s, const dec_t c) const;
+        dec_t enr(const word_t word, const int s, const dec_t c) const;
+
+        bool isEmerging(
+            const word_t word,
+            const int s,
+            const dec_t c,
+            const dec_t alpha,
+            const dec_t beta,
+            const dec_t gamma
+        ) const;
 
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {
             for (const auto period : corpus.periods) os << period << std::endl;
