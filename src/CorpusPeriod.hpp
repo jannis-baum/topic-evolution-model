@@ -17,6 +17,8 @@ class CorpusPeriod {
         dec_t nutrition(const word_t word, const dec_t c) const;
         // number of documents that contain all given words
         int nDocumentsContaining(const std::initializer_list<word_t> words) const;
+        // asymmetric term correlation, see definitions.md or paper
+        dec_t termCorrelation(const word_t k, const word_t z) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, CorpusPeriod const &period) {
