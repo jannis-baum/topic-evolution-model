@@ -9,6 +9,10 @@
 class SemanticNode {
     word_t word;
     std::vector<std::pair<dec_t, SemanticNode*>> neighbors;
+
+    public:
+        SemanticNode(word_t word, std::vector<std::pair<dec_t, SemanticNode*>> neighbors)
+        : word(word), neighbors(neighbors) {};
 };
 
 #endif
