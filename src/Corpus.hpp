@@ -2,12 +2,14 @@
 #define CORPUS_HPP
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "CorpusPeriod.hpp"
 
 class Corpus {
     std::vector<CorpusPeriod> periods;
+    std::unordered_map<word_t, std::string> wtostr;
 
     public:
         Corpus(std::vector<CorpusPeriod> periods);
