@@ -32,3 +32,10 @@ dec_t Document::nutrition(const word_t word, const dec_t c) const {
     }
     return (1 - c) + c * (dec_t)this->words_tf.at(word) / (dec_t)this->tf_max;
 }
+
+bool Document::hasAllWords(const std::initializer_list<word_t> words) const {
+    for (auto word : words) {
+        if (!this->words_tf.contains(word)) return false;
+    }
+    return true;
+}
