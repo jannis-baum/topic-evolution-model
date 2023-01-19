@@ -10,6 +10,7 @@ Document::Document(const std::vector<word_t> words, const std::unordered_map<wor
 , words(words)
 , words_tf({})
 , tf_max(0) {
+    // build term-frequency map for words
     std::for_each(this->words.begin(), this->words.end(), [this](word_t word) {
         if (this->words_tf.contains(word)) {
             this->words_tf[word] += 1;
@@ -18,12 +19,14 @@ Document::Document(const std::vector<word_t> words, const std::unordered_map<wor
         }
     });
 
+    // find highest term-frequency
     for (const auto & [word, tf] : this->words_tf) {
         if (tf > tf_max) this->tf_max = tf;
     }
 }
 
 dec_t Document::nutrition(const word_t word, const dec_t c) const {
+    // see definitions.md or paper
     if (!this->words_tf.contains(word)) {
         return 1 - c;
     }
