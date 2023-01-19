@@ -29,8 +29,9 @@ int main(int argc, char* argv[]) {
         
         // vector of words (data for this line's document) split by spaces
         std::vector<std::string> words = {};
-        std::string word;
-        while (getline(lineStream, word, ' ')) words.push_back(word);
+        for (std::string word; getline(lineStream, word, ' ');) {
+            words.push_back(word);
+        }
 
         // add to current period
         currentPeriod->push_back(words);
