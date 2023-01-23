@@ -75,3 +75,33 @@ c_{u, v}^t > \mu_c + \sigma_c \cdot \delta
 $$
 
 where $\mu_c$ and $\sigma_c$ are the correlation median and standard deviation.
+
+## Finding topics
+
+A topic is a set of terms (words).
+
+### Emerging topics
+
+- for each emerging term $e$
+  - create new *emerging topic* $t_e = \{ e \}$
+  - start a BFS up to depth $\theta$ (with $e$ at $0$)
+  - from every discovered node $v$
+    - run another BFS up to depth $\theta$
+    - if $e$ is discovered, stop and add $v$ to $t_e$
+
+### Merging topics
+
+Let $td_{t_1, t_2}$ be the *topic distance* between topics $t_1, t_2$.
+
+$$
+  td_{t_1, t_2} = \frac{
+      \min(
+        \left\lvert t_1 \setminus t_2 \right\rvert,
+        \left\lvert t_2 \setminus t_1 \right\rvert
+      )
+    }{
+      \left\lvert t_1 \cap t_2 \right\rvert
+    }
+$$
+
+A distance of $0$ implies, that one topic is a subset of the other.
