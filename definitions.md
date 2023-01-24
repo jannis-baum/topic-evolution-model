@@ -78,7 +78,7 @@ where $\mu_c$ and $\sigma_c$ are the correlation median and standard deviation.
 
 ## Finding topics
 
-A topic is a set of terms (words).
+A topic is a period's subgraph.
 
 ### Emerging topics
 
