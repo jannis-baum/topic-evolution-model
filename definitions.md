@@ -17,7 +17,8 @@
   - $w_i^*$ is most frequent word in document $d_i$
   - $tf(w)$ is the word's term frequency in $d_i$
   - $c \in [0, 1]$ is a constant
-  - $nutrition(w)_t$ is sum of nutritions over $D_t$
+  - $nutrition(w)_t$ is sum of nutritions over $D_t$, normalized by the number
+    of documents in $t$
   - *describes relative word frequency in $[1-c, 1]$*
 - **energy** describes change in a word's nutrition over time
   - $energy(w) = \sum_{t=1}^s \frac{1}{i} (nutrition(w)_t^2 -
@@ -33,10 +34,14 @@
 Words within the following tuning parameter bounds are classified as important,
 *emerging terms*
 
-- $\alpha$: upper bound for $nutrition$ so that a word $w$ with $nutrition(w) >
-  \alpha$ is classified as a *flood word*
-- $\beta$ : lower bound for $energy$
-- $\gamma$: lower bound for $ENR$
+- $\alpha$: **upper bound for $nutrition$** such that a word $w$ with
+  $nutrition(w)$ greater than the period's median $nutrition$ plus its standard
+  deviation times $\alpha$ is classified as a *flood word*
+- $\beta$: **lower bound for $energy$** such that the remaining (non-flood)
+  words' median energy plus their standard deviation times $\beta$ is the lower
+  bound for $energy$
+- $\gamma$: **lower bound for $ENR$** such that a word's $ENR$ in the previous
+  period (or $0$) times $\gamma$ is the lower bound for $ENR$
 
 ## Semantic graph construction
 
@@ -64,17 +69,18 @@ $$
   \right\rvert
 $$
 
-In the graph, terms are nodes. The weighted edge at time $t$ between two nodes
-$(u, v)$ will be $c_{u, v}^t$.
+In the graph, terms $k$ with $2 n_{\{ k \}} < \lvert D_t \rvert$ are nodes. The
+weighted edge at time $t$ between two nodes $(u, v)$ will be $c_{u, v}^t$.
 
-Graphs are thinned out (removing edges) according
-to the tuning parameter $\delta$. An edge $(u, v)$ is kept only if their weight
+Graphs are thinned out (removing edges) according to the tuning parameter
+$\delta$. An edge $(u, v)$ is kept only if their weight
 
 $$
-c_{u, v}^t > \mu_c + \sigma_c \cdot \delta
+c_{u, v}^t > \tilde{c} + \sigma_c \cdot \delta
 $$
 
-where $\mu_c$ and $\sigma_c$ are the correlation median and standard deviation.
+where $\tilde{c}$ and $\sigma_c$ are the median and standard deviation of all
+edge weights (correlations).
 
 ## Finding topics
 
