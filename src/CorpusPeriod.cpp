@@ -12,7 +12,7 @@ dec_t CorpusPeriod::nutrition(const word_t word, const dec_t c) const {
     for (const auto &document : this->documents) {
         total += document.nutrition(word, c);
     }
-    return total;
+    return total / this->documents.size();
 }
 
 int CorpusPeriod::nDocumentsContaining(const std::initializer_list<word_t> words) const {
