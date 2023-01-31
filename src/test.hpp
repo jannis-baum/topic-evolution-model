@@ -1,9 +1,10 @@
 #ifndef TEST_HPP
 #define TEST_HPP
 
-int testAll();
+#include <functional>
+#include <string>
 
-int testCorpusPeriodBasic();
-int testCorpusPeriodChain();
+int testAll();
+int genericTest(std::string expectation, std::function<bool()> isSuccess);
 
 #endif
