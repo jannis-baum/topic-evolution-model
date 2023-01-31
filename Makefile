@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-c -pipe -O3 -std=gnu++20
 
-TARGET=out
+TARGET=$(if $(ENV_TARGET),$(ENV_TARGET),out)
 BUILD_DIR=.build
 SOURCE_DIR=src
 
@@ -16,7 +16,12 @@ $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 
 $(BUILD_DIR)/%.cpp.o: %.cpp
 	@mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(ENV_FLAGS) -c $< -o $@
+
+PHONY: test
+test:
+	@ENV_FLAGS="-D TESTING_ENV" ENV_TARGET="test" $(MAKE)
+	@./.build/test
 
 PHONY: clean
 clean:
