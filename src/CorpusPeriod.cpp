@@ -26,7 +26,7 @@ CorpusPeriod::CorpusPeriod(const std::vector<Document> documents, const std::uno
 
     // create nodes for words that have 0 < occurrences < Dt / 2
     for (const auto & [word, occurrence] : singleOccurrences) {
-        if (occurrence && occurrence < this->documents.size() / 2) {
+        if (occurrence && occurrence < this->documents.size() / 2.0) {
             this->wtonode.emplace(word, SemanticNode(word, {}));
         }
     }

@@ -14,10 +14,11 @@ class CorpusPeriod {
     // reference to Corpus' mapping to resolve word_t (aka int) to string
     const std::unordered_map<word_t, std::string> &wtostr;
     const std::vector<Document> documents;
-    // map words that exist in graph to nodes
-    std::unordered_map<word_t, SemanticNode> wtonode;
 
     public:
+        // map words that exist in graph to nodes
+        std::unordered_map<word_t, SemanticNode> wtonode;
+
         CorpusPeriod(const std::vector<Document> documents, const std::unordered_map<word_t, std::string> &wtostr);
         // see definitions.md or paper
         dec_t nutrition(const word_t word, const dec_t c) const;

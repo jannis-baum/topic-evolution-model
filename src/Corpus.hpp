@@ -8,11 +8,12 @@
 #include "CorpusPeriod.hpp"
 
 class Corpus {
-    std::vector<CorpusPeriod> periods;
     // word_t (aka int) to string mapping
     std::unordered_map<word_t, std::string> wtostr;
 
     public:
+        std::vector<CorpusPeriod> periods;
+
         Corpus(const std::vector<CorpusPeriod> periods);
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
