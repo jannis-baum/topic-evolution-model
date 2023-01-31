@@ -3,4 +3,7 @@
 
 int testAll();
 
+int testCorpusPeriodBasic();
+int testCorpusPeriodChain();
+
 #endif
