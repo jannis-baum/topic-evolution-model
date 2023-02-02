@@ -7,7 +7,7 @@
 int testAll() {
     int failedTests = 0;
 
-    std::cout << "CORPUS PERIOD" << std::endl;
+    std::cout << "NODE MERGING" << std::endl;
 
     failedTests += genericTest("Subword should point to superword", [](){
         Corpus corpus = Corpus({{ { "a", "b" }, { "b" }, {}, {}, {} }}, 1);
@@ -18,6 +18,13 @@ int testAll() {
         return corpus.periods[0].wtonode.at(0).word == 2
             && corpus.periods[0].wtonode.at(1).word == 2
             && corpus.periods[0].wtonode.at(2).word == 2;
+    });
+
+    std::cout << "EDGE BUILDING" << std::endl;
+
+    failedTests += genericTest("Edges are built without error", [](){
+        Corpus corpus = Corpus({{ {"c", "a", "b" }, { "a", "b" }, { "c", "a" }, { "b", "c" }, {}, {}, {}, {}, {} }}, 1);
+        return true;
     });
 
     std::cout << "DONE! failed: " << failedTests << std::endl;
