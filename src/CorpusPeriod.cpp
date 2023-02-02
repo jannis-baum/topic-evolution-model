@@ -66,6 +66,23 @@ dec_t CorpusPeriod::nutrition(const word_t word, const dec_t c) const {
     return total / this->documents.size();
 }
 
+std::vector<word_t> CorpusPeriod::findNonFloodWords(const dec_t c, const dec_t alpha) const {
+    std::vector<dec_t> nutritions = {};
+    for (const auto & [word, node] : this->wtonode) {
+        nutritions.push_back(this->nutrition(word, c));
+    }
+    dec_t threshold = mstdThreshold(nutritions, alpha);
+
+    std::vector<word_t> nonFloodWords = {};
+    auto it = this->wtonode.begin();
+    for (int i = 0; i < nutritions.size(); i++) {
+        if (nutritions[i] <= threshold) {
+            nonFloodWords.push_back(it->first);
+        }
+    }
+    return nonFloodWords;
+}
+
 int CorpusPeriod::nDocumentsContaining(const std::initializer_list<word_t> words) const {
     int count = 0;
     for (const auto &document : this->documents) {
