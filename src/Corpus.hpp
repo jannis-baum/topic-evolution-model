@@ -25,8 +25,7 @@ class Corpus {
         dec_t enr(const word_t word, const int s, const dec_t c) const;
 
         // see definitions.md or paper
-        bool isEmerging(
-            const word_t word,
+        std::vector<word_t> findEmergingWords(
             const int s,
             const dec_t c,
             const dec_t alpha,
