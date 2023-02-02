@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
         currentPeriod->push_back(words);
     }
 
-    Corpus corpus(structuredCorpus);
+    Corpus corpus(structuredCorpus, 1);
     std::cout << corpus;
 
     return 0;

@@ -7,7 +7,7 @@
 Corpus::Corpus(const std::vector<CorpusPeriod> periods)
 : periods(periods) {}
 
-Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus)
+Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta)
 : periods({})
 , wtostr({}) {
     // string to word_t (aka int) mapping
@@ -30,7 +30,7 @@ Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structur
             }
             documents.push_back(Document(words, this->wtostr));
         }
-        this->periods.push_back(CorpusPeriod(documents, this->wtostr));
+        this->periods.push_back(CorpusPeriod(documents, this->wtostr, delta));
     }
 }
 

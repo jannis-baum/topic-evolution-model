@@ -17,7 +17,7 @@ class Corpus {
         Corpus(const std::vector<CorpusPeriod> periods);
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
-        Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus);
+        Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta);
 
         // see definitions.md or paper
         dec_t energy(const word_t word, const int s, const dec_t c) const;
