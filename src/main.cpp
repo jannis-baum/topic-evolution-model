@@ -6,11 +6,18 @@
 #include "Corpus.hpp"
 #include "Document.hpp"
 
+#ifdef TESTING_ENV
+#include "test.hpp"
+#endif
+
 // read corpus from stdin
 // - corpus periods are separated by emtpy lines
 // - documents in periods are lines
 // - words in documents are separated by spaces
 int main(int argc, char* argv[]) {
+#ifdef TESTING_ENV
+    return testAll();
+#endif
 
     // vector (periods) of vectors (documents) of vectors (words) of strings
     std::vector<std::vector<std::vector<std::string>>> structuredCorpus = {{}};
@@ -37,7 +44,7 @@ int main(int argc, char* argv[]) {
         currentPeriod->push_back(words);
     }
 
-    Corpus corpus(structuredCorpus);
+    Corpus corpus(structuredCorpus, 1);
     std::cout << corpus;
 
     return 0;

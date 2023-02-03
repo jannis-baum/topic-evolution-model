@@ -8,15 +8,16 @@
 #include "CorpusPeriod.hpp"
 
 class Corpus {
-    std::vector<CorpusPeriod> periods;
     // word_t (aka int) to string mapping
     std::unordered_map<word_t, std::string> wtostr;
 
     public:
+        std::vector<CorpusPeriod> periods;
+
         Corpus(const std::vector<CorpusPeriod> periods);
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
-        Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus);
+        Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta);
 
         // see definitions.md or paper
         dec_t energy(const word_t word, const int s, const dec_t c) const;
@@ -24,8 +25,7 @@ class Corpus {
         dec_t enr(const word_t word, const int s, const dec_t c) const;
 
         // see definitions.md or paper
-        bool isEmerging(
-            const word_t word,
+        std::vector<word_t> findEmergingWords(
             const int s,
             const dec_t c,
             const dec_t alpha,

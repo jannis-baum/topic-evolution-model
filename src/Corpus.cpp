@@ -1,4 +1,5 @@
 #include "Corpus.hpp"
+#include "helpers.hpp"
 #include <cmath>
 #include <numeric>
 #include <unordered_map>
@@ -6,7 +7,7 @@
 Corpus::Corpus(const std::vector<CorpusPeriod> periods)
 : periods(periods) {}
 
-Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus)
+Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta)
 : periods({})
 , wtostr({}) {
     // string to word_t (aka int) mapping
@@ -29,7 +30,7 @@ Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structur
             }
             documents.push_back(Document(words, this->wtostr));
         }
-        this->periods.push_back(CorpusPeriod(documents, this->wtostr));
+        this->periods.push_back(CorpusPeriod(documents, this->wtostr, delta));
     }
 }
 
@@ -50,16 +51,31 @@ dec_t Corpus::enr(const word_t word, const int s, dec_t c) const {
     return this->energy(word, s, c) / this->periods[s].nutrition(word, c);
 }
 
-bool Corpus::isEmerging(
-    const word_t word,
+std::vector<word_t> Corpus::findEmergingWords(
     const int s,
     const dec_t c,
     const dec_t alpha,
     const dec_t beta,
     const dec_t gamma
 ) const {
-    // see definitions.md or paper
-    return this->periods[s].nutrition(word, c) < alpha
-        && this->energy(word, s, c) > beta
-        && this->enr(word, s, c) > gamma;
+    auto candidates = this->periods[s].findNonFloodWords(c, alpha);
+    // find energy threshold
+    std::vector<dec_t> energies = {};
+    for (const auto & word : candidates) {
+        energies.push_back(this->energy(word, s, c));
+    }
+    dec_t threshold = mstdThreshold(energies, beta);
+
+    // erase candidates that don't abide energy & enr thresholds
+    for (int i = 0; i < energies.size(); i++) {
+        if (
+            energies[i] <= threshold ||
+            (s != 0 && this->enr(candidates[i], s, c) > this->enr(candidates[i], s - 1, c) * gamma)
+        ) {
+            candidates[i] = -1;
+        }
+    }
+    std::erase(candidates, -1);
+
+    return candidates;
 }
