@@ -15,7 +15,9 @@ class SemanticNode {
         SemanticNode(word_t word, std::vector<std::pair<dec_t, SemanticNode*>> neighbors)
         : word(word), neighbors(neighbors) {};
 
-        void bfs(std::function<void(const SemanticNode *)> f, int theta);
+        // BFS up to max depth theta
+        // calls `f` with each discovered node and stops if `f` returns false
+        void bfs(std::function<bool(const SemanticNode *)> f, int theta);
 };
 
 #endif

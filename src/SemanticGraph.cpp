@@ -3,7 +3,7 @@
 
 #include "SemanticGraph.hpp"
 
-void SemanticNode::bfs(std::function<void(const SemanticNode *)> f, int theta) {
+void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, int theta) {
     if (!theta) return;
 
     std::queue<std::pair<const SemanticNode *, int>> discovered;
@@ -20,7 +20,9 @@ void SemanticNode::bfs(std::function<void(const SemanticNode *)> f, int theta) {
 
     while (popFront() && current.second < theta) {
         // don't call `f` on the node itself
-        if (current.second) f(current.first);
+        if (current.second) {
+            if (!f(current.first)) return;
+        }
         for (const auto & [correlation, child]: current.first->neighbors) {
             discovered.push({ child, current.second + 1 });
         }
