@@ -1,0 +1,28 @@
+#include <queue>
+#include <iostream>
+
+#include "SemanticGraph.hpp"
+
+void SemanticNode::bfs(std::function<void(const SemanticNode *)> f, int theta) {
+    if (!theta) return;
+
+    std::queue<std::pair<const SemanticNode *, int>> discovered;
+    discovered.push({ this, 0 });
+    std::pair<const SemanticNode *, int> current;
+    // assign front to `current`, pop front and return true if there are more
+    // elements in queue
+    std::function<bool()> popFront = [&discovered, &current]() mutable {
+        if (discovered.empty()) return false;
+        current = discovered.front();
+        discovered.pop();
+        return true;
+    };
+
+    while (popFront() && current.second < theta) {
+        // don't call `f` on the node itself
+        if (current.second) f(current.first);
+        for (const auto & [correlation, child]: current.first->neighbors) {
+            discovered.push({ child, current.second + 1 });
+        }
+    }
+}
