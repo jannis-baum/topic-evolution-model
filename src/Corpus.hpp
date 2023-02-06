@@ -3,9 +3,11 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "CorpusPeriod.hpp"
+#include "SemanticGraph.hpp"
 
 class Corpus {
     // word_t (aka int) to string mapping
@@ -31,6 +33,15 @@ class Corpus {
             const dec_t alpha,
             const dec_t beta,
             const dec_t gamma
+        ) const;
+
+        std::vector<std::unordered_set<const SemanticNode *>> findEmergingTopics(
+            const int s,
+            const dec_t c,
+            const dec_t alpha,
+            const dec_t beta,
+            const dec_t gamma,
+            const int theta
         ) const;
 
         // streaming (e.g. printing) operator <<
