@@ -23,7 +23,7 @@ int testAll() {
     std::cout << "EDGE BUILDING" << std::endl;
 
     failedTests += genericTest("Edges are built without error", [](){
-        Corpus corpus = Corpus({{ {"c", "a", "b" }, { "a", "b" }, { "c", "a" }, { "b", "c" }, {}, {}, {}, {}, {} }}, 1);
+        Corpus corpus = Corpus({{ {"c", "a", "b" }, { "a", "b" }, { "c", "a" }, { "b", "c" }, {"c", "b"}, {"c", "b"}, {}, {}, {}, {}, {}, {}, {} }}, 1);
         return true;
     });
 

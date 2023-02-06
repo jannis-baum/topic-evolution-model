@@ -3,6 +3,7 @@
 #include <cmath>
 #include <numeric>
 #include <unordered_map>
+#include <unordered_set>
 
 Corpus::Corpus(const std::vector<CorpusPeriod> periods)
 : periods(periods) {}
@@ -78,4 +79,39 @@ std::vector<word_t> Corpus::findEmergingWords(
     std::erase(candidates, -1);
 
     return candidates;
+}
+
+std::vector<std::unordered_set<const SemanticNode *>> Corpus::findEmergingTopics(
+    const int s,
+    const dec_t c,
+    const dec_t alpha,
+    const dec_t beta,
+    const dec_t gamma,
+    const int theta
+) const {
+    auto emergingWords = this->findEmergingWords(s, c, alpha, beta, gamma);
+    std::vector<std::unordered_set<const SemanticNode *>> topics = {};
+    const auto &wtonode = this->periods[s].wtonode;
+
+    // find emergin topics
+    for (const auto e: emergingWords) {
+        if (!wtonode.contains(e)) continue;
+        const SemanticNode *node = &wtonode.at(e);
+        // start with node itself
+        std::unordered_set<const SemanticNode *> topic = { node };
+
+        // discover connected nodes with BSF within theta
+        node->bfs([e, theta, &topic](const SemanticNode *discovered) mutable {
+            // add discovered to topic if original node can be discovered with
+            // backwards BFS within theta
+            discovered->bfs([e, &topic](const SemanticNode *backDiscovered) mutable {
+                if (backDiscovered->word != e) return true;
+                topic.insert(backDiscovered);
+                return false;
+            }, theta);
+            return true;
+        }, theta);
+    }
+
+    return topics;
 }

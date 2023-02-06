@@ -141,9 +141,9 @@ void CorpusPeriod::addEdges(const dec_t delta) {
 
     // add neighbors for nodes by threshold
     auto it_i = words.begin();
-    for (int i = 0; i < words.size(); i++) {
+    for (int i = 0; i < correlationMatrix.size(); i++) {
         auto it_j = words.begin();
-        for (int j = 0; j < words.size(); j++) {
+        for (int j = 0; j < correlationMatrix[i].size(); j++) {
             const auto correlation = correlationMatrix[i][j];
             if (correlation.has_value() && correlation.value() > threshold) {
                 this->wtonode.at(*it_i).neighbors.push_back(
