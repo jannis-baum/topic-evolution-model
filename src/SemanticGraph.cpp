@@ -3,7 +3,7 @@
 
 #include "SemanticGraph.hpp"
 
-void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, int theta) {
+void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, int theta) const {
     if (!theta) return;
 
     std::queue<std::pair<const SemanticNode *, int>> discovered;

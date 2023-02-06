@@ -17,7 +17,7 @@ class SemanticNode {
 
         // BFS up to max depth theta
         // calls `f` with each discovered node and stops if `f` returns false
-        void bfs(std::function<bool(const SemanticNode *)> f, int theta);
+        void bfs(std::function<bool(const SemanticNode *)> f, int theta) const;
 };
 
 #endif
