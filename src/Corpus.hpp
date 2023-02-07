@@ -9,6 +9,8 @@
 #include "CorpusPeriod.hpp"
 #include "SemanticGraph.hpp"
 
+typedef std::unordered_set<const SemanticNode *> Topic;
+
 class Corpus {
     // word_t (aka int) to string mapping
     std::unordered_map<word_t, std::string> wtostr;
@@ -35,7 +37,7 @@ class Corpus {
             const dec_t gamma
         ) const;
 
-        std::vector<std::unordered_set<const SemanticNode *>> findEmergingTopics(
+        std::vector<Topic> findEmergingTopics(
             const int s,
             const dec_t c,
             const dec_t alpha,
@@ -43,6 +45,8 @@ class Corpus {
             const dec_t gamma,
             const int theta
         ) const;
+
+        dec_t topicDistance(const Topic topic1, const Topic topic2) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {

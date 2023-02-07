@@ -1,5 +1,6 @@
 #include "Corpus.hpp"
 #include "helpers.hpp"
+#include <algorithm>
 #include <cmath>
 #include <numeric>
 #include <unordered_map>
@@ -81,7 +82,7 @@ std::vector<word_t> Corpus::findEmergingWords(
     return candidates;
 }
 
-std::vector<std::unordered_set<const SemanticNode *>> Corpus::findEmergingTopics(
+std::vector<Topic> Corpus::findEmergingTopics(
     const int s,
     const dec_t c,
     const dec_t alpha,
@@ -114,4 +115,25 @@ std::vector<std::unordered_set<const SemanticNode *>> Corpus::findEmergingTopics
     }
 
     return topics;
+}
+
+dec_t Corpus::topicDistance(const Topic topic1, const Topic topic2) const {
+    Topic intersection = {};
+    Topic diff12 = {};
+    for (const SemanticNode *node: topic1) {
+        if (topic2.contains(node)) {
+            intersection.insert(node);
+        } else {
+            diff12.insert(node);
+        }
+    }
+
+    Topic diff21 = {};
+    for (const SemanticNode *node: topic2) {
+        if (!topic1.contains(node)) {
+            diff21.insert(node);
+        }
+    }
+
+    return std::min(diff12.size(), diff21.size()) / (dec_t)intersection.size();
 }
