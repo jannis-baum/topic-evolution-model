@@ -8,8 +8,7 @@
 
 #include "CorpusPeriod.hpp"
 #include "SemanticGraph.hpp"
-
-typedef std::unordered_set<const SemanticNode *> Topic;
+#include "topics.hpp"
 
 class Corpus {
     // word_t (aka int) to string mapping
@@ -45,8 +44,6 @@ class Corpus {
             const dec_t gamma,
             const int theta
         ) const;
-
-        dec_t topicDistance(const Topic topic1, const Topic topic2) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {

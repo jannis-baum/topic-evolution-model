@@ -116,24 +116,3 @@ std::vector<Topic> Corpus::findEmergingTopics(
 
     return topics;
 }
-
-dec_t Corpus::topicDistance(const Topic topic1, const Topic topic2) const {
-    Topic intersection = {};
-    Topic diff12 = {};
-    for (const SemanticNode *node: topic1) {
-        if (topic2.contains(node)) {
-            intersection.insert(node);
-        } else {
-            diff12.insert(node);
-        }
-    }
-
-    Topic diff21 = {};
-    for (const SemanticNode *node: topic2) {
-        if (!topic1.contains(node)) {
-            diff21.insert(node);
-        }
-    }
-
-    return std::min(diff12.size(), diff21.size()) / (dec_t)intersection.size();
-}
