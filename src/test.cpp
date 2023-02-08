@@ -1,13 +1,35 @@
+#include <cmath>
 #include <iostream>
 #include "assert.h"
 
 #include "test.hpp"
 #include "Corpus.hpp"
+#include "topics.hpp"
+
+int testGraphConstruction();
+int testTopics();
 
 int testAll() {
     int failedTests = 0;
+    failedTests += testGraphConstruction();
+    failedTests += testTopics();
 
-    std::cout << "NODE MERGING" << std::endl;
+    std::cout << "DONE! failed: " << failedTests << std::endl;
+    return failedTests;
+}
+
+int genericTest(std::string expectation, std::function<bool()> isSuccess) {
+    std::cout << "- " << expectation;
+    bool success = isSuccess();
+    std::cout << " " << (success ? "✅" : "❌") << std::endl;
+    return !success;
+}
+
+int testGraphConstruction() {
+    int failedTests = 0;
+
+    std::cout << "GRAPH CONSTRUCTION" << std::endl;
+    std::cout << "Node merging" << std::endl;
 
     failedTests += genericTest("Subword should point to superword", [](){
         Corpus corpus = Corpus({{ { "a", "b" }, { "b" }, {}, {}, {} }}, 1);
@@ -20,20 +42,44 @@ int testAll() {
             && corpus.periods[0].wtonode.at(2).word == 2;
     });
 
-    std::cout << "EDGE BUILDING" << std::endl;
+    std::cout << "Edge building" << std::endl;
 
     failedTests += genericTest("Edges are built without error", [](){
         Corpus corpus = Corpus({{ {"c", "a", "b" }, { "a", "b" }, { "c", "a" }, { "b", "c" }, {"c", "b"}, {"c", "b"}, {}, {}, {}, {}, {}, {}, {} }}, 1);
         return true;
     });
 
-    std::cout << "DONE! failed: " << failedTests << std::endl;
     return failedTests;
 }
 
-int genericTest(std::string expectation, std::function<bool()> isSuccess) {
-    std::cout << "- " << expectation;
-    bool success = isSuccess();
-    std::cout << " " << (success ? "✅" : "❌") << std::endl;
-    return !success;
+int testTopics() {
+    int failedTests = 0;
+
+    std::cout << "TOPICS" << std::endl;
+
+    failedTests += genericTest("Topic distance is inf", [](){
+        SemanticNode node1(1, {});
+        SemanticNode node2(2, {});
+        Topic t1 = { &node1 };
+        Topic t2 = { &node2 };
+        return isinf(topicDistance(t1, t2));
+    });
+
+    failedTests += genericTest("Topic distance is 0", [](){
+        SemanticNode node1(1, {});
+        Topic t1 = { &node1 };
+        Topic t2 = { &node1 };
+        return isEqual(topicDistance(t1, t2), 0);
+    });
+
+    failedTests += genericTest("Topic distance is 1", [](){
+        SemanticNode node1(1, {});
+        SemanticNode node2(2, {});
+        SemanticNode node3(3, {});
+        Topic t1 = { &node1, &node2 };
+        Topic t2 = { &node2, &node3 };
+        return isEqual(topicDistance(t1, t2), 1);
+    });
+
+    return failedTests;
 }
