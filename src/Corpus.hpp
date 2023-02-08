@@ -42,7 +42,8 @@ class Corpus {
             const dec_t alpha,
             const dec_t beta,
             const dec_t gamma,
-            const int theta
+            const int theta,
+            const dec_t mergeThreshold
         ) const;
 
         // streaming (e.g. printing) operator <<

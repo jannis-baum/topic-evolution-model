@@ -1,5 +1,6 @@
 #include "Corpus.hpp"
 #include "helpers.hpp"
+#include "topics.hpp"
 #include <algorithm>
 #include <cmath>
 #include <numeric>
@@ -88,7 +89,8 @@ std::vector<Topic> Corpus::findEmergingTopics(
     const dec_t alpha,
     const dec_t beta,
     const dec_t gamma,
-    const int theta
+    const int theta,
+    const dec_t mergeThreshold
 ) const {
     auto emergingWords = this->findEmergingWords(s, c, alpha, beta, gamma);
     std::vector<std::unordered_set<const SemanticNode *>> topics = {};
@@ -114,5 +116,6 @@ std::vector<Topic> Corpus::findEmergingTopics(
         }, theta);
     }
 
+    mergeTopicsByThreshold(topics, mergeThreshold);
     return topics;
 }
