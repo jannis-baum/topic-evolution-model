@@ -63,7 +63,7 @@ int testTopics() {
         SemanticNode node2(2, {});
         Topic t1 = { &node1 };
         Topic t2 = { &node2 };
-        return isinf(topicDistance(t1, t2));
+        return std::isinf(topicDistance(t1, t2));
     });
 
     failedTests += genericTest("Topic distance is 0", [](){
@@ -92,6 +92,53 @@ int testTopics() {
         return topics.size() == 1
             && topics.begin()->size() == 2
             && topics.begin()->contains(&node2);
+    });
+
+    failedTests += genericTest("Simple merge by threshold I", [](){
+        SemanticNode node1(1, {});
+        SemanticNode node2(2, {});
+        SemanticNode node3(3, {});
+        SemanticNode node4(4, {});
+        std::vector<Topic> topics = {
+            Topic({ &node4 }),
+            Topic({ &node1, &node2 }),
+            Topic({ &node2, &node3 })
+        };
+        mergeTopicsByThreshold(topics, 1);
+        return topics.size() == 2
+            && topics.begin()->size() == 1
+            && (topics.begin() + 1)->size() == 3;
+    });
+
+    failedTests += genericTest("Simple merge by threshold II", [](){
+        SemanticNode node1(1, {});
+        SemanticNode node2(2, {});
+        SemanticNode node3(3, {});
+        SemanticNode node4(4, {});
+        std::vector<Topic> topics = {
+            Topic({ &node1, &node2 }),
+            Topic({ &node2, &node3, &node4 }),
+            Topic({ &node3, &node4 }),
+        };
+        mergeTopicsByThreshold(topics, 0);
+        return topics.size() == 2
+            && topics.begin()->size() == 2
+            && (topics.begin() + 1)->size() == 3;
+    });
+
+    failedTests += genericTest("Recursive merge by threshold", [](){
+        SemanticNode node1(1, {});
+        SemanticNode node2(2, {});
+        SemanticNode node3(3, {});
+        SemanticNode node4(4, {});
+        std::vector<Topic> topics = {
+            Topic({ &node1, &node2 }),
+            Topic({ &node2, &node3, &node4 }),
+            Topic({ &node3, &node4 }),
+        };
+        mergeTopicsByThreshold(topics, 1);
+        return topics.size() == 1
+            && topics.begin()->size() == 4;
     });
 
     return failedTests;
