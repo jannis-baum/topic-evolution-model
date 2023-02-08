@@ -28,7 +28,7 @@ int genericTest(std::string expectation, std::function<bool()> isSuccess) {
 int testGraphConstruction() {
     int failedTests = 0;
 
-    std::cout << "GRAPH CONSTRUCTION" << std::endl;
+    std::cout << std::endl << "GRAPH CONSTRUCTION" << std::endl;
     std::cout << "Node merging" << std::endl;
 
     failedTests += genericTest("Subword should point to superword", [](){
@@ -55,7 +55,8 @@ int testGraphConstruction() {
 int testTopics() {
     int failedTests = 0;
 
-    std::cout << "TOPICS" << std::endl;
+    std::cout << std::endl << "TOPICS" << std::endl;
+    std::cout << "Distances" << std::endl;
 
     failedTests += genericTest("Topic distance is inf", [](){
         SemanticNode node1(1, {});
@@ -79,6 +80,18 @@ int testTopics() {
         Topic t1 = { &node1, &node2 };
         Topic t2 = { &node2, &node3 };
         return isEqual(topicDistance(t1, t2), 1);
+    });
+
+    std::cout << "Merging" << std::endl;
+
+    failedTests += genericTest("Merge two topics", [](){
+        SemanticNode node1(1, {});
+        SemanticNode node2(2, {});
+        std::vector<Topic> topics = { Topic({ &node1 }), Topic({ &node2 }) };
+        mergeTopics(topics, { topics.begin(), topics.begin() + 1 });
+        return topics.size() == 1
+            && topics.begin()->size() == 2
+            && topics.begin()->contains(&node2);
     });
 
     return failedTests;
