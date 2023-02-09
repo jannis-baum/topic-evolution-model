@@ -73,7 +73,7 @@ std::vector<word_t> Corpus::findEmergingWords(
     for (int i = 0; i < energies.size(); i++) {
         if (
             energies[i] <= threshold ||
-            (s != 0 && this->enr(candidates[i], s, c) > this->enr(candidates[i], s - 1, c) * gamma)
+            (s != 0 && this->enr(candidates[i], s, c) <= this->enr(candidates[i], s - 1, c) * gamma)
         ) {
             candidates[i] = -1;
         }
