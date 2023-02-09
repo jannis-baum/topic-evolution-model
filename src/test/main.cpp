@@ -5,7 +5,7 @@
 int testAll() {
     int failedTests = 0;
 
-    failedTests += testGraphConstruction();
+    failedTests += testPeriod();
     failedTests += testTopics();
 
     std::cout << "DONE! failed: " << failedTests << std::endl;
