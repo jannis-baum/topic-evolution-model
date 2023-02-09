@@ -22,6 +22,8 @@ class CorpusPeriod {
     // (will be nullopt if no co-occurrence)
     std::optional<dec_t> termCorrelation(const word_t k, const word_t z) const;
 
+    void constructGraph(const dec_t delta);
+    void constructNodes();
     void addEdges(const dec_t delta);
 
     public:
@@ -31,8 +33,7 @@ class CorpusPeriod {
 
         CorpusPeriod(
                 const std::vector<Document> documents,
-                const std::unordered_map<word_t,
-                std::string> &wtostr,
+                const std::unordered_map<word_t, std::string> &wtostr,
                 const dec_t delta);
         std::vector<word_t> findNonFloodWords(const dec_t c, const dec_t alpha) const;
         // see definitions.md or paper

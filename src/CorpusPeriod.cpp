@@ -11,6 +11,15 @@
 
 CorpusPeriod::CorpusPeriod(const std::vector<Document> documents, const std::unordered_map<word_t, std::string> &wtostr, const dec_t delta)
 : documents(documents), wtostr(wtostr), wtonode({}) {
+    this->constructGraph(delta);
+};
+
+void CorpusPeriod::constructGraph(const dec_t delta) {
+    this->constructNodes();
+    this->addEdges(delta);
+}
+
+void CorpusPeriod::constructNodes() {
     // word -> (nDocumentsContaining(word),
     //          [(all other words, and their co-occurrences with word)])
     std::unordered_map<word_t, std::pair<int, std::vector<std::pair<word_t, int>>>> occurrences = {};
@@ -58,9 +67,49 @@ CorpusPeriod::CorpusPeriod(const std::vector<Document> documents, const std::uno
             }
         }
     }
+}
 
-    this->addEdges(delta);
-};
+void CorpusPeriod::addEdges(const dec_t delta) {
+    // find main words for nodes
+    std::unordered_set<word_t> words = {};
+    for (const auto & [word, node] : this->wtonode) {
+        words.insert(node.word);
+    }
+    // find term corralations between all word pairs as matrix (undefined if no
+    // correlation), and as list of all correlations
+    std::vector<std::vector<std::optional<dec_t>>> correlationMatrix;
+    std::vector<dec_t> correlationValues;
+    for (const auto word1 : words) {
+        correlationMatrix.push_back({});
+        for (const auto word2 : words) {
+            if (word1 == word2) continue;
+            const std::optional<dec_t> correlation = this->termCorrelation(word1, word2);
+            correlationMatrix.back().push_back(correlation);
+            if (correlation.has_value()) {
+                correlationValues.push_back(correlation.value());
+            }
+        }
+    }
+    if (correlationValues.empty()) return;
+    // threshold to add edges
+    dec_t threshold = mstdThreshold(correlationValues, delta);
+
+    // add neighbors for nodes by threshold
+    auto it_i = words.begin();
+    for (int i = 0; i < correlationMatrix.size(); i++) {
+        auto it_j = words.begin();
+        for (int j = 0; j < correlationMatrix[i].size(); j++) {
+            const auto correlation = correlationMatrix[i][j];
+            if (correlation.has_value() && correlation.value() > threshold) {
+                this->wtonode.at(*it_i).neighbors.push_back(
+                    { correlation.value(), &(this->wtonode.at(*it_j)) }
+                );
+            }
+            it_j++;
+        }
+        it_i++;
+    }
+}
 
 dec_t CorpusPeriod::nutrition(const word_t word, const dec_t c) const {
     dec_t total = 0;
@@ -112,46 +161,4 @@ std::optional<dec_t> CorpusPeriod::termCorrelation(const word_t k, const word_t 
         (dec_t)n_kz / n_k -
         (dec_t)(n_z - n_kz) / (d_t - n_k)
     );
-}
-
-void CorpusPeriod::addEdges(const dec_t delta) {
-    // find main words for nodes
-    std::unordered_set<word_t> words = {};
-    for (const auto & [word, node] : this->wtonode) {
-        words.insert(node.word);
-    }
-    // find term corralations between all word pairs as matrix (undefined if no
-    // correlation), and as list of all correlations
-    std::vector<std::vector<std::optional<dec_t>>> correlationMatrix;
-    std::vector<dec_t> correlationValues;
-    for (const auto word1 : words) {
-        correlationMatrix.push_back({});
-        for (const auto word2 : words) {
-            if (word1 == word2) continue;
-            const std::optional<dec_t> correlation = this->termCorrelation(word1, word2);
-            correlationMatrix.back().push_back(correlation);
-            if (correlation.has_value()) {
-                correlationValues.push_back(correlation.value());
-            }
-        }
-    }
-    if (correlationValues.empty()) return;
-    // threshold to add edges
-    dec_t threshold = mstdThreshold(correlationValues, delta);
-
-    // add neighbors for nodes by threshold
-    auto it_i = words.begin();
-    for (int i = 0; i < correlationMatrix.size(); i++) {
-        auto it_j = words.begin();
-        for (int j = 0; j < correlationMatrix[i].size(); j++) {
-            const auto correlation = correlationMatrix[i][j];
-            if (correlation.has_value() && correlation.value() > threshold) {
-                this->wtonode.at(*it_i).neighbors.push_back(
-                    { correlation.value(), &(this->wtonode.at(*it_j)) }
-                );
-            }
-            it_j++;
-        }
-        it_i++;
-    }
 }
