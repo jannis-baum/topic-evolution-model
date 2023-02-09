@@ -14,6 +14,9 @@ class Corpus {
     // word_t (aka int) to string mapping
     std::unordered_map<word_t, std::string> wtostr;
 
+    // s is period index
+    const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const;
+
     public:
         std::vector<CorpusPeriod> periods;
 

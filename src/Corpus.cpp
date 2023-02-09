@@ -83,6 +83,11 @@ std::vector<word_t> Corpus::findEmergingWords(
     return candidates;
 }
 
+
+const std::unordered_map<word_t, SemanticNode> &Corpus::wtonodeByPeriod(const int s) const {
+    return this->periods[s].wtonode;
+}
+
 std::vector<Topic> Corpus::findEmergingTopics(
     const int s,
     const dec_t c,
@@ -94,7 +99,7 @@ std::vector<Topic> Corpus::findEmergingTopics(
 ) const {
     auto emergingWords = this->findEmergingWords(s, c, alpha, beta, gamma);
     std::vector<std::unordered_set<const SemanticNode *>> topics = {};
-    const auto &wtonode = this->periods[s].wtonode;
+    const auto &wtonode = this->wtonodeByPeriod(s);
 
     // find emergin topics
     for (const auto e: emergingWords) {
