@@ -6,6 +6,7 @@ int testAll() {
     int failedTests = 0;
 
     failedTests += testPeriod();
+    failedTests += testCorpus();
     failedTests += testTopics();
 
     std::cout << "DONE! failed: " << failedTests << std::endl;
