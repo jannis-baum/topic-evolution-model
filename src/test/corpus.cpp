@@ -5,9 +5,6 @@
 #include "../Corpus.hpp"
 
 class MockCorpus: public Corpus {
-    std::unordered_map<word_t, SemanticNode> mock_wtonode;
-    std::vector<word_t> mock_emergingWords;
-
     const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const override {
         return this->mock_wtonode;
     }
@@ -23,16 +20,42 @@ class MockCorpus: public Corpus {
     };
 
     public:
+        std::unordered_map<word_t, SemanticNode> mock_wtonode;
+        std::vector<word_t> mock_emergingWords;
+
         MockCorpus(const int testingCase): Corpus() {
             switch (testingCase) {
+                case 3:
+                    // 0 -> 1 -> 2 -> 3 -> 0
+                    this->mock_wtonode.emplace(0, SemanticNode(0, {}));
+                    this->mock_wtonode.emplace(1, SemanticNode(1, {}));
+                    this->mock_wtonode.emplace(2, SemanticNode(2, {}));
+                    this->mock_wtonode.emplace(3, SemanticNode(3, {}));
+                    this->mock_wtonode.at(0).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(2)) });
+                    this->mock_wtonode.at(2).neighbors.push_back({ 1, &(this->mock_wtonode.at(3)) });
+                    this->mock_wtonode.at(3).neighbors.push_back({ 1, &(this->mock_wtonode.at(0)) });
+                    this->mock_emergingWords = { 0 };
+                    break;
+                case 2:
+                    // 0 <-> 1 <-> 2
+                    this->mock_wtonode.emplace(0, SemanticNode(0, {}));
+                    this->mock_wtonode.emplace(1, SemanticNode(1, {}));
+                    this->mock_wtonode.emplace(2, SemanticNode(2, {}));
+                    this->mock_wtonode.at(0).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(0)) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(2)) });
+                    this->mock_wtonode.at(2).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
+                    this->mock_emergingWords = { 0 };
+                    break;
                 case 1:
-                    // two nodes connected one-way
+                    // 1 -> 0
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
                     this->mock_wtonode.emplace(1, SemanticNode(1, { { 1, &(this->mock_wtonode.at(0)) } }));
                     this->mock_emergingWords = { 1 };
                     break;
                 default:
-                    // two inter-connected nodes, 0 is emerging
+                    // 0 <-> 1
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
                     this->mock_wtonode.emplace(1, SemanticNode(1, { { 1, &(this->mock_wtonode.at(0)) } }));
                     this->mock_wtonode.at(0).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
@@ -100,13 +123,34 @@ int testCorpus() {
 
     failedTests += genericTest("Missing back-connection", [](){
         MockCorpus m = MockCorpus(1);
-        // first 5 params are for finding emerging words (irrelevant), theta is
-        // BFS depth & last would only be relevant if we had more than one
-        // emerging word
         auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 1, 0);
         return topics.size() == 1
             && topics[0].size() == 1;
     });
+
+    failedTests += genericTest("Connection with multi-node path but insufficient lambda", [](){
+        MockCorpus m = MockCorpus(2);
+        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 1, 0);
+        return topics.size() == 1
+            && topics[0].size() == 2;
+    });
+
+    failedTests += genericTest("Connection with multi-node path but sufficient lambda", [](){
+        MockCorpus m = MockCorpus(2);
+        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 2, 0);
+        return topics.size() == 1
+            && topics[0].size() == 3;
+    });
+
+    failedTests += genericTest("Insufficient lambda on backwards search", [](){
+        MockCorpus m = MockCorpus(3);
+        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 2, 0);
+        return topics.size() == 1
+            && topics[0].size() == 2
+            && topics[0].contains(&(m.mock_wtonode.at(0)))
+            && topics[0].contains(&(m.mock_wtonode.at(2)));
+    });
+
 
     return failedTests;
 }
