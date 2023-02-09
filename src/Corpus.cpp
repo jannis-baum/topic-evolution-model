@@ -109,13 +109,15 @@ std::vector<Topic> Corpus::findEmergingTopics(
         node->bfs([e, theta, &topic](const SemanticNode *discovered) mutable {
             // add discovered to topic if original node can be discovered with
             // backwards BFS within theta
-            discovered->bfs([e, &topic](const SemanticNode *backDiscovered) mutable {
+            discovered->bfs([e, discovered, &topic](const SemanticNode *backDiscovered) mutable {
                 if (backDiscovered->word != e) return true;
-                topic.insert(backDiscovered);
+                topic.insert(discovered);
                 return false;
             }, theta);
             return true;
         }, theta);
+
+        topics.push_back(topic);
     }
 
     mergeTopicsByThreshold(topics, mergeThreshold);
