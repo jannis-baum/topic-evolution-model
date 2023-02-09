@@ -25,5 +25,15 @@ int testCorpus() {
         return isEqual(c.energy(0, 1, 1), 1.0/9 - 1.0/36);
     });
 
+    std::cout << "ENR" << std::endl;
+
+    failedTests += genericTest("ENR is calculated correctly", [](){
+        Corpus c = Corpus({
+            { { "a", "b", "b" }, {}, {} }, // a has nutrition 1/6
+            { { "a", "a" }, {}, {} }, // a has nutrition 1/3
+        }, 1);
+        return isEqual(c.enr(0, 1, 1), (1.0/9 - 1.0/36) / (1.0/3));
+    });
+
     return failedTests;
 }
