@@ -9,7 +9,18 @@ int testAll() {
     failedTests += testCorpus();
     failedTests += testTopics();
 
-    std::cout << "DONE! failed: " << failedTests << std::endl;
+    std::cout << std::endl
+        << "--------------------------------------------------------------------------------"
+        << std::endl;
+    if (!failedTests) {
+        std::cout << "✅ Done! All tests passed successfully." << std::endl;
+    } else {
+        std::cout << "❌ Done! " << failedTests << " tests failed." << std::endl;
+    }
+    std::cout
+        << "--------------------------------------------------------------------------------"
+        << std::endl << std::endl;
+
     return failedTests;
 }
 
