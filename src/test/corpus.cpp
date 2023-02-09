@@ -35,5 +35,16 @@ int testCorpus() {
         return isEqual(c.enr(0, 1, 1), (1.0/9 - 1.0/36) / (1.0/3));
     });
 
+    std::cout << "Emerging words & topics" << std::endl;
+
+    failedTests += genericTest("Emerging terms are found correctly", [](){
+        Corpus c = Corpus({
+            { { "a", "b", "b", "c", "c", "c" }, {}, {} }, // c is flood word for alpha = 1
+            { { "a", "a", "b", "b", "c", "c", "c" }, {}, {} }, // a gets higher energy
+        }, 1);
+        auto e = c.findEmergingWords(1, 1, 1, 0, 0);
+        return e.size() == 1 && e[0] == 0;
+    });
+
     return failedTests;
 }
