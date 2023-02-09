@@ -150,6 +150,7 @@ std::vector<word_t> CorpusPeriod::findNonFloodWords(const dec_t c, const dec_t a
         if (nutritions[i] <= threshold) {
             nonFloodWords.push_back(it->first);
         }
+        it++;
     }
     return nonFloodWords;
 }
