@@ -25,6 +25,12 @@ class MockCorpus: public Corpus {
     public:
         MockCorpus(const int testingCase): Corpus() {
             switch (testingCase) {
+                case 1:
+                    // two nodes connected one-way
+                    this->mock_wtonode.emplace(0, SemanticNode(0, {}));
+                    this->mock_wtonode.emplace(1, SemanticNode(1, { { 1, &(this->mock_wtonode.at(0)) } }));
+                    this->mock_emergingWords = { 1 };
+                    break;
                 default:
                     // two inter-connected nodes, 0 is emerging
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
@@ -82,7 +88,7 @@ int testCorpus() {
 
     std::cout << "Topics" << std::endl;
 
-    failedTests += genericTest("Simplest emerging topic", [](){
+    failedTests += genericTest("Simple emerging topic with 2 nodes", [](){
         MockCorpus m = MockCorpus(0);
         // first 5 params are for finding emerging words (irrelevant), theta is
         // BFS depth & last would only be relevant if we had more than one
@@ -90,6 +96,16 @@ int testCorpus() {
         auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 1, 0);
         return topics.size() == 1
             && topics[0].size() == 2;
+    });
+
+    failedTests += genericTest("Missing back-connection", [](){
+        MockCorpus m = MockCorpus(1);
+        // first 5 params are for finding emerging words (irrelevant), theta is
+        // BFS depth & last would only be relevant if we had more than one
+        // emerging word
+        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 1, 0);
+        return topics.size() == 1
+            && topics[0].size() == 1;
     });
 
     return failedTests;
