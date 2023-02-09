@@ -20,6 +20,8 @@ class Corpus {
     public:
         std::vector<CorpusPeriod> periods;
 
+        // () constructor for testing
+        Corpus(): periods({}), wtostr({}) {};
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
         Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta);
