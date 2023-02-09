@@ -13,4 +13,7 @@ constexpr bool isEqual(dec_t a, dec_t b, dec_t epsilon = 0.001) {
     return std::abs(a - b) < epsilon;
 };
 
+int testGraphConstruction();
+int testTopics();
+
 #endif
