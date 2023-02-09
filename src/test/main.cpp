@@ -2,9 +2,9 @@
 #include <iostream>
 #include "assert.h"
 
-#include "test.hpp"
-#include "Corpus.hpp"
-#include "topics.hpp"
+#include "tests.hpp"
+#include "../Corpus.hpp"
+#include "../topics.hpp"
 
 int testGraphConstruction();
 int testTopics();

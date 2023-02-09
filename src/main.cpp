@@ -7,7 +7,7 @@
 #include "Document.hpp"
 
 #ifdef TESTING_ENV
-#include "test.hpp"
+#include "test/tests.hpp"
 #endif
 
 // read corpus from stdin

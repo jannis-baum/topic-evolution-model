@@ -5,7 +5,7 @@
 #include <functional>
 #include <string>
 
-#include "types.hpp"
+#include "../types.hpp"
 
 int testAll();
 int genericTest(std::string expectation, std::function<bool()> isSuccess);
