@@ -15,12 +15,11 @@ class Corpus {
     std::unordered_map<word_t, std::string> wtostr;
 
     // s is period index
-    const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const;
+    virtual const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const;
 
     public:
         std::vector<CorpusPeriod> periods;
 
-        Corpus(const std::vector<CorpusPeriod> periods);
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
         Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta);
@@ -31,14 +30,14 @@ class Corpus {
         dec_t enr(const word_t word, const int s, const dec_t c) const;
 
         // see definitions.md or paper
-        std::vector<word_t> findEmergingWords(
+        virtual std::vector<word_t> findEmergingWords(
             const int s,
             const dec_t c,
             const dec_t alpha,
             const dec_t beta,
             const dec_t gamma
         ) const;
-
+        // see definitions.md or paper
         std::vector<Topic> findEmergingTopics(
             const int s,
             const dec_t c,

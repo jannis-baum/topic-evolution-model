@@ -7,9 +7,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-Corpus::Corpus(const std::vector<CorpusPeriod> periods)
-: periods(periods) {}
-
 Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta)
 : periods({})
 , wtostr({}) {
