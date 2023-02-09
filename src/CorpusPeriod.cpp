@@ -10,6 +10,7 @@
 #include "SemanticGraph.hpp"
 #include "helpers.hpp"
 
+// constructor from list of list of words (constructs documents)
 CorpusPeriod::CorpusPeriod(
     const std::vector<std::vector<word_t>> structuredDocuments,
     const std::unordered_map<word_t, std::string> &wtostr,
@@ -21,6 +22,7 @@ CorpusPeriod::CorpusPeriod(
     this->constructGraph(delta);
 };
 
+// constructor from list of list of documents
 CorpusPeriod::CorpusPeriod(
     const std::vector<Document> documents,
     const std::unordered_map<word_t, std::string> &wtostr,
@@ -29,6 +31,7 @@ CorpusPeriod::CorpusPeriod(
     this->constructGraph(delta);
 };
 
+// construct graph
 void CorpusPeriod::constructGraph(const dec_t delta) {
     this->constructNodes();
     this->addEdges(delta);
