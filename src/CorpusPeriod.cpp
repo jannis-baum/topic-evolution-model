@@ -6,10 +6,25 @@
 #include <utility>
 
 #include "CorpusPeriod.hpp"
+#include "Document.hpp"
 #include "SemanticGraph.hpp"
 #include "helpers.hpp"
 
-CorpusPeriod::CorpusPeriod(const std::vector<Document> documents, const std::unordered_map<word_t, std::string> &wtostr, const dec_t delta)
+CorpusPeriod::CorpusPeriod(
+    const std::vector<std::vector<word_t>> structuredDocuments,
+    const std::unordered_map<word_t, std::string> &wtostr,
+    const dec_t delta)
+: documents({}), wtostr(wtostr), wtonode({}) {
+    for (const auto & words: structuredDocuments) {
+        this->documents.push_back(Document(words, this->wtostr));
+    }
+    this->constructGraph(delta);
+};
+
+CorpusPeriod::CorpusPeriod(
+    const std::vector<Document> documents,
+    const std::unordered_map<word_t, std::string> &wtostr,
+    const dec_t delta)
 : documents(documents), wtostr(wtostr), wtonode({}) {
     this->constructGraph(delta);
 };

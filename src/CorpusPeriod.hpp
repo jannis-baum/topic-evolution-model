@@ -14,7 +14,7 @@
 class CorpusPeriod {
     // reference to Corpus' mapping to resolve word_t (aka int) to string
     const std::unordered_map<word_t, std::string> &wtostr;
-    const std::vector<Document> documents;
+    std::vector<Document> documents;
 
     // number of documents that contain all given words
     int nDocumentsContaining(const std::initializer_list<word_t> words) const;
@@ -32,9 +32,13 @@ class CorpusPeriod {
         std::unordered_map<word_t, SemanticNode> wtonode;
 
         CorpusPeriod(
-                const std::vector<Document> documents,
-                const std::unordered_map<word_t, std::string> &wtostr,
-                const dec_t delta);
+            const std::vector<std::vector<word_t>> structuredDocuments,
+            const std::unordered_map<word_t, std::string> &wtostr,
+            const dec_t delta);
+        CorpusPeriod(
+            const std::vector<Document> documents,
+            const std::unordered_map<word_t, std::string> &wtostr,
+            const dec_t delta);
         std::vector<word_t> findNonFloodWords(const dec_t c, const dec_t alpha) const;
         // see definitions.md or paper
         dec_t nutrition(const word_t word, const dec_t c) const;
