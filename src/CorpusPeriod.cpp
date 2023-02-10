@@ -6,11 +6,38 @@
 #include <utility>
 
 #include "CorpusPeriod.hpp"
+#include "Document.hpp"
 #include "SemanticGraph.hpp"
 #include "helpers.hpp"
 
-CorpusPeriod::CorpusPeriod(const std::vector<Document> documents, const std::unordered_map<word_t, std::string> &wtostr, const dec_t delta)
+// constructor from list of list of words (constructs documents)
+CorpusPeriod::CorpusPeriod(
+    const std::vector<std::vector<word_t>> structuredDocuments,
+    const std::unordered_map<word_t, std::string> &wtostr,
+    const dec_t delta)
+: documents({}), wtostr(wtostr), wtonode({}) {
+    for (const auto & words: structuredDocuments) {
+        this->documents.push_back(Document(words, this->wtostr));
+    }
+    this->constructGraph(delta);
+};
+
+// constructor from list of list of documents
+CorpusPeriod::CorpusPeriod(
+    const std::vector<Document> documents,
+    const std::unordered_map<word_t, std::string> &wtostr,
+    const dec_t delta)
 : documents(documents), wtostr(wtostr), wtonode({}) {
+    this->constructGraph(delta);
+};
+
+// construct graph
+void CorpusPeriod::constructGraph(const dec_t delta) {
+    this->constructNodes();
+    this->addEdges(delta);
+}
+
+void CorpusPeriod::constructNodes() {
     // word -> (nDocumentsContaining(word),
     //          [(all other words, and their co-occurrences with word)])
     std::unordered_map<word_t, std::pair<int, std::vector<std::pair<word_t, int>>>> occurrences = {};
@@ -58,60 +85,6 @@ CorpusPeriod::CorpusPeriod(const std::vector<Document> documents, const std::uno
             }
         }
     }
-
-    this->addEdges(delta);
-};
-
-dec_t CorpusPeriod::nutrition(const word_t word, const dec_t c) const {
-    dec_t total = 0;
-    for (const auto &document : this->documents) {
-        total += document.nutrition(word, c);
-    }
-    return total / this->documents.size();
-}
-
-std::vector<word_t> CorpusPeriod::findNonFloodWords(const dec_t c, const dec_t alpha) const {
-    std::vector<dec_t> nutritions = {};
-    for (const auto & [word, node] : this->wtonode) {
-        nutritions.push_back(this->nutrition(word, c));
-    }
-    dec_t threshold = mstdThreshold(nutritions, alpha);
-
-    std::vector<word_t> nonFloodWords = {};
-    auto it = this->wtonode.begin();
-    for (int i = 0; i < nutritions.size(); i++) {
-        if (nutritions[i] <= threshold) {
-            nonFloodWords.push_back(it->first);
-        }
-    }
-    return nonFloodWords;
-}
-
-int CorpusPeriod::nDocumentsContaining(const std::initializer_list<word_t> words) const {
-    int count = 0;
-    for (const auto &document : this->documents) {
-        count += document.hasAllWords(words);
-    }
-    return count;
-}
-
-std::optional<dec_t> CorpusPeriod::termCorrelation(const word_t k, const word_t z) const {
-    int n_kz = this->nDocumentsContaining({ k, z });
-    // return nullopt if no co-occurrence
-    if (!n_kz) return std::nullopt;
-
-    int n_k = this->nDocumentsContaining({ k });
-    int n_z = this->nDocumentsContaining({ z });
-    int d_t = this->documents.size();
-
-    // forumla from definitions.md / paper
-    return std::log(
-        ((dec_t)n_kz / (n_k - n_kz)) /
-        ((dec_t)(n_z - n_kz) / (d_t - n_z - n_k + n_kz))
-    ) * std::abs(
-        (dec_t)n_kz / n_k -
-        (dec_t)(n_z - n_kz) / (d_t - n_k)
-    );
 }
 
 void CorpusPeriod::addEdges(const dec_t delta) {
@@ -154,4 +127,57 @@ void CorpusPeriod::addEdges(const dec_t delta) {
         }
         it_i++;
     }
+}
+
+dec_t CorpusPeriod::nutrition(const word_t word, const dec_t c) const {
+    dec_t total = 0;
+    for (const auto &document : this->documents) {
+        total += document.nutrition(word, c);
+    }
+    return total / this->documents.size();
+}
+
+std::vector<word_t> CorpusPeriod::findNonFloodWords(const dec_t c, const dec_t alpha) const {
+    std::vector<dec_t> nutritions = {};
+    for (const auto & [word, node] : this->wtonode) {
+        nutritions.push_back(this->nutrition(word, c));
+    }
+    dec_t threshold = mstdThreshold(nutritions, alpha);
+
+    std::vector<word_t> nonFloodWords = {};
+    auto it = this->wtonode.begin();
+    for (int i = 0; i < nutritions.size(); i++) {
+        if (nutritions[i] <= threshold) {
+            nonFloodWords.push_back(it->first);
+        }
+        it++;
+    }
+    return nonFloodWords;
+}
+
+int CorpusPeriod::nDocumentsContaining(const std::initializer_list<word_t> words) const {
+    int count = 0;
+    for (const auto &document : this->documents) {
+        count += document.hasAllWords(words);
+    }
+    return count;
+}
+
+std::optional<dec_t> CorpusPeriod::termCorrelation(const word_t k, const word_t z) const {
+    int n_kz = this->nDocumentsContaining({ k, z });
+    // return nullopt if no co-occurrence
+    if (!n_kz) return std::nullopt;
+
+    int n_k = this->nDocumentsContaining({ k });
+    int n_z = this->nDocumentsContaining({ z });
+    int d_t = this->documents.size();
+
+    // forumla from definitions.md / paper
+    return std::log(
+        ((dec_t)n_kz / (n_k - n_kz)) /
+        ((dec_t)(n_z - n_kz) / (d_t - n_z - n_k + n_kz))
+    ) * std::abs(
+        (dec_t)n_kz / n_k -
+        (dec_t)(n_z - n_kz) / (d_t - n_k)
+    );
 }

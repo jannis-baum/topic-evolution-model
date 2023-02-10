@@ -18,7 +18,7 @@ void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, int theta) c
         return true;
     };
 
-    while (popFront() && current.second < theta) {
+    while (popFront() && current.second <= theta) {
         // don't call `f` on the node itself
         if (current.second) {
             if (!f(current.first)) return;

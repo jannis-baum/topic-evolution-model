@@ -2,7 +2,10 @@ CC=g++
 CFLAGS=-c -pipe -O3 -std=gnu++20
 
 TARGET=$(if $(ENV_TARGET),$(ENV_TARGET),out)
-BUILD_DIR=.build
+
+BUILD_DIR_PREFIX=.build
+BUILD_DIR=$(BUILD_DIR_PREFIX).$(TARGET)
+
 SOURCE_DIR=src
 
 SOURCES=$(shell find $(SOURCE_DIR) -name '*.cpp')
@@ -21,7 +24,7 @@ $(BUILD_DIR)/%.cpp.o: %.cpp
 PHONY: test
 test:
 	@ENV_FLAGS="-D TESTING_ENV" ENV_TARGET="test" $(MAKE)
-	@./.build/test
+	@$(BUILD_DIR_PREFIX).test/test
 
 PHONY: clean
 clean:

@@ -1,12 +1,11 @@
 #include "Corpus.hpp"
 #include "helpers.hpp"
+#include "topics.hpp"
+#include <algorithm>
 #include <cmath>
 #include <numeric>
 #include <unordered_map>
 #include <unordered_set>
-
-Corpus::Corpus(const std::vector<CorpusPeriod> periods)
-: periods(periods) {}
 
 Corpus::Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta)
 : periods({})
@@ -71,7 +70,7 @@ std::vector<word_t> Corpus::findEmergingWords(
     for (int i = 0; i < energies.size(); i++) {
         if (
             energies[i] <= threshold ||
-            (s != 0 && this->enr(candidates[i], s, c) > this->enr(candidates[i], s - 1, c) * gamma)
+            (s != 0 && this->enr(candidates[i], s, c) <= this->enr(candidates[i], s - 1, c) * gamma)
         ) {
             candidates[i] = -1;
         }
@@ -81,17 +80,23 @@ std::vector<word_t> Corpus::findEmergingWords(
     return candidates;
 }
 
-std::vector<std::unordered_set<const SemanticNode *>> Corpus::findEmergingTopics(
+
+const std::unordered_map<word_t, SemanticNode> &Corpus::wtonodeByPeriod(const int s) const {
+    return this->periods[s].wtonode;
+}
+
+std::vector<Topic> Corpus::findEmergingTopics(
     const int s,
     const dec_t c,
     const dec_t alpha,
     const dec_t beta,
     const dec_t gamma,
-    const int theta
+    const int theta,
+    const dec_t mergeThreshold
 ) const {
     auto emergingWords = this->findEmergingWords(s, c, alpha, beta, gamma);
     std::vector<std::unordered_set<const SemanticNode *>> topics = {};
-    const auto &wtonode = this->periods[s].wtonode;
+    const auto &wtonode = this->wtonodeByPeriod(s);
 
     // find emergin topics
     for (const auto e: emergingWords) {
@@ -104,14 +109,17 @@ std::vector<std::unordered_set<const SemanticNode *>> Corpus::findEmergingTopics
         node->bfs([e, theta, &topic](const SemanticNode *discovered) mutable {
             // add discovered to topic if original node can be discovered with
             // backwards BFS within theta
-            discovered->bfs([e, &topic](const SemanticNode *backDiscovered) mutable {
+            discovered->bfs([e, discovered, &topic](const SemanticNode *backDiscovered) mutable {
                 if (backDiscovered->word != e) return true;
-                topic.insert(backDiscovered);
+                topic.insert(discovered);
                 return false;
             }, theta);
             return true;
         }, theta);
+
+        topics.push_back(topic);
     }
 
+    mergeTopicsByThreshold(topics, mergeThreshold);
     return topics;
 }
