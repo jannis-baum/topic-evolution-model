@@ -19,6 +19,7 @@ class Corpus {
 
     public:
         std::vector<CorpusPeriod> periods;
+        std::vector<std::vector<Topic>> topicbyperiod;
 
         // () constructor for testing
         Corpus(): periods({}), wtostr({}) {};
@@ -49,6 +50,20 @@ class Corpus {
             const int theta,
             const dec_t mergeThreshold
         ) const;
+
+        void findEmergingTopicsByPeriod(
+            const dec_t c,
+            const dec_t alpha,
+            const dec_t beta,
+            const dec_t gamma,
+            const int theta,
+            const dec_t mergeThreshold
+        );
+
+        //see definitions.md or paper
+        bool isPersistent(Topic topic, int s, const dec_t c) const;
+
+        Topic findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {

@@ -85,6 +85,7 @@ const std::unordered_map<word_t, SemanticNode> &Corpus::wtonodeByPeriod(const in
     return this->periods[s].wtonode;
 }
 
+
 std::vector<Topic> Corpus::findEmergingTopics(
     const int s,
     const dec_t c,
@@ -95,7 +96,7 @@ std::vector<Topic> Corpus::findEmergingTopics(
     const dec_t mergeThreshold
 ) const {
     auto emergingWords = this->findEmergingWords(s, c, alpha, beta, gamma);
-    std::vector<std::unordered_set<const SemanticNode *>> topics = {};
+    std::vector<Topic> topics = {};
     const auto &wtonode = this->wtonodeByPeriod(s);
 
     // find emergin topics
@@ -122,4 +123,53 @@ std::vector<Topic> Corpus::findEmergingTopics(
 
     mergeTopicsByThreshold(topics, mergeThreshold);
     return topics;
+}
+
+void Corpus::findEmergingTopicsByPeriod(
+    const dec_t c,
+    const dec_t alpha,
+    const dec_t beta,
+    const dec_t gamma,
+    const int theta,
+    const dec_t mergeThreshold
+) {
+    for (int s=1; s<this->periods.size(); s++) {
+        auto tmp = findEmergingTopics(s, c, alpha, beta, gamma, theta, mergeThreshold);
+        this->topicbyperiod.push_back(tmp);
+    }
+    return;
+}
+
+
+bool Corpus::isPersistent(Topic topic, int s, const dec_t c) const {
+    dec_t overall_mean_energy = 0, topic_mean_energy = 0;
+    const std::unordered_map<word_t, SemanticNode> period_words;
+    
+    for (auto it = period_words.begin(); it != period_words.end(); it++) {
+        overall_mean_energy += energy(it->first, s, c);
+    }
+    overall_mean_energy /= period_words.size();
+    
+    for (auto it = topic.begin(); it != topic.end(); it++) {
+        topic_mean_energy += energy((*it)->word, s, c);
+    }
+    topic_mean_energy /= topic.size();
+
+    return topic_mean_energy >= overall_mean_energy;
+}
+
+Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const {
+    //s is the index of the period before topic
+    std::vector<Topic> previous_topics = this->topicbyperiod[s];
+    Topic predecessor = previous_topics[0];
+
+    for(auto it = previous_topics.begin(); it!=previous_topics.end(); it++) {
+        if (topicDistance(topic, *it) < topicDistance(topic, predecessor))
+            predecessor = *it;
+    }
+
+    if (topicDistance(topic, predecessor) <= distance_threshold) {
+        return predecessor;
+    }
+    return {};
 }

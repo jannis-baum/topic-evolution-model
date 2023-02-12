@@ -25,6 +25,23 @@ class MockCorpus: public Corpus {
 
         MockCorpus(const int testingCase): Corpus() {
             switch (testingCase) {
+                case 4:
+                    {std::vector<Topic> topics = {};
+                    this->mock_wtonode.emplace(0, SemanticNode(0, {}));
+                    this->mock_wtonode.emplace(1, SemanticNode(1, {}));
+                    this->mock_wtonode.emplace(2, SemanticNode(2, {}));
+                    this->mock_wtonode.emplace(3, SemanticNode(3, {}));
+                    this->mock_wtonode.emplace(4, SemanticNode(4, {}));
+                    this->mock_wtonode.emplace(5, SemanticNode(5, {}));
+                    Topic t = {&(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1))};
+                    topics.push_back(t);
+                    t = {&(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(5))};
+                    topics.push_back(t);
+                    t = {&(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4)),  &(this->mock_wtonode.at(2))};
+                    topics.push_back(t);
+
+                    this->topicbyperiod.push_back(topics);
+                    }
                 case 3:
                     // 0 -> 1 -> 2 -> 3 -> 0
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
@@ -151,6 +168,19 @@ int testCorpus() {
             && topics[0].contains(&(m.mock_wtonode.at(2)));
     });
 
+    failedTests += genericTest("Predecessors are found correctly", [](){
+        MockCorpus m = MockCorpus(4);
+        Topic topic = {&(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5))};
+        auto predecessor = m.findPredecessorTopic(topic, 1.0, 0);
+        return predecessor.size() == 4;
+    });
+
+    failedTests += genericTest("Predecessor are chosen with threshold", [](){
+        MockCorpus m = MockCorpus(4);
+        Topic topic = {&(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5))};
+        auto predecessor = m.findPredecessorTopic(topic, 0, 0);
+        return predecessor.size() == 0;
+    });
 
     return failedTests;
 }
