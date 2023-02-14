@@ -9,13 +9,7 @@ class MockCorpus: public Corpus {
         return this->mock_wtonode;
     }
 
-    std::vector<word_t> findEmergingWords(
-        const int s,
-        const dec_t c,
-        const dec_t alpha,
-        const dec_t beta,
-        const dec_t gamma
-    ) const override {
+    std::vector<word_t> findEmergingWords(const int s) const override {
         return this->mock_emergingWords;
     };
 
@@ -23,7 +17,15 @@ class MockCorpus: public Corpus {
         std::unordered_map<word_t, SemanticNode> mock_wtonode;
         std::vector<word_t> mock_emergingWords;
 
-        MockCorpus(const int testingCase): Corpus() {
+        MockCorpus(
+            const int testingCase,
+            const dec_t c = 1,
+            const dec_t alpha = 0,
+            const dec_t beta = 0,
+            const dec_t gamma = 0,
+            const int theta = 1,
+            const dec_t mergeThreshold = 1
+        ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
             switch (testingCase) {
                 case 4:
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
@@ -88,16 +90,16 @@ int testCorpus() {
         Corpus c = Corpus({
             { { "a" }, {}, {} },
             { { "a" }, {}, {} },
-        }, 1);
-        return isEqual(c.energy(0, 1, 1), 0);
+        }, 1, 1);
+        return isEqual(c.energy(0, 1), 0);
     });
 
     failedTests += genericTest("Energy is calculated correctly", [](){
         Corpus c = Corpus({
             { { "a", "b", "b" }, {}, {} }, // a has nutrition 1/6
             { { "a", "a" }, {}, {} }, // a has nutrition 1/3
-        }, 1);
-        return isEqual(c.energy(0, 1, 1), 1.0/9 - 1.0/36);
+        }, 1, 1);
+        return isEqual(c.energy(0, 1), 1.0/9 - 1.0/36);
     });
 
     std::cout << "ENR" << std::endl;
@@ -106,8 +108,8 @@ int testCorpus() {
         Corpus c = Corpus({
             { { "a", "b", "b" }, {}, {} }, // a has nutrition 1/6
             { { "a", "a" }, {}, {} }, // a has nutrition 1/3
-        }, 1);
-        return isEqual(c.enr(0, 1, 1), (1.0/9 - 1.0/36) / (1.0/3));
+        }, 1, 1);
+        return isEqual(c.enr(0, 1), (1.0/9 - 1.0/36) / (1.0/3));
     });
 
     std::cout << std::endl << "EMERGING WORDS & TOPICS" << std::endl;
@@ -117,47 +119,47 @@ int testCorpus() {
         Corpus c = Corpus({
             { { "a", "b", "b", "c", "c", "c" }, {}, {} }, // c is flood word for alpha = 1
             { { "a", "a", "b", "b", "c", "c", "c" }, {}, {} }, // a gets higher energy
-        }, 1);
-        auto e = c.findEmergingWords(1, 1, 1, 0, 0);
+        }, 1, 1, 1, 0, 0);
+        auto e = c.findEmergingWords(1);
         return e.size() == 1 && e[0] == 0;
     });
 
     std::cout << "Topics" << std::endl;
 
     failedTests += genericTest("Simple emerging topic with 2 nodes", [](){
-        MockCorpus m = MockCorpus(0);
+        MockCorpus m = MockCorpus(0, 0, 0, 0, 0, 1, 0);
         // first 5 params are for finding emerging words (irrelevant), theta is
         // BFS depth & last would only be relevant if we had more than one
         // emerging word
-        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 1, 0);
+        auto topics = m.findEmergingTopics(0);
         return topics.size() == 1
             && topics[0].size() == 2;
     });
 
     failedTests += genericTest("Missing back-connection", [](){
-        MockCorpus m = MockCorpus(1);
-        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 1, 0);
+        MockCorpus m = MockCorpus(1, 0, 0, 0, 0, 1, 0);
+        auto topics = m.findEmergingTopics(0);
         return topics.size() == 1
             && topics[0].size() == 1;
     });
 
     failedTests += genericTest("Connection with multi-node path but insufficient lambda", [](){
-        MockCorpus m = MockCorpus(2);
-        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 1, 0);
+        MockCorpus m = MockCorpus(2, 0, 0, 0, 0, 1, 0);
+        auto topics = m.findEmergingTopics(0);
         return topics.size() == 1
             && topics[0].size() == 2;
     });
 
     failedTests += genericTest("Connection with multi-node path but sufficient lambda", [](){
-        MockCorpus m = MockCorpus(2);
-        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 2, 0);
+        MockCorpus m = MockCorpus(2, 0, 0, 0, 0, 2, 0);
+        auto topics = m.findEmergingTopics(0);
         return topics.size() == 1
             && topics[0].size() == 3;
     });
 
     failedTests += genericTest("Insufficient lambda on backwards search", [](){
-        MockCorpus m = MockCorpus(3);
-        auto topics = m.findEmergingTopics(0, 0, 0, 0, 0, 2, 0);
+        MockCorpus m = MockCorpus(3, 0, 0, 0, 0, 2, 0);
+        auto topics = m.findEmergingTopics(0);
         return topics.size() == 1
             && topics[0].size() == 2
             && topics[0].contains(&(m.mock_wtonode.at(0)))

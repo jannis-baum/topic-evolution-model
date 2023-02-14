@@ -13,6 +13,13 @@
 class Corpus {
     // word_t (aka int) to string mapping
     std::unordered_map<word_t, std::string> wtostr;
+    // tuning parameters (see definitions.md or paper)
+    const dec_t c;
+    const dec_t alpha;
+    const dec_t beta;
+    const dec_t gamma;
+    const int theta;
+    const dec_t mergeThreshold;
 
     // s is period index
     virtual const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const;
@@ -21,47 +28,42 @@ class Corpus {
         std::vector<CorpusPeriod> periods;
         std::vector<std::vector<Topic>> topicbyperiod;
 
-        // () constructor for testing
-        Corpus(): periods({}), wtostr({}) {};
+        // constructor for testing
+        Corpus(
+            const dec_t c,
+            const dec_t alpha,
+            const dec_t beta,
+            const dec_t gamma,
+            const int theta,
+            const dec_t mergeThreshold
+        ):
+            periods({}), wtostr({}),
+            c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta), mergeThreshold(mergeThreshold) {};
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
-        Corpus(const std::vector<std::vector<std::vector<std::string>>> structuredCorpus, const dec_t delta);
-
-        // see definitions.md or paper
-        dec_t energy(const word_t word, const int s, const dec_t c) const;
-        // ENR (energy-nutrition-ratio), see definitions.md or paper
-        dec_t enr(const word_t word, const int s, const dec_t c) const;
-
-        // see definitions.md or paper
-        virtual std::vector<word_t> findEmergingWords(
-            const int s,
-            const dec_t c,
-            const dec_t alpha,
-            const dec_t beta,
-            const dec_t gamma
-        ) const;
-        // see definitions.md or paper
-        std::vector<Topic> findEmergingTopics(
-            const int s,
-            const dec_t c,
-            const dec_t alpha,
-            const dec_t beta,
-            const dec_t gamma,
-            const int theta,
-            const dec_t mergeThreshold
-        ) const;
-
-        void findEmergingTopicsByPeriod(
-            const dec_t c,
-            const dec_t alpha,
-            const dec_t beta,
-            const dec_t gamma,
-            const int theta,
-            const dec_t mergeThreshold
+        Corpus(
+            const std::vector<std::vector<std::vector<std::string>>> structuredCorpus,
+            const dec_t delta,
+            const dec_t c = 1,
+            const dec_t alpha = 0,
+            const dec_t beta = 0,
+            const dec_t gamma = 0,
+            const int theta = 1,
+            const dec_t mergeThreshold = 1
         );
 
+        // see definitions.md or paper
+        dec_t energy(const word_t word, const int s) const;
+        // ENR (energy-nutrition-ratio), see definitions.md or paper
+        dec_t enr(const word_t word, const int s) const;
+
+        // see definitions.md or paper
+        virtual std::vector<word_t> findEmergingWords(const int s) const;
+        // see definitions.md or paper
+        std::vector<Topic> findEmergingTopics(const int s) const;
+
         //see definitions.md or paper
-        bool isPersistent(Topic topic, int s, const dec_t c) const;
+        bool isPersistent(Topic topic, int s) const;
 
         Topic findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const;
 
