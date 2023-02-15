@@ -85,7 +85,6 @@ std::vector<word_t> Corpus::findEmergingWords(const int s) const {
     return candidates;
 }
 
-
 const std::unordered_map<word_t, SemanticNode> &Corpus::wtonodeByPeriod(const int s) const {
     return this->periods[s].wtonode;
 }
@@ -124,8 +123,11 @@ std::vector<Topic> Corpus::findEmergingTopics(const int s) const {
 
 bool Corpus::isPersistent(Topic topic, int s) const {
     dec_t overall_mean_energy = 0, topic_mean_energy = 0;
-    const std::unordered_map<word_t, SemanticNode> period_words;
+    const std::unordered_map<word_t, SemanticNode> period_words = this->periods[s].wtonode;
     
+    if (!period_words.size() || !topic.size())
+        return 0;
+
     for (auto it = period_words.begin(); it != period_words.end(); it++) {
         overall_mean_energy += energy(it->first, s);
     }
@@ -138,9 +140,8 @@ bool Corpus::isPersistent(Topic topic, int s) const {
 
     return topic_mean_energy >= overall_mean_energy;
 }
-
+// s is the index of the period preceeding the period that topic comes from
 Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const {
-    //s is the index of the period before topic
     std::vector<Topic> previous_topics = this->topicbyperiod[s];
     Topic predecessor = previous_topics[0];
 
