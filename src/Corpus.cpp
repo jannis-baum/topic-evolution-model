@@ -143,15 +143,15 @@ bool Corpus::isPersistent(Topic topic, int s) const {
 // s is the index of the period preceeding the period that topic comes from
 Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const {
     std::vector<Topic> previous_topics = this->topicbyperiod[s];
-    Topic predecessor = previous_topics[0];
+    Topic *predecessor = &previous_topics[0];
 
     for(auto it = previous_topics.begin(); it!=previous_topics.end(); it++) {
-        if (topicDistance(topic, *it) < topicDistance(topic, predecessor))
-            predecessor = *it;
+        if (topicDistance(topic, *it) < topicDistance(topic, *predecessor))
+            predecessor = &(*it);
     }
 
-    if (topicDistance(topic, predecessor) <= distance_threshold) {
-        return predecessor;
+    if (topicDistance(topic, *predecessor) <= distance_threshold) {
+        return *predecessor;
     }
     return {};
 }
