@@ -129,12 +129,12 @@ bool Corpus::isPersistent(Topic topic, int s) const {
         return 0;
 
     for (auto it = period_words.begin(); it != period_words.end(); it++) {
-        overall_mean_energy += energy(it->first, s);
+        overall_mean_energy += this->energy(it->first, s);
     }
     overall_mean_energy /= period_words.size();
     
     for (auto it = topic.begin(); it != topic.end(); it++) {
-        topic_mean_energy += energy((*it)->word, s);
+        topic_mean_energy += this->energy((*it)->word, s);
     }
     topic_mean_energy /= topic.size();
 
