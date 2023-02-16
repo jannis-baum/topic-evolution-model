@@ -121,24 +121,17 @@ std::vector<Topic> Corpus::findEmergingTopics(const int s) const {
     return topics;
 }
 
-bool Corpus::isPersistent(Topic topic, int s) const {
-    dec_t overall_mean_energy = 0, topic_mean_energy = 0;
-    const std::unordered_map<word_t, SemanticNode> period_words = this->periods[s].wtonode;
+dec_t Corpus::topicHealth(Topic topic, int s) const {
+    dec_t topic_mean_energy = 0;
     
-    if (!period_words.size() || !topic.size())
+    if (topic.size() == 0 || this->periods.size() == 0)
         return 0;
-
-    for (auto it = period_words.begin(); it != period_words.end(); it++) {
-        overall_mean_energy += this->energy(it->first, s);
-    }
-    overall_mean_energy /= period_words.size();
-    
+    std::cout << std::endl << "health passed initial check" << std::endl;
     for (auto it = topic.begin(); it != topic.end(); it++) {
         topic_mean_energy += this->energy((*it)->word, s);
+        std::cout << "adding word energy" << std::endl;
     }
-    topic_mean_energy /= topic.size();
-
-    return topic_mean_energy >= overall_mean_energy;
+    return topic_mean_energy / topic.size();
 }
 // s is the index of the period preceeding the period that topic comes from
 Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const {
@@ -156,34 +149,41 @@ Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, 
     return {};
 }
 
-std::vector<std::pair<Topic, int>> Corpus::getTopicIds(const dec_t distance_threshold) const {
-    std::vector<std::pair<Topic, int>> topicIds;
-    std::vector<std::pair<const Topic *, int>> helper;
+std::vector<std::vector<std::tuple<Topic, int, dec_t>>> Corpus::getTopicIds(const dec_t distance_threshold) const {
+    std::vector<std::vector<std::tuple<Topic, int, dec_t>>> topicIds;
+    std::vector<std::vector<std::tuple<const Topic *, int, dec_t>>> helper;
     Topic predecessor;
     int idcount = 0;
+    helper.push_back({});
     for (auto it = this->topicbyperiod[0].begin(); it != this->topicbyperiod[0].end(); it++) {
-        helper.push_back({&(*it), idcount});
+        auto h = this->topicHealth(*it, 0);
+        helper[0].push_back({&(*it), idcount, h});
+        //helper[0].push_back({&(*it), idcount, 1});//this->topicHealth(*it, 0)});
         idcount++;
     }
     
     for (int i=1; i < this->topicbyperiod.size(); i++) {
+        helper.push_back({});
         for (auto topicIt = this->topicbyperiod[i].begin(); topicIt != this->topicbyperiod[i].end(); topicIt++) {
             predecessor = this->findPredecessorTopic(*topicIt, distance_threshold, i-1);
             if (predecessor.size() == 0) {
-                helper.push_back({&(*topicIt), idcount});
+                helper[i].push_back({&(*topicIt), idcount, this->topicHealth(*topicIt, i)});
                 idcount++;
             } else {
-                for (auto cmpIt = helper.begin(); cmpIt != helper.end(); cmpIt++) {
-                    if (topicsEqual(*topicIt, *(*cmpIt).first)) {
-                        helper.push_back({&(*topicIt), (*cmpIt).second});
+                for (auto cmpIt = helper[i-1].begin(); cmpIt != helper[i-1].end(); cmpIt++) {
+                    if (topicsEqual(*topicIt, *(std::get<0>((*cmpIt))))) {
+                        helper[i].push_back({&(*topicIt), std::get<1>(*cmpIt), this->topicHealth(*topicIt, i)});
                         break;
                     }
                 }
             }
         }
     }
-    for (auto it = helper.begin(); it != helper.end(); it++) {
-        topicIds.push_back({*((*it).first), (*it).second});
+    for (int i = 0; i < helper.size(); i++) {
+        topicIds.push_back({});
+        for (auto it = helper[i].begin(); it != helper[i].end(); it++) {
+            topicIds[i].push_back({*(std::get<0>(*it)), std::get<1>(*it), std::get<2>(*it)});
+        }
     }
     return topicIds;
 }

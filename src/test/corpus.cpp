@@ -4,6 +4,38 @@
 #include "tests.hpp"
 #include "../Corpus.hpp"
 
+
+class MockCorpus2: public Corpus {
+    public:
+        std::unordered_map<word_t, SemanticNode> mock_wtonode;
+
+        dec_t energy(const word_t word, const int s) const override {
+            return 1;
+        }
+
+        MockCorpus2(
+                const dec_t c = 1,
+                const dec_t alpha = 0,
+                const dec_t beta = 0,
+                const dec_t gamma = 0,
+                const int theta = 1,
+                const dec_t mergeThreshold = 1
+            ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
+                this->mock_wtonode.emplace(0, SemanticNode(0, {}));
+                this->mock_wtonode.emplace(1, SemanticNode(1, {}));
+                this->mock_wtonode.emplace(2, SemanticNode(2, {}));
+                this->mock_wtonode.emplace(3, SemanticNode(3, {}));
+                this->mock_wtonode.emplace(4, SemanticNode(4, {}));
+                this->topicbyperiod.push_back({
+                    Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))})
+                    });
+                this->topicbyperiod.push_back({
+                    Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))}),
+                    Topic({ &(this->mock_wtonode.at(2)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4))})
+                });
+            }
+};
+
 class MockCorpus: public Corpus {
     const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const override {
         return this->mock_wtonode;
@@ -27,21 +59,6 @@ class MockCorpus: public Corpus {
             const dec_t mergeThreshold = 1
         ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
             switch (testingCase) {
-                case 5:
-                    this->mock_wtonode.emplace(0, SemanticNode(0, {}));
-                    this->mock_wtonode.emplace(1, SemanticNode(1, {}));
-                    this->mock_wtonode.emplace(2, SemanticNode(2, {}));
-                    this->mock_wtonode.emplace(3, SemanticNode(3, {}));
-                    this->mock_wtonode.emplace(4, SemanticNode(4, {}));
-                    //this->mock_wtonode.emplace(5, SemanticNode(5, {}));
-                    this->topicbyperiod.push_back({
-                        Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))})
-                        });
-                    this->topicbyperiod.push_back({
-                        Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))}),
-                        Topic({ &(this->mock_wtonode.at(2)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4))})
-                    });
-                    break;
                 case 4:
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
                     this->mock_wtonode.emplace(1, SemanticNode(1, {}));
@@ -197,11 +214,12 @@ int testCorpus() {
     });
 
     failedTests += genericTest("Topic Ids are assigned correctly", [](){
-        MockCorpus m = MockCorpus(5);
+        MockCorpus2 m = MockCorpus2();
+        std::cout << std::endl;
         auto topicIds = m.getTopicIds(0.01);
-        return (topicIds[0].second == 0 && topicsEqual(topicIds[0].first, m.topicbyperiod[0][0]))
-            && (topicIds[1].second == 0 && topicsEqual(topicIds[1].first, m.topicbyperiod[1][0]))
-            && (topicIds[2].second == 1 && topicsEqual(topicIds[2].first, m.topicbyperiod[1][1]));
+        return (std::get<1>(topicIds[0][0]) == 0 && topicsEqual(std::get<0>(topicIds[0][0]), m.topicbyperiod[0][0]))
+            && (std::get<1>(topicIds[1][0]) == 0 && topicsEqual(std::get<0>(topicIds[1][0]), m.topicbyperiod[1][0]))
+            && (std::get<1>(topicIds[1][1]) == 1 && topicsEqual(std::get<0>(topicIds[1][1]), m.topicbyperiod[1][1]));
     });
 
     return failedTests;

@@ -53,7 +53,7 @@ class Corpus {
         );
 
         // see definitions.md or paper
-        dec_t energy(const word_t word, const int s) const;
+        virtual dec_t energy(const word_t word, const int s) const;
         // ENR (energy-nutrition-ratio), see definitions.md or paper
         dec_t enr(const word_t word, const int s) const;
 
@@ -63,10 +63,10 @@ class Corpus {
         std::vector<Topic> findEmergingTopics(const int s) const;
 
         //see definitions.md or paper
-        bool isPersistent(Topic topic, int s) const;
+        dec_t topicHealth(Topic topic, int s) const;
 
         Topic findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const;
-        std::vector<std::pair<Topic, int>> getTopicIds(const dec_t distance_threshold) const;
+        std::vector<std::vector<std::tuple<Topic, int, dec_t>>> getTopicIds(const dec_t distance_threshold) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {
