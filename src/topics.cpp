@@ -62,3 +62,13 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
     // recurse for nested merging
     mergeTopicsByThreshold(topics, threshold);
 }
+
+bool topicsEqual(const Topic topic1, const Topic topic2) {
+    if (topic1.size() != topic2.size())
+        return false;
+    for (auto it = topic1.begin(); it != topic1.end(); it++) {
+        if (std::find(topic2.begin(), topic2.end(), *it) == topic2.end())
+            return false;
+    }
+    return true;
+}
