@@ -27,6 +27,21 @@ class MockCorpus: public Corpus {
             const dec_t mergeThreshold = 1
         ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
             switch (testingCase) {
+                case 5:
+                    this->mock_wtonode.emplace(0, SemanticNode(0, {}));
+                    this->mock_wtonode.emplace(1, SemanticNode(1, {}));
+                    this->mock_wtonode.emplace(2, SemanticNode(2, {}));
+                    this->mock_wtonode.emplace(3, SemanticNode(3, {}));
+                    this->mock_wtonode.emplace(4, SemanticNode(4, {}));
+                    //this->mock_wtonode.emplace(5, SemanticNode(5, {}));
+                    this->topicbyperiod.push_back({
+                        Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))})
+                        });
+                    this->topicbyperiod.push_back({
+                        Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))}),
+                        Topic({ &(this->mock_wtonode.at(2)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4))})
+                    });
+                    break;
                 case 4:
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
                     this->mock_wtonode.emplace(1, SemanticNode(1, {}));
@@ -40,6 +55,7 @@ class MockCorpus: public Corpus {
                         Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(5)) }),
                         Topic({ &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4)), &(this->mock_wtonode.at(2)) })
                     });
+                    break;
                 case 3:
                     // 0 -> 1 -> 2 -> 3 -> 0
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
@@ -178,6 +194,14 @@ int testCorpus() {
         Topic topic = {&(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5))};
         auto predecessor = m.findPredecessorTopic(topic, 0, 0);
         return predecessor.size() == 0;
+    });
+
+    failedTests += genericTest("Topic Ids are assigned correctly", [](){
+        MockCorpus m = MockCorpus(5);
+        auto topicIds = m.getTopicIds(0.01);
+        return (topicIds[0].second == 0 && topicsEqual(topicIds[0].first, m.topicbyperiod[0][0]))
+            && (topicIds[1].second == 0 && topicsEqual(topicIds[1].first, m.topicbyperiod[1][0]))
+            && (topicIds[2].second == 1 && topicsEqual(topicIds[2].first, m.topicbyperiod[1][1]));
     });
 
     return failedTests;

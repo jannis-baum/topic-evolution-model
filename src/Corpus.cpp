@@ -155,3 +155,35 @@ Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, 
     }
     return {};
 }
+
+std::vector<std::pair<Topic, int>> Corpus::getTopicIds(const dec_t distance_threshold) const {
+    std::vector<std::pair<Topic, int>> topicIds;
+    std::vector<std::pair<const Topic *, int>> helper;
+    Topic predecessor;
+    int idcount = 0;
+    for (auto it = this->topicbyperiod[0].begin(); it != this->topicbyperiod[0].end(); it++) {
+        helper.push_back({&(*it), idcount});
+        idcount++;
+    }
+    
+    for (int i=1; i < this->topicbyperiod.size(); i++) {
+        for (auto topicIt = this->topicbyperiod[i].begin(); topicIt != this->topicbyperiod[i].end(); topicIt++) {
+            predecessor = this->findPredecessorTopic(*topicIt, distance_threshold, i-1);
+            if (predecessor.size() == 0) {
+                helper.push_back({&(*topicIt), idcount});
+                idcount++;
+            } else {
+                for (auto cmpIt = helper.begin(); cmpIt != helper.end(); cmpIt++) {
+                    if (topicsEqual(*topicIt, *(*cmpIt).first)) {
+                        helper.push_back({&(*topicIt), (*cmpIt).second});
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    for (auto it = helper.begin(); it != helper.end(); it++) {
+        topicIds.push_back({*((*it).first), (*it).second});
+    }
+    return topicIds;
+}
