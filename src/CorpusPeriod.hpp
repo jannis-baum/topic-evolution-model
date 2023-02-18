@@ -41,7 +41,7 @@ class CorpusPeriod {
             const dec_t delta);
         std::vector<word_t> findNonFloodWords(const dec_t c, const dec_t alpha) const;
         // see definitions.md or paper
-        dec_t nutrition(const word_t word, const dec_t c) const;
+        virtual dec_t nutrition(const word_t word, const dec_t c) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, CorpusPeriod const &period) {
