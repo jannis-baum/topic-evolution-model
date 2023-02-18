@@ -66,7 +66,7 @@ class Corpus {
         dec_t topicHealth(Topic topic, int s) const;
 
         Topic findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const;
-        std::vector<std::vector<std::tuple<Topic, int, dec_t>>> getTopicIds(const dec_t distance_threshold) const;
+        std::vector<std::vector<std::tuple<Topic, int, dec_t>>> getTopicEvolution(const dec_t distance_threshold) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {

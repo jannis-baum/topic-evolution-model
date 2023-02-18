@@ -213,10 +213,10 @@ int testCorpus() {
         return predecessor.size() == 0;
     });
 
-    failedTests += genericTest("Topic Ids are assigned correctly", [](){
+    failedTests += genericTest("Topic evolution is found correctly", [](){
         MockCorpus2 m = MockCorpus2();
         std::cout << std::endl;
-        auto topicIds = m.getTopicIds(0.01);
+        auto topicIds = m.getTopicEvolution(0.01);
         return (std::get<1>(topicIds[0][0]) == 0 && topicsEqual(std::get<0>(topicIds[0][0]), m.topicsByPeriod[0][0]))
             && (std::get<1>(topicIds[1][0]) == 0 && topicsEqual(std::get<0>(topicIds[1][0]), m.topicsByPeriod[1][0]))
             && (std::get<1>(topicIds[1][1]) == 1 && topicsEqual(std::get<0>(topicIds[1][1]), m.topicsByPeriod[1][1]));

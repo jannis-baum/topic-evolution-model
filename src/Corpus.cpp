@@ -149,7 +149,7 @@ Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, 
     return {};
 }
 
-std::vector<std::vector<std::tuple<Topic, int, dec_t>>> Corpus::getTopicIds(const dec_t distance_threshold) const {
+std::vector<std::vector<std::tuple<Topic, int, dec_t>>> Corpus::getTopicEvolution(const dec_t distance_threshold) const {
     std::vector<std::vector<std::tuple<Topic, int, dec_t>>> topicIds;
     std::vector<std::vector<std::tuple<const Topic *, int, dec_t>>> helper;
     Topic predecessor;
