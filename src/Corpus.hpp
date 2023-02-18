@@ -26,7 +26,7 @@ class Corpus {
 
     public:
         std::vector<CorpusPeriod> periods;
-        std::vector<std::vector<Topic>> topicbyperiod;
+        std::vector<std::vector<Topic>> topicsByPeriod;
 
         // constructor for testing
         Corpus(

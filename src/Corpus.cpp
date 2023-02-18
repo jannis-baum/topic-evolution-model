@@ -41,7 +41,7 @@ Corpus::Corpus(
             documents.push_back(Document(words, this->wtostr));
         }
         this->periods.push_back(CorpusPeriod(documents, this->wtostr, delta));
-        this->topicbyperiod.push_back(findEmergingTopics(s++));
+        this->topicsByPeriod.push_back(findEmergingTopics(s++));
     }
 }
 
@@ -135,7 +135,7 @@ dec_t Corpus::topicHealth(Topic topic, int s) const {
 }
 // s is the index of the period preceeding the period that topic comes from
 Topic Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const {
-    std::vector<Topic> previous_topics = this->topicbyperiod[s];
+    std::vector<Topic> previous_topics = this->topicsByPeriod[s];
     Topic *predecessor = &previous_topics[0];
 
     for(auto it = previous_topics.begin(); it!=previous_topics.end(); it++) {
@@ -155,16 +155,16 @@ std::vector<std::vector<std::tuple<Topic, int, dec_t>>> Corpus::getTopicIds(cons
     Topic predecessor;
     int idcount = 0;
     helper.push_back({});
-    for (auto it = this->topicbyperiod[0].begin(); it != this->topicbyperiod[0].end(); it++) {
+    for (auto it = this->topicsByPeriod[0].begin(); it != this->topicsByPeriod[0].end(); it++) {
         auto h = this->topicHealth(*it, 0);
         helper[0].push_back({&(*it), idcount, h});
         //helper[0].push_back({&(*it), idcount, 1});//this->topicHealth(*it, 0)});
         idcount++;
     }
     
-    for (int i=1; i < this->topicbyperiod.size(); i++) {
+    for (int i=1; i < this->topicsByPeriod.size(); i++) {
         helper.push_back({});
-        for (auto topicIt = this->topicbyperiod[i].begin(); topicIt != this->topicbyperiod[i].end(); topicIt++) {
+        for (auto topicIt = this->topicsByPeriod[i].begin(); topicIt != this->topicsByPeriod[i].end(); topicIt++) {
             predecessor = this->findPredecessorTopic(*topicIt, distance_threshold, i-1);
             if (predecessor.size() == 0) {
                 helper[i].push_back({&(*topicIt), idcount, this->topicHealth(*topicIt, i)});

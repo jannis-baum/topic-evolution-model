@@ -26,10 +26,10 @@ class MockCorpus2: public Corpus {
                 this->mock_wtonode.emplace(2, SemanticNode(2, {}));
                 this->mock_wtonode.emplace(3, SemanticNode(3, {}));
                 this->mock_wtonode.emplace(4, SemanticNode(4, {}));
-                this->topicbyperiod.push_back({
+                this->topicsByPeriod.push_back({
                     Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))})
                     });
-                this->topicbyperiod.push_back({
+                this->topicsByPeriod.push_back({
                     Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))}),
                     Topic({ &(this->mock_wtonode.at(2)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4))})
                 });
@@ -67,7 +67,7 @@ class MockCorpus: public Corpus {
                     this->mock_wtonode.emplace(4, SemanticNode(4, {}));
                     this->mock_wtonode.emplace(5, SemanticNode(5, {}));
 
-                    this->topicbyperiod.push_back({
+                    this->topicsByPeriod.push_back({
                         Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)) }),
                         Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(5)) }),
                         Topic({ &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4)), &(this->mock_wtonode.at(2)) })
@@ -217,9 +217,9 @@ int testCorpus() {
         MockCorpus2 m = MockCorpus2();
         std::cout << std::endl;
         auto topicIds = m.getTopicIds(0.01);
-        return (std::get<1>(topicIds[0][0]) == 0 && topicsEqual(std::get<0>(topicIds[0][0]), m.topicbyperiod[0][0]))
-            && (std::get<1>(topicIds[1][0]) == 0 && topicsEqual(std::get<0>(topicIds[1][0]), m.topicbyperiod[1][0]))
-            && (std::get<1>(topicIds[1][1]) == 1 && topicsEqual(std::get<0>(topicIds[1][1]), m.topicbyperiod[1][1]));
+        return (std::get<1>(topicIds[0][0]) == 0 && topicsEqual(std::get<0>(topicIds[0][0]), m.topicsByPeriod[0][0]))
+            && (std::get<1>(topicIds[1][0]) == 0 && topicsEqual(std::get<0>(topicIds[1][0]), m.topicsByPeriod[1][0]))
+            && (std::get<1>(topicIds[1][1]) == 1 && topicsEqual(std::get<0>(topicIds[1][1]), m.topicsByPeriod[1][1]));
     });
 
     return failedTests;
