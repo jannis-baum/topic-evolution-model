@@ -8,6 +8,7 @@ int testAll() {
     failedTests += testPeriod();
     failedTests += testCorpus();
     failedTests += testTopics();
+    failedTests += testYaml();
 
     std::cout << std::endl
         << "--------------------------------------------------------------------------------"
