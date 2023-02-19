@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 #include <vector>
 
 #include "topics.hpp"
@@ -12,8 +13,11 @@
 // couldn't get the implicit template instantiation to compile if i put the
 // definition in a source file so now they're here - jannis
 
-template<typename T>
-std::string dumpVector(const std::vector<T> &data, const std::function<std::string(const T &)> dumpElement) {
+template<typename Container>
+std::string dumpIterable(
+    const Container &data,
+    std::function<std::string(typename Container::value_type)> dumpElement
+) {
     std::string dump = "";
 
     for (const auto &element : data) {
