@@ -16,5 +16,6 @@ constexpr bool isEqual(dec_t a, dec_t b, dec_t epsilon = 0.001) {
 int testPeriod();
 int testCorpus();
 int testTopics();
+int testYaml();
 
 #endif
