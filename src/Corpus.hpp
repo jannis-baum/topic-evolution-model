@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <optional>
 
 #include "CorpusPeriod.hpp"
 #include "SemanticGraph.hpp"
@@ -26,7 +27,7 @@ class Corpus {
 
     public:
         std::vector<CorpusPeriod> periods;
-        std::vector<std::vector<Topic>> topicsByPeriod;
+        std::vector<std::optional<std::vector<Topic>>> topicsByPeriod;
 
         // constructor for testing
         Corpus(
@@ -52,20 +53,21 @@ class Corpus {
             const dec_t mergeThreshold = 1
         );
 
+        virtual int nPeriods() const;
         // see definitions.md or paper
         virtual dec_t energy(const word_t word, const int s) const;
         // ENR (energy-nutrition-ratio), see definitions.md or paper
         dec_t enr(const word_t word, const int s) const;
 
         // see definitions.md or paper
-        virtual std::vector<word_t> findEmergingWords(const int s) const;
+        virtual std::optional<std::vector<word_t>> findEmergingWords(const int s) const;
         // see definitions.md or paper
-        std::vector<Topic> findEmergingTopics(const int s) const;
+        std::optional<std::vector<Topic>> findEmergingTopics(const int s) const;
 
         //see definitions.md or paper
         dec_t topicHealth(Topic topic, int s) const;
 
-        Topic findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const;
+        std::optional<const Topic*> findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const;
         std::vector<std::vector<std::tuple<Topic, int, dec_t>>> getTopicEvolution(const dec_t distance_threshold) const;
 
         // streaming (e.g. printing) operator <<

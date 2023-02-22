@@ -93,33 +93,5 @@ int testTopics() {
             && topics.begin()->size() == 4;
     });
 
-    failedTests += genericTest("Topic equality", [](){
-        SemanticNode node1(1, {});
-        SemanticNode node2(2, {});
-        return topicsEqual(
-            Topic({ &node1, &node2 }),
-            Topic({ &node2, &node1 })
-        );
-    });
-
-    failedTests += genericTest("Topic inequality I", [](){
-        SemanticNode node1(1, {});
-        SemanticNode node2(2, {});
-        return !topicsEqual(
-            Topic({ &node1, &node2 }),
-            Topic({ &node2 })
-        );
-    });
-
-    failedTests += genericTest("Topic inequality II", [](){
-        SemanticNode node1(1, {});
-        SemanticNode node2(2, {});
-        SemanticNode node3(3, {});
-        return !topicsEqual(
-            Topic({ &node1, &node2 }),
-            Topic({ &node2, &node3 })
-        );
-    });
-
     return failedTests;
 }

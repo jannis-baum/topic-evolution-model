@@ -4,16 +4,22 @@
 #include "tests.hpp"
 #include "../Corpus.hpp"
 
-
 class MockCorpus2: public Corpus {
+
+    dec_t energy(const word_t word, const int s) const override {
+        return 1;
+    }
+
+    int nPeriods() const override {
+        return this->periodNumber;
+    }
+
     public:
         std::unordered_map<word_t, SemanticNode> mock_wtonode;
-
-        dec_t energy(const word_t word, const int s) const override {
-            return 1;
-        }
+        int periodNumber;
 
         MockCorpus2(
+                const int periodNumber,
                 const dec_t c = 1,
                 const dec_t alpha = 0,
                 const dec_t beta = 0,
@@ -21,18 +27,19 @@ class MockCorpus2: public Corpus {
                 const int theta = 1,
                 const dec_t mergeThreshold = 1
             ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
+                this->periodNumber = periodNumber;
                 this->mock_wtonode.emplace(0, SemanticNode(0, {}));
                 this->mock_wtonode.emplace(1, SemanticNode(1, {}));
                 this->mock_wtonode.emplace(2, SemanticNode(2, {}));
                 this->mock_wtonode.emplace(3, SemanticNode(3, {}));
                 this->mock_wtonode.emplace(4, SemanticNode(4, {}));
-                this->topicsByPeriod.push_back({
+                this->topicsByPeriod.push_back(std::make_optional<std::vector<Topic>>({
                     Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))})
-                    });
-                this->topicsByPeriod.push_back({
+                    }));
+                this->topicsByPeriod.push_back(std::make_optional<std::vector<Topic>>({
                     Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))}),
                     Topic({ &(this->mock_wtonode.at(2)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4))})
-                });
+                }));
             }
 };
 
@@ -41,16 +48,22 @@ class MockCorpus: public Corpus {
         return this->mock_wtonode;
     }
 
-    std::vector<word_t> findEmergingWords(const int s) const override {
+    std::optional<std::vector<word_t>> findEmergingWords(const int s) const override {
         return this->mock_emergingWords;
     };
+
+    int nPeriods() const override {
+        return this->periodNumber;
+    }
 
     public:
         std::unordered_map<word_t, SemanticNode> mock_wtonode;
         std::vector<word_t> mock_emergingWords;
+        int periodNumber;
 
         MockCorpus(
             const int testingCase,
+            const int periodNumber,
             const dec_t c = 1,
             const dec_t alpha = 0,
             const dec_t beta = 0,
@@ -58,6 +71,7 @@ class MockCorpus: public Corpus {
             const int theta = 1,
             const dec_t mergeThreshold = 1
         ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
+            this->periodNumber = periodNumber;
             switch (testingCase) {
                 case 4:
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
@@ -67,11 +81,11 @@ class MockCorpus: public Corpus {
                     this->mock_wtonode.emplace(4, SemanticNode(4, {}));
                     this->mock_wtonode.emplace(5, SemanticNode(5, {}));
 
-                    this->topicsByPeriod.push_back({
+                    this->topicsByPeriod.push_back(std::make_optional<std::vector<Topic>>({
                         Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)) }),
                         Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(5)) }),
                         Topic({ &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4)), &(this->mock_wtonode.at(2)) })
-                    });
+                    }));
                     break;
                 case 3:
                     // 0 -> 1 -> 2 -> 3 -> 0
@@ -154,72 +168,83 @@ int testCorpus() {
             { { "a", "a", "b", "b", "c", "c", "c" }, {}, {} }, // a gets higher energy
         }, 1, 1, 1, 0, 0);
         auto e = c.findEmergingWords(1);
-        return e.size() == 1 && e[0] == 0;
+        return e
+            && (*e).size() == 1
+            && (*e)[0] == 0;
     });
 
     std::cout << "Topics" << std::endl;
 
     failedTests += genericTest("Simple emerging topic with 2 nodes", [](){
-        MockCorpus m = MockCorpus(0, 0, 0, 0, 0, 1, 0);
+        MockCorpus m = MockCorpus(0, 1, 0, 0, 0, 0, 1, 0);
         // first 5 params are for finding emerging words (irrelevant), theta is
         // BFS depth & last would only be relevant if we had more than one
         // emerging word
         auto topics = m.findEmergingTopics(0);
-        return topics.size() == 1
-            && topics[0].size() == 2;
+        if (!topics)
+            std::cout << std::endl << "topics are nullopt" << std::endl;
+        return topics
+            && (*topics).size() == 1
+            && (*topics)[0].size() == 2;
     });
 
     failedTests += genericTest("Missing back-connection", [](){
-        MockCorpus m = MockCorpus(1, 0, 0, 0, 0, 1, 0);
+        MockCorpus m = MockCorpus(1, 1, 0, 0, 0, 0, 1, 0);
         auto topics = m.findEmergingTopics(0);
-        return topics.size() == 1
-            && topics[0].size() == 1;
+        return topics
+            && (*topics).size() == 1
+            && (*topics)[0].size() == 1;
     });
 
     failedTests += genericTest("Connection with multi-node path but insufficient lambda", [](){
-        MockCorpus m = MockCorpus(2, 0, 0, 0, 0, 1, 0);
+        MockCorpus m = MockCorpus(2, 1, 0, 0, 0, 0, 1, 0);
         auto topics = m.findEmergingTopics(0);
-        return topics.size() == 1
-            && topics[0].size() == 2;
+        return topics
+            && (*topics).size() == 1
+            && (*topics)[0].size() == 2;
     });
 
     failedTests += genericTest("Connection with multi-node path but sufficient lambda", [](){
-        MockCorpus m = MockCorpus(2, 0, 0, 0, 0, 2, 0);
+        MockCorpus m = MockCorpus(2, 1, 0, 0, 0, 0, 2, 0);
         auto topics = m.findEmergingTopics(0);
-        return topics.size() == 1
-            && topics[0].size() == 3;
+        return topics
+            && (*topics).size() == 1
+            && (*topics)[0].size() == 3;
     });
 
     failedTests += genericTest("Insufficient lambda on backwards search", [](){
-        MockCorpus m = MockCorpus(3, 0, 0, 0, 0, 2, 0);
+        MockCorpus m = MockCorpus(3, 1, 0, 0, 0, 0, 2, 0);
         auto topics = m.findEmergingTopics(0);
-        return topics.size() == 1
-            && topics[0].size() == 2
-            && topics[0].contains(&(m.mock_wtonode.at(0)))
-            && topics[0].contains(&(m.mock_wtonode.at(2)));
+        return topics
+            && (*topics).size() == 1
+            && (*topics)[0].size() == 2
+            && (*topics)[0].contains(&(m.mock_wtonode.at(0)))
+            && (*topics)[0].contains(&(m.mock_wtonode.at(2)));
     });
 
     failedTests += genericTest("Predecessors are found correctly", [](){
-        MockCorpus m = MockCorpus(4);
+        MockCorpus m = MockCorpus(4, 2);
         Topic topic = {&(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5))};
-        auto predecessor = m.findPredecessorTopic(topic, 1.0, 0);
-        return predecessor.size() == 4;
+        auto predecessor = m.findPredecessorTopic(topic, 1.0, 1);
+        const Topic *predecessorPtr = *predecessor;
+        std::cout << std::endl << "predecessor has size " << (*predecessorPtr).size() << std::endl;
+        return predecessor
+            && (*(*predecessor)).size() == 4;
     });
 
     failedTests += genericTest("Predecessor are chosen with threshold", [](){
-        MockCorpus m = MockCorpus(4);
+        MockCorpus m = MockCorpus(4, 2);
         Topic topic = {&(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5))};
-        auto predecessor = m.findPredecessorTopic(topic, 0, 0);
-        return predecessor.size() == 0;
+        auto predecessor = m.findPredecessorTopic(topic, 0, 1);
+        return !predecessor;
     });
 
     failedTests += genericTest("Topic evolution is found correctly", [](){
-        MockCorpus2 m = MockCorpus2();
-        std::cout << std::endl;
+        MockCorpus2 m = MockCorpus2(2);
         auto topicIds = m.getTopicEvolution(0.01);
-        return (std::get<1>(topicIds[0][0]) == 0 && topicsEqual(std::get<0>(topicIds[0][0]), m.topicsByPeriod[0][0]))
-            && (std::get<1>(topicIds[1][0]) == 0 && topicsEqual(std::get<0>(topicIds[1][0]), m.topicsByPeriod[1][0]))
-            && (std::get<1>(topicIds[1][1]) == 1 && topicsEqual(std::get<0>(topicIds[1][1]), m.topicsByPeriod[1][1]));
+        return (std::get<1>(topicIds[0][0]) == 0 && std::get<0>(topicIds[0][0]) == (*(m.topicsByPeriod[0]))[0])
+            && (std::get<1>(topicIds[1][0]) == 0 && std::get<0>(topicIds[1][0]) == (*(m.topicsByPeriod[1]))[0])
+            && (std::get<1>(topicIds[1][1]) == 1 && std::get<0>(topicIds[1][1]) == (*(m.topicsByPeriod[1]))[1]);
     });
 
     return failedTests;
