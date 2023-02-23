@@ -17,8 +17,11 @@
 template<typename Container>
 std::string dumpIterable(
     const Container &data,
-    std::function<std::string(typename Container::value_type)> dumpElement
+    std::function<std::string(typename Container::value_type)> dumpElement,
+    const bool nullIfEmpty = true
 ) {
+    if (nullIfEmpty && !data.size()) return "null";
+
     std::string dump = "";
 
     for (const auto &element : data) {
