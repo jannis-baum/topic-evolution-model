@@ -15,8 +15,6 @@
 typedef std::tuple<Topic, int, dec_t> TopicData;
 
 class Corpus {
-    // word_t (aka int) to string mapping
-    std::unordered_map<word_t, std::string> wtostr;
     // tuning parameters (see definitions.md or paper)
     const dec_t c;
     const dec_t alpha;
@@ -35,6 +33,9 @@ class Corpus {
     }
 
     public:
+        // word_t (aka int) to string mapping
+        std::unordered_map<word_t, std::string> wtostr;
+
         std::vector<CorpusPeriod> periods;
         std::vector<std::vector<Topic>> topicsByPeriod;
 
