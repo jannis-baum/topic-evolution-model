@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Corpus.hpp"
 #include "topics.hpp"
 
 // couldn't get the implicit template instantiation to compile if i put the
@@ -44,9 +45,6 @@ std::string dumpTuple(const std::tuple<Tp...> &data, const std::vector<std::stri
     return dump;
 }
 
-// TODO: move typedef somehwere else when other PR is merged
-// Topic, ID, health
-typedef std::tuple<Topic, int, dec_t> TopicData;
 std::string dumpTopicEvolution(
     const std::vector<std::vector<TopicData>> &data,
     const std::unordered_map<word_t, std::string> &wtostr

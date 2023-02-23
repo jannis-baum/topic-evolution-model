@@ -158,8 +158,8 @@ std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, co
     return std::nullopt;
 }
 
-std::vector<std::vector<std::tuple<Topic, int, dec_t>>> Corpus::getTopicEvolution(const dec_t distance_threshold) const {
-    std::vector<std::vector<std::tuple<Topic, int, dec_t>>> evolution;
+std::vector<std::vector<TopicData>> Corpus::getTopicEvolution(const dec_t distance_threshold) const {
+    std::vector<std::vector<TopicData>> evolution;
     std::unordered_map<const Topic *, int> topicIds;
     int nextId = 0;
     
