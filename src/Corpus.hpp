@@ -25,6 +25,10 @@ class Corpus {
     // s is period index
     virtual const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const;
 
+    inline bool periodExists(const int s) const {
+        return s < this->nPeriods() && s >= 0;
+    }
+
     public:
         std::vector<CorpusPeriod> periods;
         std::vector<std::optional<std::vector<Topic>>> topicsByPeriod;

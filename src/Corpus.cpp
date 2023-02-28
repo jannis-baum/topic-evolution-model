@@ -49,9 +49,8 @@ int Corpus::nPeriods() const {
 }
 
 dec_t Corpus::energy(const word_t word, const int s) const {
+    if (!this->periodExists(s)) return 0;
     dec_t energy = 0;
-    if (s >= this->nPeriods() || s < 1)
-        return energy;
     // see definitions.md or paper
     for (int i = 1; i <= s; i++) {
         energy += (dec_t)1 / i * (
@@ -63,15 +62,13 @@ dec_t Corpus::energy(const word_t word, const int s) const {
 }
 
 dec_t Corpus::enr(const word_t word, const int s) const {
-    if ( s >= this->nPeriods() || s < 1)
-        return 0;
+    if (!this->periodExists(s)) return 0;
     // see definitions.md or paper
     return this->energy(word, s) / this->periods[s].nutrition(word, this->c);
 }
 
 std::optional<std::vector<word_t>> Corpus::findEmergingWords(const int s) const {
-    if (s >= this->nPeriods())
-        return std::nullopt;
+    if (!this->periodExists(s)) return std::nullopt;
 
     auto candidates = this->periods[s].findNonFloodWords(this->c, this->alpha);
     // find energy threshold
@@ -100,9 +97,8 @@ const std::unordered_map<word_t, SemanticNode> &Corpus::wtonodeByPeriod(const in
 }
 
 std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const {
-    if (s >= this->nPeriods() || s < 0) {
-        return std::nullopt;
-    }
+    if (!this->periodExists(s)) return std::nullopt;
+
     auto emergingWordsOpt = this->findEmergingWords(s);
     if (!emergingWordsOpt) {
         return std::nullopt;
@@ -143,9 +139,6 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
 
 dec_t Corpus::topicHealth(Topic topic, int s) const {
     dec_t topic_mean_energy = 0;
-    
-    if (topic.size() == 0 || this->nPeriods() == 0)
-        return 0;
     for (auto it = topic.begin(); it != topic.end(); it++) {
         topic_mean_energy += this->energy((*it)->word, s);
     }
@@ -153,9 +146,7 @@ dec_t Corpus::topicHealth(Topic topic, int s) const {
 }
 // s is the index of the period that topic is in
 std::optional<const Topic *> Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const {
-    if (s >= this->nPeriods() || s < 1) {
-        return std::nullopt;
-    }
+    if (!this->periodExists(s)) return std::nullopt;
     if (!(this->topicsByPeriod[s-1])) {
         return std::nullopt;
     }
