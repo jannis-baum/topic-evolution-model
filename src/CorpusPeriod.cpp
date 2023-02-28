@@ -56,7 +56,8 @@ void CorpusPeriod::constructNodes() {
     // create nodes for words that have 0 < occurrences < Dt / 2
     for (const auto & [word, occurrence] : singleOccurrences) {
         if (occurrence && occurrence < this->documents.size() / 2.0) {
-            this->wtonode.emplace(word, SemanticNode(word, {}));
+            this->wtonodeAll.emplace(word, SemanticNode(word, {}));
+            this->wtonode.emplace(word, &this->wtonodeAll.at(word));
         }
     }
 
@@ -91,7 +92,7 @@ void CorpusPeriod::addEdges(const dec_t delta) {
     // find main words for nodes
     std::unordered_set<word_t> words = {};
     for (const auto & [word, node] : this->wtonode) {
-        words.insert(node.word);
+        words.insert(node->word);
     }
     // find term corralations between all word pairs as matrix (undefined if no
     // correlation), and as list of all correlations
@@ -119,8 +120,8 @@ void CorpusPeriod::addEdges(const dec_t delta) {
         for (int j = 0; j < correlationMatrix[i].size(); j++) {
             const auto correlation = correlationMatrix[i][j];
             if (correlation.has_value() && correlation.value() > threshold) {
-                this->wtonode.at(*it_i).neighbors.push_back(
-                    { correlation.value(), &(this->wtonode.at(*it_j)) }
+                this->wtonode.at(*it_i)->neighbors.push_back(
+                    { correlation.value(), this->wtonode.at(*it_j) }
                 );
             }
             it_j++;

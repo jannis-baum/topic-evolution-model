@@ -21,16 +21,16 @@ int testPeriod() {
             // empty docs to avoid ignoring words for occuring too many times
             { 0, 1 }, { 1 }, {}, {}, {}
         }, mock_wtostr, 1);
-        return cp.wtonode.at(0).word == cp.wtonode.at(1).word;
+        return cp.wtonode.at(0)->word == cp.wtonode.at(1)->word;
     });
 
     failedTests += genericTest("Chain of subwords should point to common superword", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 2, 0, 1 }, { 0, 1 }, { 1 }, {}, {}, {}, {}
         }, mock_wtostr, 1);
-        return cp.wtonode.at(0).word == 1
-            && cp.wtonode.at(1).word == 1
-            && cp.wtonode.at(2).word == 1;
+        return cp.wtonode.at(0)->word == 1
+            && cp.wtonode.at(1)->word == 1
+            && cp.wtonode.at(2)->word == 1;
     });
 
     std::cout << "Edge building" << std::endl;

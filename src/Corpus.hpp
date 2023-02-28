@@ -23,7 +23,7 @@ class Corpus {
     const dec_t mergeThreshold;
 
     // s is period index
-    virtual inline const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const {
+    virtual inline const std::unordered_map<word_t, SemanticNode *> &wtonodeByPeriod(const int s) const {
         return this->periods[s].wtonode;
     };
 
