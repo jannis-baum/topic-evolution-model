@@ -73,9 +73,9 @@ class Corpus {
         std::optional<std::vector<Topic>> findEmergingTopics(const int s) const;
 
         //see definitions.md or paper
-        dec_t topicHealth(Topic topic, int s) const;
+        dec_t topicHealth(const Topic &topic, int s) const;
 
-        std::optional<const Topic*> findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const;
+        std::optional<const Topic*> findPredecessorTopic(const Topic &topic, const dec_t distance_threshold, int s) const;
         std::vector<std::vector<std::tuple<Topic, int, dec_t>>> getTopicEvolution(const dec_t distance_threshold) const;
 
         // streaming (e.g. printing) operator <<

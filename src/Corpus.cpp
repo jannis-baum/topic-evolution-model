@@ -130,7 +130,7 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
     return topics;
 }
 
-dec_t Corpus::topicHealth(Topic topic, int s) const {
+dec_t Corpus::topicHealth(const Topic &topic, int s) const {
     dec_t topic_mean_energy = 0;
     for (auto it = topic.begin(); it != topic.end(); it++) {
         topic_mean_energy += this->energy((*it)->word, s);
@@ -138,7 +138,7 @@ dec_t Corpus::topicHealth(Topic topic, int s) const {
     return topic_mean_energy / topic.size();
 }
 // s is the index of the period that topic is in
-std::optional<const Topic *> Corpus::findPredecessorTopic(Topic topic, const dec_t distance_threshold, int s) const {
+std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, const dec_t distance_threshold, int s) const {
     if (!this->periodExists(s)) return std::nullopt;
     if (!(this->topicsByPeriod[s-1])) {
         return std::nullopt;
