@@ -33,7 +33,7 @@ class Corpus {
 
     public:
         std::vector<CorpusPeriod> periods;
-        std::vector<std::optional<std::vector<Topic>>> topicsByPeriod;
+        std::vector<std::vector<Topic>> topicsByPeriod;
 
         // constructor for testing
         Corpus(

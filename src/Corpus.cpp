@@ -41,7 +41,8 @@ Corpus::Corpus(
             documents.push_back(Document(words, this->wtostr));
         }
         this->periods.push_back(CorpusPeriod(documents, this->wtostr, delta));
-        this->topicsByPeriod.push_back(findEmergingTopics(s++));
+        // we are sure emerging topics exist since we just added the period
+        this->topicsByPeriod.push_back(findEmergingTopics(s++).value());
     }
 }
 
@@ -100,7 +101,7 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
     std::vector<Topic> topics = {};
     const auto &wtonode = this->wtonodeByPeriod(s);
 
-    // find emergin topics
+    // find emerging topics
     for (const auto e: emergingWords) {
         if (!wtonode.contains(e)) continue;
         const SemanticNode *node = &wtonode.at(e);
@@ -124,9 +125,7 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
     }
 
     mergeTopicsByThreshold(topics, this->mergeThreshold);
-    if (topics.size() == 0) {
-        return std::nullopt;
-    }
+
     return topics;
 }
 
@@ -137,17 +136,19 @@ dec_t Corpus::topicHealth(const Topic &topic, int s) const {
     }
     return topic_mean_energy / topic.size();
 }
+
 // s is the index of the period that topic is in
 std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, const dec_t distance_threshold, int s) const {
     if (!this->periodExists(s)) return std::nullopt;
-    if (!(this->topicsByPeriod[s-1])) {
-        return std::nullopt;
-    }
-    Topic *predecessor = (Topic *) &(*(this->topicsByPeriod[s-1]))[0];
+    if (!this->periodExists(s - 1)) return std::nullopt;
 
-    for (int i = 1; i < (*(this->topicsByPeriod[s-1])).size(); i++) {
-        if (topicDistance(topic, (*(this->topicsByPeriod[s-1]))[i]) < topicDistance(topic, *predecessor)) {
-            predecessor = (Topic *) &(*(this->topicsByPeriod[s-1]))[i];
+    const auto &previousTopics = this->topicsByPeriod[s - 1];
+    if (previousTopics.empty()) return std::nullopt;
+
+    const Topic *predecessor = &previousTopics[0];
+    for (auto it = previousTopics.begin(); it < previousTopics.end(); it++) {
+        if (topicDistance(topic, *it) < topicDistance(topic, *predecessor)) {
+            predecessor = &(*it);
         }
     }
 
@@ -164,9 +165,9 @@ std::vector<std::vector<std::tuple<Topic, int, dec_t>>> Corpus::getTopicEvolutio
     
     for (int s = 0; s < this->topicsByPeriod.size(); s++) {
         topicIdsByPeriod.push_back({});
-        if (!topicsByPeriod[s])
-            continue;
-        for (auto topicIt = (*(this->topicsByPeriod[s])).begin(); topicIt != (*(this->topicsByPeriod[s])).end(); topicIt++) {
+        if (topicsByPeriod[s].empty()) continue;
+
+        for (auto topicIt = (this->topicsByPeriod[s]).begin(); topicIt != (this->topicsByPeriod[s]).end(); topicIt++) {
             auto predecessorOpt = this->findPredecessorTopic(*topicIt, distance_threshold, s);
             if (predecessorOpt) {
                 topicIds[&(*topicIt)] = topicIds[*predecessorOpt];
