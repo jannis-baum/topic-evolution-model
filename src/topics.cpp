@@ -1,5 +1,15 @@
 #include "topics.hpp"
 
+std::ostream& operator<<(std::ostream& os, Topic const &topic) {
+    bool first = true;
+    for (const auto &node: topic) {
+        if (!first) os << ", ";
+        os << node->word;
+        first = false;
+    }
+    return os;
+};
+
 dec_t topicDistance(const Topic topic1, const Topic topic2) {
     Topic intersection = {};
     Topic diff12 = {};
