@@ -181,8 +181,6 @@ int testCorpus() {
         // BFS depth & last would only be relevant if we had more than one
         // emerging word
         auto topics = m.findEmergingTopics(0);
-        if (!topics)
-            std::cout << std::endl << "topics are nullopt" << std::endl;
         return topics
             && (*topics).size() == 1
             && (*topics)[0].size() == 2;
@@ -226,8 +224,6 @@ int testCorpus() {
         MockCorpus m = MockCorpus(4, 2);
         Topic topic = {&(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5))};
         auto predecessor = m.findPredecessorTopic(topic, 1.0, 1);
-        const Topic *predecessorPtr = *predecessor;
-        std::cout << std::endl << "predecessor has size " << (*predecessorPtr).size() << std::endl;
         return predecessor
             && (*(*predecessor)).size() == 4;
     });
