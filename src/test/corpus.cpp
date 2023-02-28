@@ -10,7 +10,7 @@ class MockCorpus2: public Corpus {
         return 1;
     }
 
-    int nPeriods() const override {
+    inline int nPeriods() const override {
         return this->periodNumber;
     }
 
@@ -44,7 +44,7 @@ class MockCorpus2: public Corpus {
 };
 
 class MockCorpus: public Corpus {
-    const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const override {
+    const inline std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const override {
         return this->mock_wtonode;
     }
 
@@ -52,7 +52,7 @@ class MockCorpus: public Corpus {
         return this->mock_emergingWords;
     };
 
-    int nPeriods() const override {
+    inline int nPeriods() const override {
         return this->periodNumber;
     }
 

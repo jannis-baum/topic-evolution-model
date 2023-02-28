@@ -44,9 +44,6 @@ Corpus::Corpus(
         this->topicsByPeriod.push_back(findEmergingTopics(s++));
     }
 }
-int Corpus::nPeriods() const {
-    return this->periods.size();
-}
 
 dec_t Corpus::energy(const word_t word, const int s) const {
     if (!this->periodExists(s)) return 0;
@@ -90,10 +87,6 @@ std::optional<std::vector<word_t>> Corpus::findEmergingWords(const int s) const 
     std::erase(candidates, -1);
 
     return candidates;
-}
-
-const std::unordered_map<word_t, SemanticNode> &Corpus::wtonodeByPeriod(const int s) const {
-    return this->periods[s].wtonode;
 }
 
 std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const {

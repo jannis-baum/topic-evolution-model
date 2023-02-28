@@ -23,7 +23,9 @@ class Corpus {
     const dec_t mergeThreshold;
 
     // s is period index
-    virtual const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const;
+    virtual inline const std::unordered_map<word_t, SemanticNode> &wtonodeByPeriod(const int s) const {
+        return this->periods[s].wtonode;
+    };
 
     inline bool periodExists(const int s) const {
         return s < this->nPeriods() && s >= 0;
@@ -57,7 +59,9 @@ class Corpus {
             const dec_t mergeThreshold = 1
         );
 
-        virtual int nPeriods() const;
+        virtual inline int nPeriods() const {
+            return this->periods.size(); 
+        };
         // see definitions.md or paper
         virtual dec_t energy(const word_t word, const int s) const;
         // ENR (energy-nutrition-ratio), see definitions.md or paper
