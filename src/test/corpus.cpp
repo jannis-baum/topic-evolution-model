@@ -11,12 +11,12 @@ class MockCorpus2: public Corpus {
     }
 
     inline int nPeriods() const override {
-        return this->periodNumber;
+        return this->periodCount;
     }
 
     public:
         std::unordered_map<word_t, SemanticNode> mock_wtonode;
-        int periodNumber;
+        int periodCount;
 
         MockCorpus2(
                 const int periodNumber,
@@ -27,7 +27,7 @@ class MockCorpus2: public Corpus {
                 const int theta = 1,
                 const dec_t mergeThreshold = 1
             ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
-                this->periodNumber = periodNumber;
+                this->periodCount = periodNumber;
                 this->mock_wtonode.emplace(0, SemanticNode(0, {}));
                 this->mock_wtonode.emplace(1, SemanticNode(1, {}));
                 this->mock_wtonode.emplace(2, SemanticNode(2, {}));
@@ -53,13 +53,13 @@ class MockCorpus: public Corpus {
     };
 
     inline int nPeriods() const override {
-        return this->periodNumber;
+        return this->periodCount;
     }
 
     public:
         std::unordered_map<word_t, SemanticNode> mock_wtonode;
         std::vector<word_t> mock_emergingWords;
-        int periodNumber;
+        int periodCount;
 
         MockCorpus(
             const int testingCase,
@@ -71,7 +71,7 @@ class MockCorpus: public Corpus {
             const int theta = 1,
             const dec_t mergeThreshold = 1
         ) : Corpus(c, alpha, beta, gamma, theta, mergeThreshold) {
-            this->periodNumber = periodNumber;
+            this->periodCount = periodNumber;
             switch (testingCase) {
                 case 4:
                     this->mock_wtonode.emplace(0, SemanticNode(0, {}));
