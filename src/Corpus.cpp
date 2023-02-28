@@ -159,25 +159,23 @@ std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, co
 }
 
 std::vector<std::vector<std::tuple<Topic, int, dec_t>>> Corpus::getTopicEvolution(const dec_t distance_threshold) const {
-    std::vector<std::vector<std::tuple<Topic, int, dec_t>>> topicIdsByPeriod;
+    std::vector<std::vector<std::tuple<Topic, int, dec_t>>> evolution;
     std::unordered_map<const Topic *, int> topicIds;
-    int idcount = 0;
+    int nextId = 0;
     
-    for (int s = 0; s < this->topicsByPeriod.size(); s++) {
-        topicIdsByPeriod.push_back({});
+    for (int s = 0; s < this->nPeriods(); s++) {
+        evolution.push_back({});
         if (topicsByPeriod[s].empty()) continue;
 
-        for (auto topicIt = (this->topicsByPeriod[s]).begin(); topicIt != (this->topicsByPeriod[s]).end(); topicIt++) {
-            auto predecessorOpt = this->findPredecessorTopic(*topicIt, distance_threshold, s);
+        for (auto it = this->topicsByPeriod[s].begin(); it != this->topicsByPeriod[s].end(); it++) {
+            auto predecessorOpt = this->findPredecessorTopic(*it, distance_threshold, s);
             if (predecessorOpt) {
-                topicIds[&(*topicIt)] = topicIds[*predecessorOpt];
+                topicIds[&(*it)] = topicIds[predecessorOpt.value()];
+            } else {
+                topicIds[&(*it)] = nextId++;
             }
-            else {
-                topicIds[&(*topicIt)] = idcount;
-                idcount++;
-            }
-            topicIdsByPeriod[s].push_back({*topicIt, topicIds[&(*topicIt)], topicHealth(*topicIt, s)});
+            evolution[s].push_back({*it, topicIds[&(*it)], topicHealth(*it, s)});
         }
     }
-    return topicIdsByPeriod;
+    return evolution;
 }
