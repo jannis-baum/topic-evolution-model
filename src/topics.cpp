@@ -13,20 +13,25 @@ std::ostream& operator<<(std::ostream& os, Topic const &topic) {
 };
 
 dec_t topicDistance(const Topic topic1, const Topic topic2) {
-    Topic intersection = {};
-    Topic diff12 = {};
-    for (const SemanticNode *node: topic1) {
-        if (topic2.contains(node)) {
-            intersection.insert(node);
+    std::unordered_set<word_t> words1;
+    std::unordered_set<word_t> words2;
+    for (const auto &node: topic1) words1.insert(node->word);
+    for (const auto &node: topic2) words2.insert(node->word);
+
+    std::unordered_set<word_t> intersection = {};
+    std::unordered_set<word_t> diff12 = {};
+    for (const auto &w: words1) {
+        if (words2.contains(w)) {
+            intersection.insert(w);
         } else {
-            diff12.insert(node);
+            diff12.insert(w);
         }
     }
 
-    Topic diff21 = {};
-    for (const SemanticNode *node: topic2) {
-        if (!topic1.contains(node)) {
-            diff21.insert(node);
+    std::unordered_set<word_t> diff21 = {};
+    for (const auto &w: words2) {
+        if (!words1.contains(w)) {
+            diff21.insert(w);
         }
     }
 
