@@ -55,7 +55,7 @@ void CorpusPeriod::constructNodes() {
 
     // create nodes for words that have 0 < occurrences < Dt / 2
     for (const auto & [word, occurrence] : singleOccurrences) {
-        if (occurrence && occurrence < this->documents.size() / 2.0) {
+        if (occurrence && occurrence <= this->documents.size() / 2.0) {
             this->wtonodeAll.emplace(word, SemanticNode(word, {}));
             this->wtonode.emplace(word, &this->wtonodeAll.at(word));
         }
