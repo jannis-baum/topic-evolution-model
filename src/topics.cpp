@@ -1,20 +1,37 @@
+#include <set>
+
 #include "topics.hpp"
 
+std::ostream& operator<<(std::ostream& os, Topic const &topic) {
+    bool first = true;
+    for (const auto &node: topic) {
+        if (!first) os << ", ";
+        os << node->word;
+        first = false;
+    }
+    return os;
+};
+
 dec_t topicDistance(const Topic topic1, const Topic topic2) {
-    Topic intersection = {};
-    Topic diff12 = {};
-    for (const SemanticNode *node: topic1) {
-        if (topic2.contains(node)) {
-            intersection.insert(node);
+    std::unordered_set<word_t> words1;
+    std::unordered_set<word_t> words2;
+    for (const auto &node: topic1) words1.insert(node->word);
+    for (const auto &node: topic2) words2.insert(node->word);
+
+    std::unordered_set<word_t> intersection = {};
+    std::unordered_set<word_t> diff12 = {};
+    for (const auto &w: words1) {
+        if (words2.contains(w)) {
+            intersection.insert(w);
         } else {
-            diff12.insert(node);
+            diff12.insert(w);
         }
     }
 
-    Topic diff21 = {};
-    for (const SemanticNode *node: topic2) {
-        if (!topic1.contains(node)) {
-            diff21.insert(node);
+    std::unordered_set<word_t> diff21 = {};
+    for (const auto &w: words2) {
+        if (!words1.contains(w)) {
+            diff21.insert(w);
         }
     }
 
@@ -25,7 +42,6 @@ void mergeTopics(std::vector<Topic> &topics, const std::pair<TopicIt, TopicIt> m
     for (const auto &node: *merge.second) {
         merge.first->insert(node);
     }
-    topics.erase(merge.second);
 }
 
 void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
@@ -51,12 +67,24 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
     });
 
     // merge topics & remove from topics vector
-    std::unordered_set<Topic *> merged;
-    for (auto &[topicsToMerge, distance]: distances) {
-        if (merged.contains(&(*topicsToMerge.first)) || merged.contains(&(*topicsToMerge.second))) continue;
+    std::unordered_set<int> merged;
+    // set orders smallest to largest
+    std::set<int> remove;
+    for (auto &[topicsToMerge, _]: distances) {
+        int offset1 = topicsToMerge.first - topics.begin();
+        int offset2 = topicsToMerge.second - topics.begin();
+        if (
+            merged.contains(offset1) || merged.contains(offset2) ||
+            remove.contains(offset1) || remove.contains(offset2)
+        ) continue;
         mergeTopics(topics, topicsToMerge);
-        merged.insert(&(*topicsToMerge.first));
-        merged.insert(&(*topicsToMerge.second));
+        merged.insert(offset1);
+        remove.insert(offset2);
+    }
+
+    // crbegin/crend are for backwards traversal
+    for (auto it = remove.crbegin(); it != remove.crend(); it++) {
+        topics.erase(topics.begin() + *it);
     }
 
     // recurse for nested merging

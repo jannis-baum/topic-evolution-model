@@ -14,6 +14,8 @@
 class CorpusPeriod {
     // reference to Corpus' mapping to resolve word_t (aka int) to string
     const std::unordered_map<word_t, std::string> &wtostr;
+    // map words that exist in graph to nodes
+    std::unordered_map<word_t, SemanticNode> wtonodeAll;
     std::vector<Document> documents;
 
     // number of documents that contain all given words
@@ -27,9 +29,9 @@ class CorpusPeriod {
     void addEdges(const dec_t delta);
 
     public:
-        // map words that exist in graph to nodes
+        // maps words to their assigned node
         // public for testing
-        std::unordered_map<word_t, SemanticNode> wtonode;
+        std::unordered_map<word_t, SemanticNode *> wtonode;
 
         CorpusPeriod(
             const std::vector<std::vector<word_t>> structuredDocuments,
@@ -41,7 +43,7 @@ class CorpusPeriod {
             const dec_t delta);
         std::vector<word_t> findNonFloodWords(const dec_t c, const dec_t alpha) const;
         // see definitions.md or paper
-        dec_t nutrition(const word_t word, const dec_t c) const;
+        virtual dec_t nutrition(const word_t word, const dec_t c) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, CorpusPeriod const &period) {
