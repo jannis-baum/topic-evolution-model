@@ -11,9 +11,10 @@
 #include "SemanticGraph.hpp"
 #include "topics.hpp"
 
+// Topic, ID, health
+typedef std::tuple<Topic, int, dec_t> TopicData;
+
 class Corpus {
-    // word_t (aka int) to string mapping
-    std::unordered_map<word_t, std::string> wtostr;
     // tuning parameters (see definitions.md or paper)
     const dec_t c;
     const dec_t alpha;
@@ -32,6 +33,9 @@ class Corpus {
     }
 
     public:
+        // word_t (aka int) to string mapping
+        std::unordered_map<word_t, std::string> wtostr;
+
         std::vector<CorpusPeriod> periods;
         std::vector<std::vector<Topic>> topicsByPeriod;
 
@@ -76,7 +80,7 @@ class Corpus {
         dec_t topicHealth(const Topic &topic, int s) const;
 
         std::optional<const Topic*> findPredecessorTopic(const Topic &topic, const dec_t distance_threshold, int s) const;
-        std::vector<std::vector<std::tuple<Topic, int, dec_t>>> getTopicEvolution(const dec_t distance_threshold) const;
+        std::vector<std::vector<TopicData>> getTopicEvolution(const dec_t distance_threshold) const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {
