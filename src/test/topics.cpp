@@ -41,7 +41,7 @@ int testTopics() {
         SemanticNode node2(2, {});
         std::vector<Topic> topics = { Topic({ &node1 }), Topic({ &node2 }) };
         mergeTopics(topics, { topics.begin(), topics.begin() + 1 });
-        return topics.size() == 1
+        return topics.size() == 2
             && topics.begin()->size() == 2
             && topics.begin()->contains(&node2);
     });
@@ -91,6 +91,21 @@ int testTopics() {
         mergeTopicsByThreshold(topics, 1);
         return topics.size() == 1
             && topics.begin()->size() == 4;
+    });
+
+    failedTests += genericTest("Merge many topics", [](){
+        SemanticNode node1(1, {});
+        std::vector<Topic> topics = {
+            Topic({ &node1 }),
+            Topic({ &node1 }),
+            Topic({ &node1 }),
+            Topic({ &node1 }),
+            Topic({ &node1 }),
+            Topic({ &node1 }),
+        };
+        mergeTopicsByThreshold(topics, 1);
+        return topics.size() == 1
+            && topics.begin()->size() == 1;
     });
 
     return failedTests;

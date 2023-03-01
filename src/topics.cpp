@@ -1,3 +1,5 @@
+#include <set>
+
 #include "topics.hpp"
 
 std::ostream& operator<<(std::ostream& os, Topic const &topic) {
@@ -35,7 +37,6 @@ void mergeTopics(std::vector<Topic> &topics, const std::pair<TopicIt, TopicIt> m
     for (const auto &node: *merge.second) {
         merge.first->insert(node);
     }
-    topics.erase(merge.second);
 }
 
 void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
@@ -61,12 +62,24 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
     });
 
     // merge topics & remove from topics vector
-    std::unordered_set<Topic *> merged;
-    for (auto &[topicsToMerge, distance]: distances) {
-        if (merged.contains(&(*topicsToMerge.first)) || merged.contains(&(*topicsToMerge.second))) continue;
+    std::unordered_set<int> merged;
+    // set orders smallest to largest
+    std::set<int> remove;
+    for (auto &[topicsToMerge, _]: distances) {
+        int offset1 = topicsToMerge.first - topics.begin();
+        int offset2 = topicsToMerge.second - topics.begin();
+        if (
+            merged.contains(offset1) || merged.contains(offset2) ||
+            remove.contains(offset1) || remove.contains(offset2)
+        ) continue;
         mergeTopics(topics, topicsToMerge);
-        merged.insert(&(*topicsToMerge.first));
-        merged.insert(&(*topicsToMerge.second));
+        merged.insert(offset1);
+        remove.insert(offset2);
+    }
+
+    // crbegin/crend are for backwards traversal
+    for (auto it = remove.crbegin(); it != remove.crend(); it++) {
+        topics.erase(topics.begin() + *it);
     }
 
     // recurse for nested merging
