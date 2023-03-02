@@ -55,7 +55,7 @@ void CorpusPeriod::constructNodes() {
 
     // create nodes for words that have 0 < occurrences < Dt / 2
     for (const auto & [word, occurrence] : singleOccurrences) {
-        if (occurrence && occurrence < this->documents.size() / 2.0) {
+        if (occurrence && occurrence <= this->documents.size() / 2.0) {
             this->wtonodeAll.emplace(word, SemanticNode(word, {}));
             this->wtonode.emplace(word, &this->wtonodeAll.at(word));
         }
@@ -81,7 +81,9 @@ void CorpusPeriod::constructNodes() {
                 // constructor
                 auto it = this->wtonode.find(coWord);
                 if (it != this->wtonode.end()) {
-                    it->second = this->wtonode.at(word);
+                    SemanticNode *supernode = this->wtonode.at(word);
+                    it->second = supernode;
+                    supernode->subwords.insert(it->first);
                 }
             }
         }

@@ -48,6 +48,9 @@ Corpus::Corpus(
 
 dec_t Corpus::energy(const word_t word, const int s) const {
     if (!this->periodExists(s)) return 0;
+    if (s == 0) {
+        return std::pow(this->periods[s].nutrition(word, this->c), 2);
+    }
     dec_t energy = 0;
     // see definitions.md or paper
     for (int i = 1; i <= s; i++) {

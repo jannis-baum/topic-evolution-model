@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <set>
 
 #include "topics.hpp"
@@ -12,11 +13,19 @@ std::ostream& operator<<(std::ostream& os, Topic const &topic) {
     return os;
 };
 
+std::unordered_set<word_t> topicWords(const Topic &topic) {
+    std::unordered_set<word_t> words;
+    for (const auto &node: topic) {
+        for (const auto &word: node->allWords()) {
+            words.insert(word);
+        }
+    }
+    return words;
+}
+
 dec_t topicDistance(const Topic topic1, const Topic topic2) {
-    std::unordered_set<word_t> words1;
-    std::unordered_set<word_t> words2;
-    for (const auto &node: topic1) words1.insert(node->word);
-    for (const auto &node: topic2) words2.insert(node->word);
+    std::unordered_set<word_t> words1 = topicWords(topic1);
+    std::unordered_set<word_t> words2 = topicWords(topic2);
 
     std::unordered_set<word_t> intersection = {};
     std::unordered_set<word_t> diff12 = {};
