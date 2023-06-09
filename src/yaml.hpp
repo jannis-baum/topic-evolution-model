@@ -12,7 +12,7 @@
 #include "topics.hpp"
 
 // couldn't get the implicit template instantiation to compile if i put the
-// definition in a source file so now they're here - jannis
+// definition in a source file so now they're here
 
 template<typename Container>
 std::string dumpIterable(
