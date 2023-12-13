@@ -21,10 +21,10 @@ class Corpus {
     const dec_t beta;
     const dec_t gamma;
     const int theta;
-    const dec_t mergeThreshold;
+    const dec_t merge_threshold;
 
     // s is period index
-    virtual inline const std::unordered_map<word_t, SemanticNode *> &wtonodeByPeriod(const int s) const {
+    virtual inline const std::unordered_map<word_t, SemanticNode *> &wtonode_by_period(const int s) const {
         return this->periods[s].wtonode;
     };
 
@@ -37,7 +37,7 @@ class Corpus {
         std::unordered_map<word_t, std::string> wtostr;
 
         std::vector<CorpusPeriod> periods;
-        std::vector<std::vector<Topic>> topicsByPeriod;
+        std::vector<std::vector<Topic>> topics_by_period;
 
         // constructor for testing
         Corpus(
@@ -46,21 +46,21 @@ class Corpus {
             const dec_t beta,
             const dec_t gamma,
             const int theta,
-            const dec_t mergeThreshold
+            const dec_t merge_threshold
         ):
             periods({}), wtostr({}),
-            c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta), mergeThreshold(mergeThreshold) {};
+            c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta), merge_threshold(merge_threshold) {};
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
         Corpus(
-            const std::vector<std::vector<std::vector<std::string>>> structuredCorpus,
+            const std::vector<std::vector<std::vector<std::string>>> structured_corpus,
             const dec_t delta,
             const dec_t c = 1,
             const dec_t alpha = 0,
             const dec_t beta = 0,
             const dec_t gamma = 0,
             const int theta = 1,
-            const dec_t mergeThreshold = 1
+            const dec_t merge_threshold = 1
         );
 
         virtual inline int nPeriods() const {
