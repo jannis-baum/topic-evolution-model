@@ -12,7 +12,7 @@ information about TEM can be found in the following publication:
 - build the model by running `make`
 - run the model in `.build.out/out` and provide the model parameters as
   arguments: `--delta`, `--c`, `--alpha`, `--beta`, `--gamma`,
-  `--mergeThreshold` `--evolutionThreshold`
+  `--merge_threshold` `--evolution_threshold`
 - the corpus is then read from `stdin`:
   - *temporal periods* are separated by blank lines
   - *documents* in periods are lines
