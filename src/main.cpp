@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
@@ -130,7 +131,10 @@ int main(int argc, char* argv[]) {
     const auto keep_alive = hasArg(arg_beg, arg_end, "--keep_alive");
     if (keep_alive) {
         for (std::string block; std::getline(std::cin, block, '\0');) {
-            if (!block.empty()) {
+            // skip if block is emtpy or contains only whitespace
+            if (!(block.empty() || std::all_of(block.begin(), block.end(), [](unsigned char ch) {
+                return ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t';
+            }))) {
                 std::stringstream block_stream(block);
                 processCorpus(block_stream);
             }
