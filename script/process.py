@@ -39,9 +39,9 @@ def tem_output(
     ]
     if metrics: args.append('--metrics')
 
-    p = subprocess.Popen([
-            _te_exec,
-            *args
-        ], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(
+        [_te_exec, *args],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
 
     return p.communicate(input=structured_text.encode())[0].decode()
