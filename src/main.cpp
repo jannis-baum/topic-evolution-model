@@ -130,14 +130,15 @@ int main(int argc, char* argv[]) {
     const auto keep_alive = hasArg(arg_beg, arg_end, "--keep_alive");
     if (keep_alive) {
         for (std::string block; std::getline(std::cin, block, '\0');) {
-            std::stringstream block_stream(block);
-            processCorpus(block_stream);
-            std::cout << '\0';
+            if (!block.empty()) {
+                std::stringstream block_stream(block);
+                processCorpus(block_stream);
+            }
+            std::cout << '\0' << std::flush;
         }
     } else {
         processCorpus(std::cin);
     }
-
 
     return 0;
 }
