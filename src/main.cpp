@@ -8,6 +8,7 @@
 
 #include "Corpus.hpp"
 #include "Document.hpp"
+#include "metrics.hpp"
 #include "types.hpp"
 #include "argparse.hpp"
 #include "yaml.hpp"
@@ -106,7 +107,17 @@ int main(int argc, char* argv[]) {
     Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold);
     const auto evolution = corpus.getTopicEvolution();
 
-    std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
+    if (hasArg(arg_beg, arg_end, "--metrics")) {
+        std::cout << "[";
+        const auto metrics = getMetrics(evolution);
+        for (int i = 0; i < metrics.size(); i++) {
+            if (i) std::cout << ", ";
+            std::cout << metrics[i];
+        }
+        std::cout << "]" << std::endl;
+    } else {
+        std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
+    }
 
     return 0;
 }
