@@ -62,11 +62,16 @@ def merge_short_periods(corpus: list[list[list[str]]], min_docs = 2) -> list[lis
             merged[-1] += period
     return merged if len(merged[-1]) > min_docs else merged[:-1]
 
-# create structured corpus from text
-def get_corpus(text: str) -> list[list[list[str]]]:
+# create structured corpus from text, suitable for TEM input
+def get_structured_corpus(text: str) -> str:
     corpus = [
         period
         for period in map(docs_from_period, text.split('\n'))
         if len(period) > 0
     ]
-    return merge_short_periods(corpus, min_docs=2)
+    corpus = merge_short_periods(corpus, min_docs=2)
+    return '\n\n'.join([
+        '\n'.join([
+            ' '.join(word for word in doc)
+        for doc in period])
+    for period in corpus])

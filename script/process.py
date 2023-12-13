@@ -3,7 +3,7 @@ import os
 
 import pexpect
 
-from nlp import get_corpus
+from nlp import get_structured_corpus
 
 _te_exec = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
@@ -16,14 +16,9 @@ def _init_worker(getter, args: list[str]):
     getter.proc = pexpect.spawn(_te_exec, args, echo=False)
 
 def _get_output(text: str) -> str:
-    corpus = get_corpus(text)
-    structured_text = '\n\n'.join([
-        '\n'.join([
-            ' '.join(word for word in doc)
-        for doc in period])
-    for period in corpus])
+    corpus = get_structured_corpus(text)
 
-    _get_output.proc.sendline(structured_text + '\0')
+    _get_output.proc.sendline(corpus + '\0')
     _get_output.proc.expect('\0')
 
     out: bytes = _get_output.proc.before # type: ignore
