@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <exception>
 #include <iostream>
+#include <istream>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -34,6 +35,7 @@ void printHelp() {
         << "Optional arguments:" << std::endl
         << "    --help, -h    print this message and exit." << std::endl
         << "    --metrics     output TE metrics instead of graph" << std::endl
+        << "    --keep_alive  process multiple corpora separated by null" << std::endl
         << std::endl;
 }
 
@@ -80,45 +82,62 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // vector (periods) of vectors (documents) of vectors (words) of strings
-    std::vector<std::vector<std::vector<std::string>>> structured_corpus = {{}};
+    const auto metrics = hasArg(arg_beg, arg_end, "--metrics");
+    const auto processCorpus = [
+        delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold, metrics
+    ](std::basic_istream<char> &block_stream) {
+        // vector (periods) of vectors (documents) of vectors (words) of strings
+        std::vector<std::vector<std::vector<std::string>>> structured_corpus = {{}};
 
-    // read lines
-    for (std::string line; std::getline(std::cin, line);) {
-        // empty line -> next period starts
-        if (line.empty()) {
-            structured_corpus.push_back({});
-            continue;
+        // read lines
+        for (std::string line; std::getline(block_stream, line);) {
+            // empty line -> next period starts
+            if (line.empty()) {
+                structured_corpus.push_back({});
+                continue;
+            }
+
+            // currently adding documents to last period
+            auto *current_period = &structured_corpus.back();
+            std::stringstream line_stream(line);
+
+            // vector of words (data for this line's document) split by spaces
+            std::vector<std::string> words = {};
+            for (std::string word; getline(line_stream, word, ' ');) {
+                words.push_back(word);
+            }
+
+            // add to current period
+            current_period->push_back(words);
         }
 
-        // currently adding documents to last period
-        auto *current_period = &structured_corpus.back();
-        std::stringstream line_stream(line);
-        
-        // vector of words (data for this line's document) split by spaces
-        std::vector<std::string> words = {};
-        for (std::string word; getline(line_stream, word, ' ');) {
-            words.push_back(word);
+        Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold);
+        const auto evolution = corpus.getTopicEvolution();
+
+        if (metrics) {
+            std::cout << "[";
+            const auto metrics = getMetrics(evolution);
+            for (int i = 0; i < metrics.size(); i++) {
+                if (i) std::cout << ", ";
+                std::cout << metrics[i];
+            }
+            std::cout << "]" << std::endl;
+        } else {
+            std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
         }
+    };
 
-        // add to current period
-        current_period->push_back(words);
-    }
-
-    Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold);
-    const auto evolution = corpus.getTopicEvolution();
-
-    if (hasArg(arg_beg, arg_end, "--metrics")) {
-        std::cout << "[";
-        const auto metrics = getMetrics(evolution);
-        for (int i = 0; i < metrics.size(); i++) {
-            if (i) std::cout << ", ";
-            std::cout << metrics[i];
+    const auto keep_alive = hasArg(arg_beg, arg_end, "--keep_alive");
+    if (keep_alive) {
+        for (std::string block; std::getline(std::cin, block, '\0');) {
+            std::stringstream block_stream(block);
+            processCorpus(block_stream);
+            std::cout << '\0';
         }
-        std::cout << "]" << std::endl;
     } else {
-        std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
+        processCorpus(std::cin);
     }
+
 
     return 0;
 }
