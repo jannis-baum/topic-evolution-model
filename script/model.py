@@ -1,3 +1,5 @@
+import yaml
+
 class TopicEvolution:
     class Topic:
         def __init__(self, data):
@@ -24,7 +26,8 @@ class TopicEvolution:
                 TopicEvolution.Topic(topic)
             for topic in data]
 
-    def __init__(self, data):
+    def __init__(self, tem_output: str):
+        data = yaml.safe_load(tem_output)
         self.periods = [
             TopicEvolution.Period(period)
         for period in data]
