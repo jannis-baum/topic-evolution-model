@@ -30,7 +30,7 @@ def normal_str(doc: str) -> str:
 
 __stopwords = set(stopwords.words('english'))
 __ps = PorterStemmer()
-def normal_tokens(doc: str, clear_stopwords=True, stem=True) -> list[str]:
+def normal_tokens(doc: str, clear_stopwords=False, stem=True) -> list[str]:
     return [
         __ps.stem(token) if stem else token
         for token in word_tokenize(normal_str(doc))
