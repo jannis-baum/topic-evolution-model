@@ -33,6 +33,7 @@ void printHelp() {
         << std::endl
         << "Optional arguments:" << std::endl
         << "    --help, -h    print this message and exit." << std::endl
+        << "    --metrics     output TE metrics instead of graph" << std::endl
         << std::endl;
 }
 
