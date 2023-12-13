@@ -17,16 +17,16 @@
 template<typename Container>
 std::string dumpIterable(
     const Container &data,
-    std::function<std::string(typename Container::value_type)> dumpElement,
-    const bool nullIfEmpty = true
+    std::function<std::string(typename Container::value_type)> dump_element,
+    const bool null_if_empty = true
 ) {
-    if (nullIfEmpty && !data.size()) return "null";
+    if (null_if_empty && !data.size()) return "null";
 
     std::string dump = "";
 
     for (const auto &element : data) {
-        std::string elementDump = dumpElement(element);
-        std::stringstream stream(elementDump);
+        std::string element_dump = dump_element(element);
+        std::stringstream stream(element_dump);
         std::string line;
         int i = 0;
         while (std::getline(stream, line, '\n')) {

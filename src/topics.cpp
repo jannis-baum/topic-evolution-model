@@ -79,14 +79,14 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
     std::unordered_set<int> merged;
     // set orders smallest to largest
     std::set<int> remove;
-    for (auto &[topicsToMerge, _]: distances) {
-        int offset1 = topicsToMerge.first - topics.begin();
-        int offset2 = topicsToMerge.second - topics.begin();
+    for (auto &[topics_to_merge, _]: distances) {
+        int offset1 = topics_to_merge.first - topics.begin();
+        int offset2 = topics_to_merge.second - topics.begin();
         if (
             merged.contains(offset1) || merged.contains(offset2) ||
             remove.contains(offset1) || remove.contains(offset2)
         ) continue;
-        mergeTopics(topics, topicsToMerge);
+        mergeTopics(topics, topics_to_merge);
         merged.insert(offset1);
         remove.insert(offset2);
     }

@@ -8,23 +8,25 @@
 #include <unordered_set>
 
 Corpus::Corpus(
-    const std::vector<std::vector<std::vector<std::string>>> structuredCorpus,
+    const std::vector<std::vector<std::vector<std::string>>> structured_corpus,
     const dec_t delta,
     const dec_t c,
     const dec_t alpha,
     const dec_t beta,
     const dec_t gamma,
     const int theta,
-    const dec_t mergeThreshold)
+    const dec_t merge_threshold,
+    const dec_t evolution_threshold)
 : periods({})
 , wtostr({})
-, c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta), mergeThreshold(mergeThreshold) {
+, c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta)
+, merge_threshold(merge_threshold), evolution_threshold(evolution_threshold) {
     // string to word_t (aka int) mapping
     std::unordered_map<std::string, word_t> strtow = {};
     
     // construct periods
     int s = 0;
-    for (const auto period : structuredCorpus) {
+    for (const auto period : structured_corpus) {
         std::vector<Document> documents = {};
         // construct documents
         for (const auto document : period) {
@@ -32,9 +34,9 @@ Corpus::Corpus(
             // index words & save mapping in both directions
             for (const auto word : document) {
                 if (!strtow.contains(word)) {
-                    int newIndex = strtow.size();
-                    strtow[word] = newIndex;
-                    wtostr[newIndex] = word;
+                    int new_index = strtow.size();
+                    strtow[word] = new_index;
+                    wtostr[new_index] = word;
                 }
                 words.push_back(strtow[word]);
             }
@@ -42,7 +44,7 @@ Corpus::Corpus(
         }
         this->periods.push_back(CorpusPeriod(documents, this->wtostr, delta));
         // we are sure emerging topics exist since we just added the period
-        this->topicsByPeriod.push_back(findEmergingTopics(s++).value());
+        this->topics_by_period.push_back(findEmergingTopics(s++).value());
     }
 }
 
@@ -96,16 +98,16 @@ std::optional<std::vector<word_t>> Corpus::findEmergingWords(const int s) const 
 std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const {
     if (!this->periodExists(s)) return std::nullopt;
 
-    auto emergingWordsOpt = this->findEmergingWords(s);
-    if (!emergingWordsOpt) {
+    auto emerging_words_opt = this->findEmergingWords(s);
+    if (!emerging_words_opt) {
         return std::nullopt;
     }
-    std::vector<word_t> emergingWords = *emergingWordsOpt;
+    std::vector<word_t> emerging_words = *emerging_words_opt;
     std::vector<Topic> topics = {};
-    const auto &wtonode = this->wtonodeByPeriod(s);
+    const auto &wtonode = this->wtonode_by_period(s);
 
     // find emerging topics
-    for (const auto e: emergingWords) {
+    for (const auto e: emerging_words) {
         if (!wtonode.contains(e)) continue;
         const SemanticNode *node = wtonode.at(e);
         // start with node itself
@@ -116,8 +118,8 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
         node->bfs([e, theta, &topic](const SemanticNode *discovered) mutable {
             // add discovered to topic if original node can be discovered with
             // backwards BFS within theta
-            discovered->bfs([e, discovered, &topic](const SemanticNode *backDiscovered) mutable {
-                if (backDiscovered->word != e) return true;
+            discovered->bfs([e, discovered, &topic](const SemanticNode *back_discovered) mutable {
+                if (back_discovered->word != e) return true;
                 topic.insert(discovered);
                 return false;
             }, theta);
@@ -127,7 +129,7 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
         topics.push_back(topic);
     }
 
-    mergeTopicsByThreshold(topics, this->mergeThreshold);
+    mergeTopicsByThreshold(topics, this->merge_threshold);
 
     return topics;
 }
@@ -145,11 +147,11 @@ std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, co
     if (!this->periodExists(s)) return std::nullopt;
     if (!this->periodExists(s - 1)) return std::nullopt;
 
-    const auto &previousTopics = this->topicsByPeriod[s - 1];
-    if (previousTopics.empty()) return std::nullopt;
+    const auto &prev_topics = this->topics_by_period[s - 1];
+    if (prev_topics.empty()) return std::nullopt;
 
-    const Topic *predecessor = &previousTopics[0];
-    for (auto it = previousTopics.begin(); it < previousTopics.end(); it++) {
+    const Topic *predecessor = &prev_topics[0];
+    for (auto it = prev_topics.begin(); it < prev_topics.end(); it++) {
         if (topicDistance(topic, *it) < topicDistance(topic, *predecessor)) {
             predecessor = &(*it);
         }
@@ -161,23 +163,23 @@ std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, co
     return std::nullopt;
 }
 
-std::vector<std::vector<TopicData>> Corpus::getTopicEvolution(const dec_t distance_threshold) const {
+std::vector<std::vector<TopicData>> Corpus::getTopicEvolution() const {
     std::vector<std::vector<TopicData>> evolution;
-    std::unordered_map<const Topic *, int> topicIds;
-    int nextId = 0;
+    std::unordered_map<const Topic *, int> topic_ids;
+    int next_id = 0;
     
     for (int s = 0; s < this->nPeriods(); s++) {
         evolution.push_back({});
-        if (topicsByPeriod[s].empty()) continue;
+        if (topics_by_period[s].empty()) continue;
 
-        for (auto it = this->topicsByPeriod[s].begin(); it != this->topicsByPeriod[s].end(); it++) {
-            auto predecessorOpt = this->findPredecessorTopic(*it, distance_threshold, s);
-            if (predecessorOpt) {
-                topicIds[&(*it)] = topicIds[predecessorOpt.value()];
+        for (auto it = this->topics_by_period[s].begin(); it != this->topics_by_period[s].end(); it++) {
+            auto predecessor_opt = this->findPredecessorTopic(*it, this->evolution_threshold, s);
+            if (predecessor_opt) {
+                topic_ids[&(*it)] = topic_ids[predecessor_opt.value()];
             } else {
-                topicIds[&(*it)] = nextId++;
+                topic_ids[&(*it)] = next_id++;
             }
-            evolution[s].push_back({*it, topicIds[&(*it)], topicHealth(*it, s)});
+            evolution[s].push_back({*it, topic_ids[&(*it)], topicHealth(*it, s)});
         }
     }
     return evolution;

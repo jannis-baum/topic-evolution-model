@@ -9,11 +9,11 @@
 #include "tests.hpp"
 
 int testYaml() {
-    int failedTests = 0;
+    int failed = 0;
 
     std::cout << std::endl << "YAML" << std::endl;
 
-    failedTests += genericTest("Correctly dumps vectors", []() {
+    failed += genericTest("Correctly dumps vectors", []() {
         const std::vector<int> data = { 1, 2 };
         const auto dump = dumpIterable(data, [](const int &element) {
             return "first: " + std::to_string(element) +
@@ -22,7 +22,7 @@ int testYaml() {
         return dump == "- first: 1\n  second: 1\n- first: 2\n  second: 2\n";
     });
 
-    failedTests += genericTest("Correctly dumps sets", []() {
+    failed += genericTest("Correctly dumps sets", []() {
         const std::unordered_set<int> data = { 1, 2 };
         const auto dump = dumpIterable(data, [](const int &element) {
             return "first: " + std::to_string(element) +
@@ -33,13 +33,13 @@ int testYaml() {
             || dump == "- first: 2\n  second: 2\n- first: 1\n  second: 1\n";
     });
 
-    failedTests += genericTest("Correctly dumps tuples", []() {
+    failed += genericTest("Correctly dumps tuples", []() {
         const auto data = std::make_tuple(1, 2);
         auto dump = dumpTuple(data, { "label1", "label2" });
         return dump == "label1: 1\nlabel2: 2\n";
     });
 
-    failedTests += genericTest("Correctly dumps topic evolution", []() {
+    failed += genericTest("Correctly dumps topic evolution", []() {
         const std::unordered_map<word_t, std::string> wtostr = {
             { 0, "a" }, { 1, "b" }
         };
@@ -56,5 +56,5 @@ int testYaml() {
             || dump == "- - topic:\n    - a\n    id: 0\n    health: 1.000000\n  - topic:\n    - b\n    id: 1\n    health: 1.000000\n- - topic:\n    - a\n    - b\n    id: 0\n    health: 1.000000\n";
     });
 
-    return failedTests;
+    return failed;
 }

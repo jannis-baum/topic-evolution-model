@@ -12,11 +12,11 @@ dec_t mstdThreshold(std::vector<dec_t> values, dec_t param) {
     mean /= count;
 
     // compute standard deviation
-    dec_t standardDeviation = 0;
+    dec_t std_deviation = 0;
     for (const auto value : values) {
-        standardDeviation += std::pow(value - mean, 2);
+        std_deviation += std::pow(value - mean, 2);
     }
-    standardDeviation = std::sqrt(standardDeviation / count);
+    std_deviation = std::sqrt(std_deviation / count);
 
     // compute median
     size_t nth = count / 2;
@@ -24,5 +24,5 @@ dec_t mstdThreshold(std::vector<dec_t> values, dec_t param) {
     std::nth_element(values.begin(), values.begin() + nth, values.end());
     dec_t median = values[nth];
 
-    return mean + standardDeviation * param;
+    return mean + std_deviation * param;
 }
