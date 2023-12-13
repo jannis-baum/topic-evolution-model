@@ -8,7 +8,7 @@
 #include "../types.hpp"
 
 int testAll();
-int genericTest(std::string expectation, std::function<bool()> isSuccess);
+int genericTest(std::string expectation, std::function<bool()> is_success);
 constexpr bool isEqual(dec_t a, dec_t b, dec_t epsilon = 0.001) {
     return std::abs(a - b) < epsilon;
 };

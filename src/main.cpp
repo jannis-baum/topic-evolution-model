@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
     // TEM params
     dec_t delta, c, alpha, beta, gamma;
-    dec_t mergeThreshold, evolutionThreshold;
+    dec_t merge_threshold, evolution_threshold;
     int theta;
     try {
         // convert strings to dec_t & int
@@ -40,8 +40,8 @@ int main(int argc, char* argv[]) {
         alpha = getArgOrFail<dec_t>(argv, argv + argc, "--alpha", stod);
         beta = getArgOrFail<dec_t>(argv, argv + argc, "--beta", stod);
         gamma = getArgOrFail<dec_t>(argv, argv + argc, "--gamma", stod);
-        mergeThreshold = getArgOrFail<dec_t>(argv, argv + argc, "--mergeThreshold", stod);
-        evolutionThreshold = getArgOrFail<dec_t>(argv, argv + argc, "--evolutionThreshold", stod);
+        merge_threshold = getArgOrFail<dec_t>(argv, argv + argc, "--merge_threshold", stod);
+        evolution_threshold = getArgOrFail<dec_t>(argv, argv + argc, "--evolution_threshold", stod);
 
         theta = getArgOrFail<int>(argv, argv + argc, "--theta", stoi);
     } catch (const std::invalid_argument &ex) {
@@ -50,32 +50,32 @@ int main(int argc, char* argv[]) {
     }
 
     // vector (periods) of vectors (documents) of vectors (words) of strings
-    std::vector<std::vector<std::vector<std::string>>> structuredCorpus = {{}};
+    std::vector<std::vector<std::vector<std::string>>> structured_corpus = {{}};
 
     // read lines
     for (std::string line; std::getline(std::cin, line);) {
         // empty line -> next period starts
         if (line.empty()) {
-            structuredCorpus.push_back({});
+            structured_corpus.push_back({});
             continue;
         }
 
         // currently adding documents to last period
-        auto *currentPeriod = &structuredCorpus.back();
-        std::stringstream lineStream(line);
+        auto *current_period = &structured_corpus.back();
+        std::stringstream line_stream(line);
         
         // vector of words (data for this line's document) split by spaces
         std::vector<std::string> words = {};
-        for (std::string word; getline(lineStream, word, ' ');) {
+        for (std::string word; getline(line_stream, word, ' ');) {
             words.push_back(word);
         }
 
         // add to current period
-        currentPeriod->push_back(words);
+        current_period->push_back(words);
     }
 
-    Corpus corpus(structuredCorpus, delta, c, alpha, beta, gamma, theta, mergeThreshold);
-    const auto evolution = corpus.getTopicEvolution(evolutionThreshold);
+    Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold);
+    const auto evolution = corpus.getTopicEvolution(evolution_threshold);
 
     std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
 

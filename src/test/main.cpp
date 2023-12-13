@@ -3,31 +3,31 @@
 #include "tests.hpp"
 
 int testAll() {
-    int failedTests = 0;
+    int failed = 0;
 
-    failedTests += testPeriod();
-    failedTests += testCorpus();
-    failedTests += testTopics();
-    failedTests += testYaml();
+    failed += testPeriod();
+    failed += testCorpus();
+    failed += testTopics();
+    failed += testYaml();
 
     std::cout << std::endl
         << "--------------------------------------------------------------------------------"
         << std::endl;
-    if (!failedTests) {
+    if (!failed) {
         std::cout << "✅ Done! All tests passed successfully." << std::endl;
     } else {
-        std::cout << "❌ Done! " << failedTests << " tests failed." << std::endl;
+        std::cout << "❌ Done! " << failed << " tests failed." << std::endl;
     }
     std::cout
         << "--------------------------------------------------------------------------------"
         << std::endl << std::endl;
 
-    return failedTests;
+    return failed;
 }
 
-int genericTest(std::string expectation, std::function<bool()> isSuccess) {
+int genericTest(std::string expectation, std::function<bool()> is_success) {
     std::cout << "- " << expectation;
-    bool success = isSuccess();
+    bool success = is_success();
     std::cout << " " << (success ? "✅" : "❌") << std::endl;
     return !success;
 }
