@@ -163,7 +163,7 @@ std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, co
     return std::nullopt;
 }
 
-std::vector<std::vector<TopicData>> Corpus::getTopicEvolution() const {
+TopicEvolution Corpus::getTopicEvolution() const {
     std::vector<std::vector<TopicData>> evolution;
     std::unordered_map<const Topic *, int> topic_ids;
     int next_id = 0;
