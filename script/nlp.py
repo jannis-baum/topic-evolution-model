@@ -30,7 +30,7 @@ def normal_str(doc: str) -> str:
 
 __stopwords = set(stopwords.words('english'))
 __ps = PorterStemmer()
-def normal_tokens(doc: str, clear_stopwords=True, stem=True) -> list[str]:
+def normal_tokens(doc: str, clear_stopwords=False, stem=True) -> list[str]:
     return [
         __ps.stem(token) if stem else token
         for token in word_tokenize(normal_str(doc))
@@ -46,8 +46,9 @@ __doc_separators = ',:;\\-–—'
 def docs_from_period(period: str) -> list[list[str]]:
     with_seps = re.sub(f'[{__doc_separators}]', '.', period)
     return [
-        normal_tokens(doc)
-        for doc in sent_tokenize(with_seps)
+        tokens
+        for tokens in map(normal_tokens, sent_tokenize(with_seps))
+        if len(tokens) > 0
     ]
 
 # merge period into predecessor if number of docs < min_docs
@@ -59,9 +60,13 @@ def merge_short_periods(corpus: list[list[list[str]]], min_docs = 2) -> list[lis
             merged.append(period)
         else:
             merged[-1] += period
-    return merged
+    return merged if len(merged[-1]) > min_docs else merged[:-1]
 
 # create structured corpus from text
 def get_corpus(text: str) -> list[list[list[str]]]:
-    corpus = [docs_from_period(line) for line in text.split('\n') if len(line) > 0]
+    corpus = [
+        period
+        for period in map(docs_from_period, text.split('\n'))
+        if len(period) > 0
+    ]
     return merge_short_periods(corpus, min_docs=2)
