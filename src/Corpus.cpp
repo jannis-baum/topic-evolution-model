@@ -15,10 +15,12 @@ Corpus::Corpus(
     const dec_t beta,
     const dec_t gamma,
     const int theta,
-    const dec_t merge_threshold)
+    const dec_t merge_threshold,
+    const dec_t evolution_threshold)
 : periods({})
 , wtostr({})
-, c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta), merge_threshold(merge_threshold) {
+, c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta)
+, merge_threshold(merge_threshold), evolution_threshold(evolution_threshold) {
     // string to word_t (aka int) mapping
     std::unordered_map<std::string, word_t> strtow = {};
     
@@ -161,7 +163,7 @@ std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, co
     return std::nullopt;
 }
 
-std::vector<std::vector<TopicData>> Corpus::getTopicEvolution(const dec_t distance_threshold) const {
+std::vector<std::vector<TopicData>> Corpus::getTopicEvolution() const {
     std::vector<std::vector<TopicData>> evolution;
     std::unordered_map<const Topic *, int> topic_ids;
     int next_id = 0;
@@ -171,7 +173,7 @@ std::vector<std::vector<TopicData>> Corpus::getTopicEvolution(const dec_t distan
         if (topics_by_period[s].empty()) continue;
 
         for (auto it = this->topics_by_period[s].begin(); it != this->topics_by_period[s].end(); it++) {
-            auto predecessor_opt = this->findPredecessorTopic(*it, distance_threshold, s);
+            auto predecessor_opt = this->findPredecessorTopic(*it, this->evolution_threshold, s);
             if (predecessor_opt) {
                 topic_ids[&(*it)] = topic_ids[predecessor_opt.value()];
             } else {

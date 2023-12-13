@@ -74,8 +74,8 @@ int main(int argc, char* argv[]) {
         current_period->push_back(words);
     }
 
-    Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold);
-    const auto evolution = corpus.getTopicEvolution(evolution_threshold);
+    Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold);
+    const auto evolution = corpus.getTopicEvolution();
 
     std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
 

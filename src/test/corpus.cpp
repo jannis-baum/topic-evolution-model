@@ -35,8 +35,9 @@ class MockCorpus2: public Corpus {
                 const dec_t beta = 0,
                 const dec_t gamma = 0,
                 const int theta = 1,
-                const dec_t merge_threshold = 1
-            ) : Corpus(c, alpha, beta, gamma, theta, merge_threshold) {
+                const dec_t merge_threshold = 1,
+                const dec_t evolution_threshold = 0.01
+            ) : Corpus(c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold) {
                 this->period_count = period_count;
                 this->value_wtonode.emplace(0, SemanticNode(0, {}));
                 this->value_wtonode.emplace(1, SemanticNode(1, {}));
@@ -81,8 +82,9 @@ class MockCorpus: public Corpus {
             const dec_t beta = 0,
             const dec_t gamma = 0,
             const int theta = 1,
-            const dec_t merge_threshold = 1
-        ) : Corpus(c, alpha, beta, gamma, theta, merge_threshold) {
+            const dec_t merge_threshold = 1,
+            const dec_t evolution_threshold = 0.01
+        ) : Corpus(c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold) {
             this->period_count = period_number;
             switch (testing_case) {
                 case 4:
@@ -260,7 +262,7 @@ int testCorpus() {
 
     failed += genericTest("Topic evolution is found correctly", [](){
         MockCorpus2 m = MockCorpus2(2);
-        auto topic_ids = m.getTopicEvolution(0.01);
+        auto topic_ids = m.getTopicEvolution();
         return (std::get<1>(topic_ids[0][0]) == 0 && std::get<0>(topic_ids[0][0]) == (m.topics_by_period[0])[0])
             && (std::get<1>(topic_ids[1][0]) == 0 && std::get<0>(topic_ids[1][0]) == (m.topics_by_period[1])[0])
             && (std::get<1>(topic_ids[1][1]) == 1 && std::get<0>(topic_ids[1][1]) == (m.topics_by_period[1])[1]);

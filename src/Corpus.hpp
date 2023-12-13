@@ -22,6 +22,7 @@ class Corpus {
     const dec_t gamma;
     const int theta;
     const dec_t merge_threshold;
+    const dec_t evolution_threshold;
 
     // s is period index
     virtual inline const std::unordered_map<word_t, SemanticNode *> &wtonode_by_period(const int s) const {
@@ -46,10 +47,11 @@ class Corpus {
             const dec_t beta,
             const dec_t gamma,
             const int theta,
-            const dec_t merge_threshold
+            const dec_t merge_threshold,
+            const dec_t evolution_threshold
         ):
             periods({}), wtostr({}),
-            c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta), merge_threshold(merge_threshold) {};
+            c(c), alpha(alpha), beta(beta), gamma(gamma), theta(theta), merge_threshold(merge_threshold), evolution_threshold(evolution_threshold) {};
         // construct Corpus from vector (periods) of vectors (documents) of
         // strings (words)
         Corpus(
@@ -60,7 +62,8 @@ class Corpus {
             const dec_t beta = 0,
             const dec_t gamma = 0,
             const int theta = 1,
-            const dec_t merge_threshold = 1
+            const dec_t merge_threshold = 1,
+            const dec_t evolution_threshold = 100
         );
 
         virtual inline int nPeriods() const {
@@ -80,7 +83,7 @@ class Corpus {
         dec_t topicHealth(const Topic &topic, int s) const;
 
         std::optional<const Topic*> findPredecessorTopic(const Topic &topic, const dec_t distance_threshold, int s) const;
-        std::vector<std::vector<TopicData>> getTopicEvolution(const dec_t distance_threshold) const;
+        std::vector<std::vector<TopicData>> getTopicEvolution() const;
 
         // streaming (e.g. printing) operator <<
         friend std::ostream& operator<<(std::ostream& os, Corpus const &corpus) {
