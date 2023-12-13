@@ -11,6 +11,8 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
 
     std::unordered_set<int> prev_topic_ids = {};
     int connected_periods = 0;
+    int current_pathl = 1;
+    int longest_pathl = 1;
 
     for (const auto &period: evolution) {
         bool is_connected = false;
@@ -29,7 +31,13 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         }
 
         prev_topic_ids = topic_ids;
-        if (is_connected) connected_periods += 1;
+        if (is_connected) {
+            connected_periods += 1;
+            current_pathl += 1;
+            longest_pathl = current_pathl > longest_pathl ? current_pathl : longest_pathl;
+        } else {
+            current_pathl = 1;
+        }
     }
 
     // number of occurrences of most common topic
@@ -49,6 +57,9 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         (dec_t)most_topics / (dec_t)topic_count,
         // METRIC 3: n_{periods with incoming} / (n_periods - 1)
         // i.e. how (relatively) many periods have a connection to their predecessor?
-        (dec_t)connected_periods / (dec_t)evolution.size()
+        (dec_t)connected_periods / (dec_t)evolution.size(),
+        // METRIC 4: n_{longest connected periods} / (n_periods)
+        // i.e. how (relatively) long is the longest chain of connected periods?
+        (dec_t)longest_pathl / (dec_t)evolution.size()
     };
 }
