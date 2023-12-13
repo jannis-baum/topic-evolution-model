@@ -6,7 +6,7 @@
 #include "../CorpusPeriod.hpp"
 
 int testPeriod() {
-    int failedTests = 0;
+    int failed = 0;
 
     std::cout << std::endl << "GRAPH CONSTRUCTION" << std::endl;
     std::cout << "Node merging" << std::endl;
@@ -16,7 +16,7 @@ int testPeriod() {
     mock_wtostr[1] = "b";
     mock_wtostr[2] = "c";
 
-    failedTests += genericTest("Subword should point to superword", [&mock_wtostr](){
+    failed += genericTest("Subword should point to superword", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
             // empty docs to avoid ignoring words for occuring too many times
             { 0, 1 }, { 1 }, {}, {}, {}
@@ -24,7 +24,7 @@ int testPeriod() {
         return cp.wtonode.at(0)->word == cp.wtonode.at(1)->word;
     });
 
-    failedTests += genericTest("Chain of subwords should point to common superword", [&mock_wtostr](){
+    failed += genericTest("Chain of subwords should point to common superword", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 2, 0, 1 }, { 0, 1 }, { 1 }, {}, {}, {}, {}
         }, mock_wtostr, 1);
@@ -35,7 +35,7 @@ int testPeriod() {
 
     std::cout << "Edge building" << std::endl;
 
-    failedTests += genericTest("Edges are built without error", [&mock_wtostr](){
+    failed += genericTest("Edges are built without error", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 2, 0, 1 }, { 0, 1 }, { 2, 0 }, { 1, 2 }, { 2, 1 }, { 2, 1 }, {}, {}, {}, {}, {}, {}, {} 
         }, mock_wtostr, 1);
@@ -44,26 +44,26 @@ int testPeriod() {
 
     std::cout << std::endl << "FLOOD WORDS" << std::endl;
 
-    failedTests += genericTest("Flood words are found based on mean threshold", [&mock_wtostr](){
+    failed += genericTest("Flood words are found based on mean threshold", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 0, 1, 1, 2, 2, 2 }, {}, {}, {}
         }, mock_wtostr, 1);
-        auto nonFloodWords = cp.findNonFloodWords(1, 0);
-        return nonFloodWords.size() == 2
-            && nonFloodWords[0] == 0
-            && nonFloodWords[1] == 1;
+        auto non_flood_words = cp.findNonFloodWords(1, 0);
+        return non_flood_words.size() == 2
+            && non_flood_words[0] == 0
+            && non_flood_words[1] == 1;
     });
 
-    failedTests += genericTest("Flood words are found based on mean and standard deviation threshold", [&mock_wtostr](){
+    failed += genericTest("Flood words are found based on mean and standard deviation threshold", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 0, 1, 1, 2, 2, 2 }, {}, {}, {}
         }, mock_wtostr, 1);
-        auto nonFloodWords = cp.findNonFloodWords(1, 2);
-        return nonFloodWords.size() == 3
-            && nonFloodWords[0] == 0
-            && nonFloodWords[1] == 1
-            && nonFloodWords[2] == 2;
+        auto non_flood_words = cp.findNonFloodWords(1, 2);
+        return non_flood_words.size() == 3
+            && non_flood_words[0] == 0
+            && non_flood_words[1] == 1
+            && non_flood_words[2] == 2;
     });
 
-    return failedTests;
+    return failed;
 }
