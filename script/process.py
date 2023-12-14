@@ -29,9 +29,9 @@ class TEM:
         beta: float = -1,
         gamma: float = 0,
         delta: float = 1,
-        theta: int = 2,
         merge_threshold: float = 100,
         evolution_threshold: float = 100,
+        theta: int = 2,
     ):
         args = [
             '--c', str(c),
