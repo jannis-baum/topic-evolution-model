@@ -11,8 +11,7 @@
 
 ## Nutrition & Energy
 
-- **nutrition** is an indicator of a word's popularity in a single document $d_i
-  \in D_t$
+- **nutrition** is an indicator of a word's popularity in a single document $d_i \in D_t$
   - $nutrition(w) = (1 - c) + c \cdot tf(w) / tf(w_i^*)$
   - $w_i^*$ is most frequent word in document $d_i$
   - $tf(w)$ is the word's term frequency in $d_i$
@@ -21,8 +20,7 @@
     of documents in $t$
   - *describes relative word frequency in $[1-c, 1]$*
 - **energy** describes change in a word's nutrition over time
-  - $energy(w) = \sum_{t=1}^s \frac{1}{i} (nutrition(w)_t^2 -
-    nutrition(w)_{t-i}^2)$
+  - $energy(w) = \sum_{t=1}^s \frac{1}{i} (nutrition(w)_t^2 - nutrition(w)_{t-i}^2)$
   - $s$ is the number of time periods before $t$
 - **Energy-Nutrition Ratio**
   - $ENR(w) = \frac{energy(w)}{nutrition(w)}$
