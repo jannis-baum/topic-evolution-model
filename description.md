@@ -5,12 +5,12 @@ works and can be used.
 
 ## General terms
 
-- A **document** is an ordered list of words $(w_1, ..., w_k)$ with $k$ being the
-  document's length. This might be the sentences of an article.
-- A **period** is an ordered list of documents that belong to the same temporal
-  section of the *corpus*. This might be the paragraphs of an article.
+- A **document** $d$ is a list of words $(w_1, ..., w_k)$ with $k$ being the
+  document's length. This might a sentence in an article.
+- A **period** $D_t$ is a list of documents that belong to the same temporal
+  section of the *corpus*. This might a paragraph in an article.
 - A **corpus** the entire body of text that makes up the input to TEM, consisting
-  of multiple periods. This might be an article.
+  of an ordered list of periods. This might be an article.
 - A **topic** $T$ is a set of words describing a theme in a period. Each topic
   has a theme identifier. Topics with the same identifier that occur over
   multiple paragraphs make up the evolution of the given theme.
@@ -52,7 +52,14 @@ parameters.
 - `--evolution_threshold` defines the threshold of *topic distance* below which
   topics of different periods are assigned the same theme
 
-## Semantic graph construction
+## TEM algorithm
+
+The following sections describe how TEM builds its output.
+
+### Semantic graph construction
+
+For each period $D_t$, a semantic graph is constructed that connects the words
+that occur in it.
 
 Let $n_W$ be the number of documents in $D_t$ that contain all words $w \in W$.
 Then $c_{k,z}^t$ is the *term correlation* between words (terms) $k$ and $z$ at
@@ -78,12 +85,12 @@ $$
   \right\rvert
 $$
 
-In the graph, terms $k$ with $2 n_{\{ k \}} \leq \lvert D_t \rvert$ are nodes,
-i.e. more common terms, also called *flood words*, are omitted. The weighted
-edge at time $t$ between two nodes $(u, v)$ will be $c_{u, v}^t$.
+In the semantic graph, terms $k$ with $2 n_{\{ k \}} \leq \lvert D_t \rvert$ are
+nodes, while more common terms, also called *flood words*, are omitted. The
+weighted edge at time $t$ between two nodes $(u, v)$ will be $c_{u, v}^t$.
 
-Graphs are thinned out (removing edges) according to the tuning parameter
-$\delta$. An edge $(u, v)$ is kept only if their weight
+The semantic graph is then are thinned out (removing edges) according to the
+tuning parameter $\delta$. An edge $(u, v)$ is kept only if their weight
 
 $$
 c_{u, v}^t > \tilde{c} + \sigma_c \cdot \delta
@@ -92,7 +99,9 @@ $$
 where $\tilde{c}$ and $\sigma_c$ are the median and standard deviation of all
 edge weights (correlations).
 
-## Nutrition & Energy
+### Emerging terms
+
+Words can be classified as *emerging* in a period based on the following values.
 
 - **nutrition** is an indicator of a word's popularity in a single document $d_i \in D_t$
   - $nutrition(w) = (1 - c) + c \cdot tf(w) / tf(w_i^*)$
@@ -111,10 +120,8 @@ edge weights (correlations).
   - describes if a word's rate of growth is accelerating, constant, or
     decelerating
 
-## Emerging terms
-
-Words within the following tuning parameter bounds are classified as important,
-*emerging terms*
+If the values for a given word fall into the following thresholds, this word is
+an *emerging term*.
 
 - $\alpha$: **upper bound for $nutrition$** such that a word $w$ with
   $nutrition(w)$ greater than the period's median $nutrition$ plus its standard
