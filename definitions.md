@@ -1,4 +1,4 @@
-# Definitions
+# Short Illustration of Topic Evolution Model
 
 ## General terms
 
@@ -8,6 +8,46 @@
 - **input**: set of lists of documents $D_t \in D$ where $t \in \tau$ is the
   time period for documents $D_t$
 - **output**: topics  $M_t \in M$
+
+## Semantic graph construction
+
+Let $n_W$ be the number of documents in $D_t$ that contain all words $w \in W$.
+Then $c_{k,z}^t$ is the *term correlation* between words (terms) $k$ and $z$ at
+a time $t$.
+
+$$
+  c_{k,z}^t = \log\left(
+    \frac{
+      n_{\left\{ k, z \right\}} / (n_{\left\{ k \right\}} - n_{\left\{ k, z \right\}})
+    }{
+      (n_{\left\{ z \right\}} - n_{\left\{ k, z \right\}}) /
+        (\left\lvert D_t \right\rvert
+          - n_{\left\{ z \right\}}
+          - n_{\left\{ k \right\}}
+          + n_{\left\{ k, z \right\}})
+    }
+  \right) \cdot \left\lvert
+    \frac{n_{\left\{ k, z \right\}}}{n_{\left\{ k \right\}}} - \frac{
+        n_{\left\{ z \right\}} - n_{\left\{ k, z \right\}}
+    }{
+        \left\lvert D_t \right\rvert - n_{\left\{ k \right\}}
+      }
+  \right\rvert
+$$
+
+In the graph, terms $k$ with $2 n_{\{ k \}} \leq \lvert D_t \rvert$ are nodes,
+i.e. more common terms, also called *flood words*, are omitted. The weighted
+edge at time $t$ between two nodes $(u, v)$ will be $c_{u, v}^t$.
+
+Graphs are thinned out (removing edges) according to the tuning parameter
+$\delta$. An edge $(u, v)$ is kept only if their weight
+
+$$
+c_{u, v}^t > \tilde{c} + \sigma_c \cdot \delta
+$$
+
+where $\tilde{c}$ and $\sigma_c$ are the median and standard deviation of all
+edge weights (correlations).
 
 ## Nutrition & Energy
 
@@ -41,45 +81,6 @@ Words within the following tuning parameter bounds are classified as important,
   bound for $energy$
 - $\gamma$: **lower bound for $ENR$** such that a word's $ENR$ in the previous
   period (or $0$) times $\gamma$ is the lower bound for $ENR$
-
-## Semantic graph construction
-
-Let $n_W$ be the number of documents in $D_t$ that contain all words $w \in W$.
-Then $c_{k,z}^t$ is the *term correlation* between words (terms) $k$ and $z$ at
-a time $t$.
-
-$$
-  c_{k,z}^t = \log\left(
-    \frac{
-      n_{\left\{ k, z \right\}} / (n_{\left\{ k \right\}} - n_{\left\{ k, z \right\}})
-    }{
-      (n_{\left\{ z \right\}} - n_{\left\{ k, z \right\}}) /
-        (\left\lvert D_t \right\rvert
-          - n_{\left\{ z \right\}}
-          - n_{\left\{ k \right\}}
-          + n_{\left\{ k, z \right\}})
-    }
-  \right) \cdot \left\lvert
-    \frac{n_{\left\{ k, z \right\}}}{n_{\left\{ k \right\}}} - \frac{
-        n_{\left\{ z \right\}} - n_{\left\{ k, z \right\}}
-    }{
-        \left\lvert D_t \right\rvert - n_{\left\{ k \right\}}
-      }
-  \right\rvert
-$$
-
-In the graph, terms $k$ with $2 n_{\{ k \}} < \lvert D_t \rvert$ are nodes. The
-weighted edge at time $t$ between two nodes $(u, v)$ will be $c_{u, v}^t$.
-
-Graphs are thinned out (removing edges) according to the tuning parameter
-$\delta$. An edge $(u, v)$ is kept only if their weight
-
-$$
-c_{u, v}^t > \tilde{c} + \sigma_c \cdot \delta
-$$
-
-where $\tilde{c}$ and $\sigma_c$ are the median and standard deviation of all
-edge weights (correlations).
 
 ## Finding topics
 
