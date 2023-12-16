@@ -41,7 +41,7 @@ The following is a list of parameters that have to be supplied to TEM. See the
 algorithm description below to find detailed information about the effect of the
 parameters.
 
-- `--c` tunes the value of $nutrition$
+- `--c` $\in [0, 1]$ tunes the value of $nutrition$
 - `--alpha` sets the threshold of $nutrition$ for emerging terms
 - `--beta` sets the threshold of $energy$ for emerging terms
 - `--gamma` sets the threshold of $ENR$ for emerging terms
@@ -51,6 +51,8 @@ parameters.
   distinct topics within a period are merged into one
 - `--evolution_threshold` defines the threshold of *topic distance* below which
   topics of different periods are assigned the same theme
+- `--theta`, **an integer**, which defines how closely connected terms have to
+  be to belong to the same topic
 
 ## TEM algorithm
 
@@ -132,20 +134,16 @@ an *emerging term*.
 - $\gamma$: **lower bound for $ENR$** such that a word's $ENR$ in the previous
   period (or $0$) times $\gamma$ is the lower bound for $ENR$
 
-## Finding topics
+### Topics
 
-A topic is a period's subgraph.
-
-### Emerging topics
+A topic is a subset of nodes from a period's semantic graph:
 
 - for each emerging term $e$
   - create new *emerging topic* $t_e = \{ e \}$
-  - start a BFS up to depth $\theta$ (with $e$ at $0$)
+  - start a BFS in the semantic graph up to depth $\theta$ (with $e$ at $0$)
   - from every discovered node $v$
     - run another BFS up to depth $\theta$
     - if $e$ is discovered, stop and add $v$ to $t_e$
-
-### Merging topics
 
 Let $td_{t_1, t_2}$ be the *topic distance* between topics $t_1, t_2$.
 
@@ -160,4 +158,11 @@ $$
     }
 $$
 
-A distance of $0$ implies, that one topic is a subset of the other.
+A distance of $0$ implies, that one topic is a subset of the other. Emerging
+topics with a distance smaller than `--merge_threshold` are recursively merged
+until all remaining topics have pairwise distances that are greater than the
+thresholds. These topics are the final topics of the period.
+
+Each discovered topic is compared with topics of predecessor periods. If the
+distance to a predecessor topic is smaller than `--evolution_threshold`, the
+topic is assigned the same theme as the predecessor.
