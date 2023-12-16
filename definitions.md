@@ -22,6 +22,7 @@
 - **energy** describes change in a word's nutrition over time
   - $energy(w) = \sum_{t=1}^s \frac{1}{i} (nutrition(w)_t^2 - nutrition(w)_{t-i}^2)$
   - $s$ is the number of time periods before $t$
+  - exception: in the first period, $energy(w) = nutrition(w)_t^2$
 - **Energy-Nutrition Ratio**
   - $ENR(w) = \frac{energy(w)}{nutrition(w)}$
   - describes if a word's rate of growth is accelerating, constant, or
