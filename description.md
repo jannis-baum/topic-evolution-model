@@ -1,13 +1,39 @@
 # Short Illustration of Topic Evolution Model
 
+This document aims to serve as a short but complete illustration of how TEM
+works and can be used.
+
 ## General terms
 
-- **document** is an ordered list of words $(w_1, ..., w_k)$ with $k$ being the
-  document's length
-- **topic** $T$ is a set of words describing a subject
-- **input**: set of lists of documents $D_t \in D$ where $t \in \tau$ is the
-  time period for documents $D_t$
-- **output**: topics  $M_t \in M$
+- A **document** is an ordered list of words $(w_1, ..., w_k)$ with $k$ being the
+  document's length. This might be the sentences of an article.
+- A **period** is an ordered list of documents that belong to the same temporal
+  section of the *corpus*. This might be the paragraphs of an article.
+- A **corpus** the entire body of text that makes up the input to TEM, consisting
+  of multiple periods. This might be an article.
+- A **topic** $T$ is a set of words describing a theme in a period. Each topic
+  has a theme identifier. Topics with the same identifier that occur over
+  multiple paragraphs make up the evolution of the given theme.
+
+TEM expects an input of a corpus made up of periods that are separated by empty
+lines, which in turn are made up of documents that are separated by line breaks,
+each made up of words separated by spaces. If the `--keep_alive` flag is given,
+TEM will not exit after printing the output, but instead process multiple
+corpora separated by null-characters. In this case, the output will also be
+separated by null-characters.
+
+By default, TEM outputs YAML-encoded data about the topics for each period. If
+the `--metrics` flag is given, it will instead output a Python-style array of
+the following four metrics calculated on the corpus:
+
+1. The absolute value of 1 minus the ratio of the number of distinct theme
+   identifiers, and the total number of topics
+2. The ratio of the number of topics with the most common theme identifier, and
+   the total number of topics
+3. The number of periods that have at least one incoming edge, i.e. a topic with
+   predecessor topic, divided by the total number of periods minus 1
+4. The ratio of the longest chain of connected periods, and the total number
+   of periods
 
 ## Semantic graph construction
 
