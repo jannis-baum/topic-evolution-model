@@ -35,6 +35,23 @@ the following four metrics calculated on the corpus:
 4. The ratio of the longest chain of connected periods, and the total number
    of periods
 
+## Model parameters
+
+The following is a list of parameters that have to be supplied to TEM. See the
+algorithm description below to find detailed information about the effect of the
+parameters.
+
+- `--c` tunes the value of $nutrition$
+- `--alpha` sets the threshold of $nutrition$ for emerging terms
+- `--beta` sets the threshold of $energy$ for emerging terms
+- `--gamma` sets the threshold of $ENR$ for emerging terms
+- `--delta` sets the threshold of *term correlation* for the construction of
+  a period's semantic graph
+- `--merge_threshold` defines the threshold of *topic distance* below which
+  distinct topics within a period are merged into one
+- `--evolution_threshold` defines the threshold of *topic distance* below which
+  topics of different periods are assigned the same theme
+
 ## Semantic graph construction
 
 Let $n_W$ be the number of documents in $D_t$ that contain all words $w \in W$.
