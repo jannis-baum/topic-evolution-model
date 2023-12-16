@@ -22,8 +22,9 @@
 void printHelp() {
     std::cout
         << "Topic Evolution Model (TEM)" << std::endl
+        << "See https://github.com/jannis-baum/topic-evolution-model/blob/main/description.md" << std::endl
         << std::endl
-        << "Required model parameters (see paper):" << std::endl
+        << "Required model parameters:" << std::endl
         << "    --delta" << std::endl
         << "    --c" << std::endl
         << "    --alpha" << std::endl
