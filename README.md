@@ -1,11 +1,13 @@
 # Topic Evolution Model
 
 TEM is a graph-based temporal topic modeling for very small corpora. Detailed
-information about TEM can be found in the following publication:
+information about TEM can be found in the following publication
 
 > Liebe L, Baum J, Schutze T, Cech T, Scheibel W, and Dollner J (2023). UNCOVER:
 > Identifying AI Generated News Articles by Linguistic Analysis and
 > Visualization
+
+or in the [short model description in this repository](./description.md).
 
 ## Usage
 

@@ -1,7 +1,7 @@
-# Short Illustration of Topic Evolution Model
+# Short Description of Topic Evolution Model
 
-This document aims to serve as a short but complete illustration of how TEM
-works and can be used.
+This document aims to serve as a short but complete description of how TEM works
+and can be used.
 
 ## General terms
 
