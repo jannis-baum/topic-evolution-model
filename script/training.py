@@ -1,3 +1,5 @@
+from typing import Callable
+
 import numpy as np
 import numpy.typing as npt
 
@@ -11,12 +13,26 @@ def metrics(corpora: list[str], params: npt.NDArray[np.float64]) -> npt.NDArray[
     return np.array([eval(metrics) for metrics in model.get_outputs(corpora)])
 
 def gradient_descent(
+    # TEM-ready corpora
+    corpora: list[str],
+    # cost function to find local minimum of: metrics-matrix -> cost
+    cost: Callable[[npt.NDArray[np.float64]], np.float64],
+
     # params: c, alpha, beta, gamma, delta, merge_threshold, evolution_threshold
-    initial_params: npt.NDArray[np.float64] = np.array([0.5, 0, -1, 0, 1, 100, 100]),
+    initial_params: npt.NDArray[np.float64] = np.array([0.5, 0, -1, 0, 1, 50, 50]),
     # boundaries: (lower, upper) limit for params
     boundaries: tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]] = (
         np.array([0, -3, -3, -3, -3, 0, 100]),
         np.array([1,  3,  3,  3,  3, 0, 100])
     ),
-) -> tuple[float, np.ndarray]:
-    return (0, initial_params)
+
+    # step size to "evaluate partial derivate"
+    delta: np.float64 = np.float64(0.01),
+    # learning rate
+    rate: np.float64 = np.float64(0.1),
+    # stop criterion: if cost makes relative improvement smaller than this, exit
+    epsilon: np.float64 = np.float64(0.01),
+    # stop criterion: stop after this many iterations
+    max_iter: int = 50,
+) -> tuple[np.float64, npt.NDArray[np.float64]]:
+    return (np.float64(0), initial_params)
