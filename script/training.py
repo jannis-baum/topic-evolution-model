@@ -42,6 +42,9 @@ def gradient_descent(
         if adjust: p[adjust[0]] = adjust[1]
         return cost(metrics(corpora, p))
 
+    def constrain_boundaries(index: int, value: np.float64) -> np.float64:
+        return min(boundaries[1], max(boundaries[0][index], value))
+
     # ACTUAL GRADIENT DESCENT
     rate = rate / delta # step adjusted learning rate
     current_cost = np.float64(-100) # fine as initial value because cost is always positive
@@ -55,7 +58,7 @@ def gradient_descent(
         # 1/delta to get the gradient, multiply with the learning rate and
         # finally add it to the current value -> step downwards
         params = np.array([
-            rate * (current_cost - evaluate_cost((i, param + delta)))
+            constrain_boundaries(i, rate * (current_cost - evaluate_cost((i, param + delta))))
         for i, param in enumerate(params)])
 
     return (current_cost, params)
