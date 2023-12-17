@@ -62,3 +62,30 @@ def gradient_descent(
         for i, param in enumerate(params)])
 
     return (current_cost, params)
+
+# loss for binary classification problem
+# evaluates contrastive loss between classes so that first class is
+# metrics_matrix[:split] and second class is metrics_matrix[split:]
+def contrastive_loss(
+    metrics_matrix: npt.NDArray,
+    split: int,
+    margin: np.float64
+) -> np.float64:
+    (pos, neg) = (metrics_matrix[:split], metrics_matrix[split:])
+    (n_pos, n_neg) = (pos.shape[0], neg.shape[0])
+
+    # pairwise Euclidean distances between samples
+    # positive & negative
+    cross_distances = np.linalg.norm(pos[:, np.newaxis] - neg, axis=-1)
+    # positive
+    pos_distances = np.linalg.norm(pos[:, np.newaxis] - pos, axis=-1)
+    # positive
+    neg_distances = np.linalg.norm(neg[:, np.newaxis] - neg, axis=-1)
+
+    # losses of similar samples
+    intra_pos_loss = np.sum(0.5 * np.square(pos_distances)) / n_pos ** 2
+    intra_neg_loss = np.sum(0.5 * np.square(neg_distances)) / n_neg ** 2
+    # losses of dissimilar samples
+    inter_loss = np.sum(0.5 * np.maximum(0, margin - cross_distances) ** 2) / n_pos * n_neg
+
+    return 0.5 * (intra_neg_loss + intra_pos_loss) + inter_loss
