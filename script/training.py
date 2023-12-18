@@ -43,7 +43,7 @@ def gradient_descent(
         return cost(metrics(corpora, p))
 
     def constrain_boundaries(index: int, value: np.float64) -> np.float64:
-        return min(boundaries[1], max(boundaries[0][index], value))
+        return min(boundaries[1][index], max(boundaries[0][index], value))
 
     # ACTUAL GRADIENT DESCENT
     rate = rate / delta # step adjusted learning rate
