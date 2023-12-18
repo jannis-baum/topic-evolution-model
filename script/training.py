@@ -83,9 +83,9 @@ def contrastive_loss(
     neg_distances = np.linalg.norm(neg[:, np.newaxis] - neg, axis=-1)
 
     # losses of similar samples
-    intra_pos_loss = np.sum(0.5 * np.square(pos_distances)) / n_pos ** 2
-    intra_neg_loss = np.sum(0.5 * np.square(neg_distances)) / n_neg ** 2
+    intra_pos_loss = np.sum(np.square(pos_distances)) / n_pos ** 2
+    intra_neg_loss = np.sum(np.square(neg_distances)) / n_neg ** 2
     # losses of dissimilar samples
-    inter_loss = np.sum(0.5 * np.maximum(0, margin - cross_distances) ** 2) / n_pos * n_neg
+    inter_loss = np.sum(np.maximum(0, margin - cross_distances) ** 2) / n_pos * n_neg
 
-    return 0.5 * (intra_neg_loss + intra_pos_loss) + inter_loss
+    return 0.25 * intra_neg_loss + 0.25 * intra_pos_loss + 0.5 * inter_loss
