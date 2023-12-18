@@ -41,7 +41,7 @@ The following is a list of parameters that have to be supplied to TEM. See the
 algorithm description below to find detailed information about the effect of the
 parameters.
 
-- `--c` $\in [0, 1]$ tunes the value of $nutrition$
+- `--c` $\in (0, 1)$ tunes the value of $nutrition$
 - `--alpha` sets the threshold of $nutrition$ for emerging terms
 - `--beta` sets the threshold of $energy$ for emerging terms
 - `--gamma` sets the threshold of $ENR$ for emerging terms
