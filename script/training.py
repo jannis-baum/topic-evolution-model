@@ -22,8 +22,8 @@ def gradient_descent(
     initial_params: npt.NDArray[np.float64] = np.array([0.5, 0, -1, 0, 1, 50, 50]),
     # boundaries: (lower, upper) limit for params
     boundaries: tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]] = (
-        np.array([0.0001, -3, -3, -3, -3, 0, 100]),
-        np.array([0.9999,  3,  3,  3,  3, 0, 100])
+        np.array([0.0001, -3, -3, -3, -3, 0, 0]),
+        np.array([0.9999,  3,  3,  3,  3, 100, 100])
     ),
 
     # step size to "evaluate partial derivate"
