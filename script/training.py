@@ -30,8 +30,8 @@ def gradient_descent(
     delta: np.float64 = np.float64(0.01),
     # learning rate
     rate: np.float64 = np.float64(0.1),
-    # stop criterion: if loss makes change smaller than this, exit
-    epsilon: np.float64 = np.float64(0.01),
+    # stop criterion: exit when loss is below this value
+    epsilon: np.float64 = np.float64(0.1),
     # stop criterion: stop after this many iterations
     max_iter: int = 50,
 ) -> tuple[np.float64, npt.NDArray[np.float64]]:
@@ -50,9 +50,8 @@ def gradient_descent(
     current_loss = np.float64(-100) # fine as initial value because loss is always positive
     for _ in range(max_iter):
         # update loss & check if we have converged
-        old_loss = current_loss
         current_loss = evaluate_loss()
-        if abs(old_loss - current_loss) < epsilon: break
+        if current_loss < epsilon: break
         # UPDATE PARAMETERS ALONG GRADIENT
         # we check the difference a small step (delta) would make, scale it by
         # 1/delta to get the gradient, multiply with the learning rate and
