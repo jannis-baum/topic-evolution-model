@@ -70,6 +70,8 @@ def get_structured_corpus(text: str) -> str:
         if len(period) > 0
     ]
     corpus = merge_short_periods(corpus, min_docs=2)
+    if len(corpus) < 2: raise ValueError('Corpus has less than 2 periods.')
+
     return '\n\n'.join([
         '\n'.join([
             ' '.join(word for word in doc)
