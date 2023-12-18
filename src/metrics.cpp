@@ -41,12 +41,15 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
     }
 
     // number of occurrences of most common topic
-    const auto most_topics = std::max_element(
+    const auto most_topics_it = std::max_element(
         std::begin(topic_count_by_id), std::end(topic_count_by_id),
         [](const auto &a, const auto &b) {
             return a.second < b.second;
         }
-    )->second;
+    );
+    const auto most_topics = most_topics_it == std::end(topic_count_by_id)
+        ? (dec_t)NAN
+        : most_topics_it->second;
     
     return {
         // METRIC 1: abs(1 - n_ids/n_nodes)
