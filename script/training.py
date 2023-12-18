@@ -38,7 +38,7 @@ def gradient_descent(
 
     params = initial_params
     def evaluate_cost(adjust: tuple[int, np.float64] | None = None):
-        p = params
+        p = np.copy(params)
         if adjust: p[adjust[0]] = adjust[1]
         return cost(metrics(corpora, p))
 
