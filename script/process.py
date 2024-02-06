@@ -5,7 +5,7 @@ import pexpect
 
 _te_exec = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-    '.build.out', 'out'
+    'build', 'topic_evolution_model'
 )
 
 def _init_worker(getter, args: list[str]):
