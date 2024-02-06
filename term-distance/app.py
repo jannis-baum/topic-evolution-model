@@ -12,7 +12,10 @@ def hello():
     sims = [['0'] * n for _ in range(n)]
     for i in range(n):
         for j in range(i + 1, n):
-            dist = str(wv.similarity(words[i], words[j]))
-            sims[i][j] = dist
-            sims[j][i] = dist
+            try:
+                sim = str(wv.similarity(words[i], words[j]))
+                sims[i][j] = sim
+                sims[j][i] = sim
+            except:
+                continue
     return '\n'.join((' '.join(row) for row in sims))
