@@ -12,7 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cmake && make
+      - run: |
+          mkdir build
+          cd build
+          cmake .. && make
 
   test:
     name: Test
@@ -20,4 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cmake --build . --target topic_evolution_model_test
+      - run: |
+          mkdir build
+          cd build
+          cmake .. && make && ./topic_evolution_model_test
