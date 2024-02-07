@@ -9,4 +9,6 @@
 // `median(values) + standardDeviation(values) * param`
 dec_t mstdThreshold(std::vector<dec_t> values, dec_t param);
 
+dec_t **wordDistances(const std::vector<std::string> words);
+
 #endif

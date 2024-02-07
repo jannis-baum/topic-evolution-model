@@ -1,5 +1,9 @@
 #include <cmath>
 #include <algorithm>
+#include <string>
+#include <cpr/cpr.h>
+
+#include <iostream>
 
 #include "helpers.hpp"
 
@@ -25,4 +29,14 @@ dec_t mstdThreshold(std::vector<dec_t> values, dec_t param) {
     dec_t median = values[nth];
 
     return mean + std_deviation * param;
+}
+
+dec_t **wordDistances(const std::vector<std::string> words) {
+    cpr::Response r = cpr::Post(
+        cpr::Url{"localhost:8000/similarity"},
+        cpr::Body{"cat\nkitten"},
+        cpr::Header{{"Content-Type", "text/plain"}}
+    );
+    std::cout << r.text << std::endl;
+    return NULL;
 }
