@@ -45,6 +45,20 @@ dec_t **wordDistances(const std::vector<std::string> words) {
         cpr::Body{body.str()},
         cpr::Header{{"Content-Type", "text/plain"}}
     );
-    std::cout << r.text << std::endl;
-    return NULL;
+
+    dec_t **distances = new dec_t*[words.size()];
+    int row = 0;
+    int col = 0;
+
+    std::istringstream response_ss(r.text);
+    for (std::string line; std::getline(response_ss, line); row++) {
+        distances[row] = new dec_t[words.size()];
+
+        std::istringstream line_ss(line);
+        for (std::string element; std::getline(line_ss, element, ' '); col++) {
+            distances[row][col] = std::stof(element);
+        }
+        col = 0;
+    }
+    return distances;
 }
