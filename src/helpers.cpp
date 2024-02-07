@@ -1,9 +1,10 @@
-#include <cmath>
 #include <algorithm>
-#include <iterator>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
-#include <string>
+#include <iterator>
 #include <sstream>
+#include <string>
 
 #include <cpr/cpr.h>
 
@@ -34,14 +35,20 @@ dec_t mstdThreshold(std::vector<dec_t> values, dec_t param) {
 }
 
 dec_t **wordDistances(const std::vector<std::string> words) {
-    std::stringstream body;
-    if (!words.empty()) {
-        std::copy(words.begin(), std::prev(words.end()), std::ostream_iterator<std::string>(body, "\n"));
-        body << words.back();
+    if (words.empty()) return NULL;
+
+    char *endpoint = std::getenv("TEM_WORD_DISTANCE_ENDPOINT");
+    if (endpoint == NULL) {
+        std::cerr << "fatal: $TEM_WORD_DISTANCE_ENDPOINT not defined" << std::endl;
+        std::abort();
     }
 
+    std::stringstream body;
+    std::copy(words.begin(), std::prev(words.end()), std::ostream_iterator<std::string>(body, "\n"));
+    body << words.back();
+
     cpr::Response r = cpr::Post(
-        cpr::Url{"localhost:8000/similarity"},
+        cpr::Url{endpoint},
         cpr::Body{body.str()},
         cpr::Header{{"Content-Type", "text/plain"}}
     );
