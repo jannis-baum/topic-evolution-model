@@ -37,26 +37,31 @@ dec_t mstdThreshold(std::vector<dec_t> values, dec_t param) {
 dec_t **wordDistances(const std::vector<std::string> words) {
     if (words.empty()) return NULL;
 
+    // retrieve endpoint URI from environment TEM_WORD_DISTANCE_ENDPOINT
     char *endpoint = std::getenv("TEM_WORD_DISTANCE_ENDPOINT");
     if (endpoint == NULL) {
         std::cerr << "fatal: $TEM_WORD_DISTANCE_ENDPOINT not defined" << std::endl;
         std::abort();
     }
 
+    // create request body: words split by newlines
     std::stringstream body;
     std::copy(words.begin(), std::prev(words.end()), std::ostream_iterator<std::string>(body, "\n"));
     body << words.back();
 
+    // make request
     cpr::Response r = cpr::Post(
         cpr::Url{endpoint},
         cpr::Body{body.str()},
         cpr::Header{{"Content-Type", "text/plain"}}
     );
 
+    // allocate distance matrix
     dec_t **distances = new dec_t*[words.size()];
     int row = 0;
     int col = 0;
 
+    // parse response to fill distance matrix
     std::istringstream response_ss(r.text);
     for (std::string line; std::getline(response_ss, line); row++) {
         distances[row] = new dec_t[words.size()];
