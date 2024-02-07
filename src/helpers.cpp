@@ -1,9 +1,11 @@
 #include <cmath>
 #include <algorithm>
-#include <string>
-#include <cpr/cpr.h>
-
+#include <iterator>
 #include <iostream>
+#include <string>
+#include <sstream>
+
+#include <cpr/cpr.h>
 
 #include "helpers.hpp"
 
@@ -32,9 +34,15 @@ dec_t mstdThreshold(std::vector<dec_t> values, dec_t param) {
 }
 
 dec_t **wordDistances(const std::vector<std::string> words) {
+    std::stringstream body;
+    if (!words.empty()) {
+        std::copy(words.begin(), std::prev(words.end()), std::ostream_iterator<std::string>(body, "\n"));
+        body << words.back();
+    }
+
     cpr::Response r = cpr::Post(
         cpr::Url{"localhost:8000/similarity"},
-        cpr::Body{"cat\nkitten"},
+        cpr::Body{body.str()},
         cpr::Header{{"Content-Type", "text/plain"}}
     );
     std::cout << r.text << std::endl;
