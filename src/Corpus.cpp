@@ -26,7 +26,6 @@ Corpus::Corpus(
     std::vector<std::string> all_words = {};
     
     // construct periods
-    int s = 0;
     for (const auto period : structured_corpus) {
         std::vector<Document> documents = {};
         // construct documents
@@ -46,7 +45,6 @@ Corpus::Corpus(
         }
         this->periods.push_back(CorpusPeriod(documents, this->wtostr));
         // we are sure emerging topics exist since we just added the period
-        this->topics_by_period.push_back(findEmergingTopics(s++).value());
     }
     this->distances = wordDistances(all_words);
 
