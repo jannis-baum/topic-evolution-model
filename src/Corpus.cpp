@@ -23,6 +23,7 @@ Corpus::Corpus(
 , merge_threshold(merge_threshold), evolution_threshold(evolution_threshold) {
     // string to word_t (aka int) mapping
     std::unordered_map<std::string, word_t> strtow = {};
+    std::vector<std::string> all_words = {};
     
     // construct periods
     int s = 0;
@@ -37,6 +38,7 @@ Corpus::Corpus(
                     int new_index = strtow.size();
                     strtow[word] = new_index;
                     wtostr[new_index] = word;
+                    all_words.push_back(word);
                 }
                 words.push_back(strtow[word]);
             }
@@ -46,6 +48,7 @@ Corpus::Corpus(
         // we are sure emerging topics exist since we just added the period
         this->topics_by_period.push_back(findEmergingTopics(s++).value());
     }
+    this->distances = wordDistances(all_words);
 }
 
 dec_t Corpus::energy(const word_t word, const int s) const {
