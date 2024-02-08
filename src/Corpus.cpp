@@ -117,7 +117,7 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
     // find emerging topics
     for (const auto e: emerging_words) {
         if (!wtonode.contains(e)) continue;
-        const SemanticNode *node = wtonode.at(e);
+        const SemanticNode *node = &(wtonode.at(e));
         // start with node itself
         std::unordered_set<const SemanticNode *> topic = { node };
 

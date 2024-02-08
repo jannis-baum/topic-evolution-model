@@ -26,7 +26,7 @@ class Corpus {
     const dec_t evolution_threshold;
 
     // s is period index
-    virtual inline const std::unordered_map<word_t, SemanticNode *> &wtonode_by_period(const int s) const {
+    virtual inline const std::unordered_map<word_t, SemanticNode> &wtonode_by_period(const int s) const {
         return this->periods[s].wtonode;
     };
 

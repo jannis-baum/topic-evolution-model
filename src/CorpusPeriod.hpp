@@ -14,23 +14,18 @@
 class CorpusPeriod {
     // reference to Corpus' mapping to resolve word_t (aka int) to string
     const std::unordered_map<word_t, std::string> &wtostr;
-    // map words that exist in graph to nodes
-    std::unordered_map<word_t, SemanticNode> wtonode_all;
     std::vector<Document> documents;
 
     // number of documents that contain all given words
     int nDocumentsContaining(const std::initializer_list<word_t> words) const;
-    // asymmetric term correlation, see definitions.md or paper
-    // (will be nullopt if no co-occurrence)
-    std::optional<dec_t> termCorrelation(const word_t k, const word_t z) const;
 
     void constructNodes();
-    void addEdges(const dec_t delta);
+    void addEdges(const dec_t delta, dec_t **distances);
 
     public:
         // maps words to their assigned node
         // public for testing
-        std::unordered_map<word_t, SemanticNode *> wtonode;
+        std::unordered_map<word_t, SemanticNode> wtonode;
 
         CorpusPeriod(
             const std::vector<std::vector<word_t>> structured_documents,

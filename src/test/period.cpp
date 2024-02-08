@@ -22,7 +22,7 @@ int testPeriod() {
             { 0, 1 }, { 1 }, {}, {}, {}
         }, mock_wtostr);
         cp.constructGraph(1, NULL);
-        return cp.wtonode.at(0)->word == cp.wtonode.at(1)->word;
+        return cp.wtonode.at(0).word == cp.wtonode.at(1).word;
     });
 
     failed += genericTest("Chain of subwords should point to common superword", [&mock_wtostr](){
@@ -30,9 +30,9 @@ int testPeriod() {
                 { 2, 0, 1 }, { 0, 1 }, { 1 }, {}, {}, {}, {}
         }, mock_wtostr);
         cp.constructGraph(1, NULL);
-        return cp.wtonode.at(0)->word == 1
-            && cp.wtonode.at(1)->word == 1
-            && cp.wtonode.at(2)->word == 1;
+        return cp.wtonode.at(0).word == 1
+            && cp.wtonode.at(1).word == 1
+            && cp.wtonode.at(2).word == 1;
     });
 
     std::cout << "Edge building" << std::endl;
