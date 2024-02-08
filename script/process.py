@@ -11,7 +11,7 @@ _te_exec = os.path.join(
 def _init_worker(getter, args: list[str]):
     # we assign the process to the _get_output function which is local to each
     # process
-    getter.proc = pexpect.spawn(_te_exec, args, echo=False)
+    getter.proc = pexpect.spawn(_te_exec, args, echo=False, env=os.environ)
 
 def _get_output(corpus: str) -> str:
     _get_output.proc.sendline(corpus + '\0')
