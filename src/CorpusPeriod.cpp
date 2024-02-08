@@ -26,12 +26,6 @@ CorpusPeriod::CorpusPeriod(
     const std::unordered_map<word_t, std::string> &wtostr)
 : documents(documents), wtostr(wtostr), wtonode({}) { };
 
-// construct graph
-void CorpusPeriod::constructGraph(const dec_t delta, dec_t **distances) {
-    this->constructNodes();
-    this->addEdges(delta, distances);
-}
-
 void CorpusPeriod::constructNodes() {
     for (const auto & [word, _] : this->wtostr) {
         int occurrences = this->nDocumentsContaining({ word });
@@ -41,13 +35,8 @@ void CorpusPeriod::constructNodes() {
     }
 }
 
-void CorpusPeriod::addEdges(const dec_t delta, dec_t **distances) {
-    // find main words for nodes
-    std::unordered_set<word_t> words = {};
-    for (const auto & [word, node] : this->wtonode) {
-        words.insert(node.word);
-    }
-    // find list of all distance values
+void CorpusPeriod::addEdges(const std::vector<word_t> words, const dec_t delta, dec_t **distances) {
+    // find list of all distance values for non-flood words
     std::vector<dec_t> correlation_values;
     for (const auto word1 : words) {
         for (const auto word2 : words) {

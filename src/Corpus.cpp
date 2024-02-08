@@ -49,7 +49,12 @@ Corpus::Corpus(
     this->distances = wordDistances(all_words);
 
     for (int s = 0; s < this->periods.size(); s++) {
-        this->periods[s].constructGraph(delta, this->distances);
+        this->periods[s].constructNodes();
+        this->periods[s].addEdges(
+            this->periods[s].findNonFloodWords(this->c, this->alpha),
+            delta,
+            this->distances
+        );
         this->topics_by_period.push_back(findEmergingTopics(s).value());
     }
 }

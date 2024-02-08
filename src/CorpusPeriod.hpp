@@ -19,9 +19,6 @@ class CorpusPeriod {
     // number of documents that contain all given words
     int nDocumentsContaining(const std::initializer_list<word_t> words) const;
 
-    void constructNodes();
-    void addEdges(const dec_t delta, dec_t **distances);
-
     public:
         // maps words to their assigned node
         // public for testing
@@ -34,7 +31,8 @@ class CorpusPeriod {
             const std::vector<Document> documents,
             const std::unordered_map<word_t, std::string> &wtostr);
 
-        void constructGraph(const dec_t delta, dec_t **distances);
+        void constructNodes();
+        void addEdges(const std::vector<word_t> words, const dec_t delta, dec_t **distances);
 
         std::vector<word_t> findNonFloodWords(const dec_t c, const dec_t alpha) const;
         // see definitions.md or paper

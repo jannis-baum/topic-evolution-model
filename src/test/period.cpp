@@ -21,7 +21,7 @@ int testPeriod() {
             // empty docs to avoid ignoring words for occuring too many times
             { 0, 1 }, { 1 }, {}, {}, {}
         }, mock_wtostr);
-        cp.constructGraph(1, NULL);
+        cp.constructNodes();
         return cp.wtonode.at(0).word == cp.wtonode.at(1).word;
     });
 
@@ -29,7 +29,7 @@ int testPeriod() {
         CorpusPeriod cp = CorpusPeriod({
                 { 2, 0, 1 }, { 0, 1 }, { 1 }, {}, {}, {}, {}
         }, mock_wtostr);
-        cp.constructGraph(1, NULL);
+        cp.constructNodes();
         return cp.wtonode.at(0).word == 1
             && cp.wtonode.at(1).word == 1
             && cp.wtonode.at(2).word == 1;
@@ -41,7 +41,7 @@ int testPeriod() {
         CorpusPeriod cp = CorpusPeriod({
                 { 2, 0, 1 }, { 0, 1 }, { 2, 0 }, { 1, 2 }, { 2, 1 }, { 2, 1 }, {}, {}, {}, {}, {}, {}, {} 
         }, mock_wtostr);
-        cp.constructGraph(1, NULL);
+        cp.constructNodes();
         return true;
     });
 
@@ -51,7 +51,7 @@ int testPeriod() {
         CorpusPeriod cp = CorpusPeriod({
                 { 0, 1, 1, 2, 2, 2 }, {}, {}, {}
         }, mock_wtostr);
-        cp.constructGraph(1, NULL);
+        cp.constructNodes();
         auto non_flood_words = cp.findNonFloodWords(1, 0);
         return non_flood_words.size() == 2
             && non_flood_words[0] == 0
@@ -62,7 +62,7 @@ int testPeriod() {
         CorpusPeriod cp = CorpusPeriod({
                 { 0, 1, 1, 2, 2, 2 }, {}, {}, {}
         }, mock_wtostr);
-        cp.constructGraph(1, NULL);
+        cp.constructNodes();
         auto non_flood_words = cp.findNonFloodWords(1, 2);
         return non_flood_words.size() == 3
             && non_flood_words[0] == 0
