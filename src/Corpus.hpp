@@ -38,7 +38,7 @@ class Corpus {
         // word_t (aka int) to string mapping
         std::unordered_map<word_t, std::string> wtostr;
         // word distance matrix
-        dec_t **distances;
+        dec_t **distances = NULL;
 
         std::vector<CorpusPeriod> periods;
         std::vector<std::vector<Topic>> topics_by_period;
@@ -71,7 +71,7 @@ class Corpus {
 
         // destructor
         ~Corpus() {
-            delete [] this->distances;
+            if (this->distances) delete [] this->distances;
         }
 
         virtual inline int nPeriods() const {
