@@ -44,11 +44,16 @@ Corpus::Corpus(
             }
             documents.push_back(Document(words, this->wtostr));
         }
-        this->periods.push_back(CorpusPeriod(documents, this->wtostr, delta));
+        this->periods.push_back(CorpusPeriod(documents, this->wtostr));
         // we are sure emerging topics exist since we just added the period
         this->topics_by_period.push_back(findEmergingTopics(s++).value());
     }
     this->distances = wordDistances(all_words);
+
+    for (int s = 0; s < this->periods.size(); s++) {
+        this->periods[s].constructGraph(delta, this->distances);
+        this->topics_by_period.push_back(findEmergingTopics(s).value());
+    }
 }
 
 dec_t Corpus::energy(const word_t word, const int s) const {

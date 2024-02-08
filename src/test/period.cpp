@@ -20,14 +20,16 @@ int testPeriod() {
         CorpusPeriod cp = CorpusPeriod({
             // empty docs to avoid ignoring words for occuring too many times
             { 0, 1 }, { 1 }, {}, {}, {}
-        }, mock_wtostr, 1);
+        }, mock_wtostr);
+        cp.constructGraph(1, NULL);
         return cp.wtonode.at(0)->word == cp.wtonode.at(1)->word;
     });
 
     failed += genericTest("Chain of subwords should point to common superword", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 2, 0, 1 }, { 0, 1 }, { 1 }, {}, {}, {}, {}
-        }, mock_wtostr, 1);
+        }, mock_wtostr);
+        cp.constructGraph(1, NULL);
         return cp.wtonode.at(0)->word == 1
             && cp.wtonode.at(1)->word == 1
             && cp.wtonode.at(2)->word == 1;
@@ -38,7 +40,8 @@ int testPeriod() {
     failed += genericTest("Edges are built without error", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 2, 0, 1 }, { 0, 1 }, { 2, 0 }, { 1, 2 }, { 2, 1 }, { 2, 1 }, {}, {}, {}, {}, {}, {}, {} 
-        }, mock_wtostr, 1);
+        }, mock_wtostr);
+        cp.constructGraph(1, NULL);
         return true;
     });
 
@@ -47,7 +50,8 @@ int testPeriod() {
     failed += genericTest("Flood words are found based on mean threshold", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 0, 1, 1, 2, 2, 2 }, {}, {}, {}
-        }, mock_wtostr, 1);
+        }, mock_wtostr);
+        cp.constructGraph(1, NULL);
         auto non_flood_words = cp.findNonFloodWords(1, 0);
         return non_flood_words.size() == 2
             && non_flood_words[0] == 0
@@ -57,7 +61,8 @@ int testPeriod() {
     failed += genericTest("Flood words are found based on mean and standard deviation threshold", [&mock_wtostr](){
         CorpusPeriod cp = CorpusPeriod({
                 { 0, 1, 1, 2, 2, 2 }, {}, {}, {}
-        }, mock_wtostr, 1);
+        }, mock_wtostr);
+        cp.constructGraph(1, NULL);
         auto non_flood_words = cp.findNonFloodWords(1, 2);
         return non_flood_words.size() == 3
             && non_flood_words[0] == 0
