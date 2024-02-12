@@ -14,7 +14,7 @@ Corpus::Corpus(
     const dec_t alpha,
     const dec_t beta,
     const dec_t gamma,
-    const int theta,
+    const dec_t theta,
     const dec_t merge_threshold,
     const dec_t evolution_threshold)
 : periods({})

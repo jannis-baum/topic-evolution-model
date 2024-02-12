@@ -4,12 +4,13 @@
 
 #include "SemanticGraph.hpp"
 
-void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, int theta) const {
+void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, dec_t theta) const {
     if (!theta) return;
 
-    std::queue<std::pair<const SemanticNode *, int>> discovered;
+    // discovered nodes & the total weight of the path there
+    std::queue<std::pair<const SemanticNode *, dec_t>> discovered;
     discovered.push({ this, 0 });
-    std::pair<const SemanticNode *, int> current;
+    std::pair<const SemanticNode *, dec_t> current;
     // assign front to `current`, pop front and return true if there are more
     // elements in queue
     std::function<bool()> popFront = [&discovered, &current]() mutable {
@@ -24,8 +25,8 @@ void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, int theta) c
         if (current.second) {
             if (!f(current.first)) return;
         }
-        for (const auto & [correlation, child]: current.first->neighbors) {
-            discovered.push({ child, current.second + 1 });
+        for (const auto & [weight, child]: current.first->neighbors) {
+            discovered.push({ child, current.second + weight });
         }
     }
 }

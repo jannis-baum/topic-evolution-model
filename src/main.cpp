@@ -60,13 +60,11 @@ int main(int argc, char* argv[]) {
     }
 
     // TEM params
-    dec_t delta, c, alpha, beta, gamma;
+    dec_t delta, c, alpha, beta, gamma, theta;
     dec_t merge_threshold, evolution_threshold;
-    int theta;
     try {
-        // convert strings to dec_t & int
+        // convert strings to dec_t
         std::function<dec_t(char*)> stod = [](char *val) { return std::stof(val); };
-        std::function<int(char*)> stoi = [](char *val) { return std::stoi(val); };
 
         // parse args
         delta = getArgOrFail<dec_t>(arg_beg, arg_end, "--delta", stod);
@@ -74,10 +72,10 @@ int main(int argc, char* argv[]) {
         alpha = getArgOrFail<dec_t>(arg_beg, arg_end, "--alpha", stod);
         beta = getArgOrFail<dec_t>(arg_beg, arg_end, "--beta", stod);
         gamma = getArgOrFail<dec_t>(arg_beg, arg_end, "--gamma", stod);
+        theta = getArgOrFail<dec_t>(arg_beg, arg_end, "--theta", stod);
+
         merge_threshold = getArgOrFail<dec_t>(arg_beg, arg_end, "--merge_threshold", stod);
         evolution_threshold = getArgOrFail<dec_t>(arg_beg, arg_end, "--evolution_threshold", stod);
-
-        theta = getArgOrFail<int>(arg_beg, arg_end, "--theta", stoi);
     } catch (const std::invalid_argument &ex) {
         std::cout << "Fatal: " << ex.what() << std::endl;
         printHelp();
