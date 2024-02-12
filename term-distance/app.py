@@ -9,7 +9,8 @@ def hello():
     body = request.get_data().decode()
     words = body.split('\n')
     n = len(words)
-    sims = [['0'] * n for _ in range(n)]
+    # for unknown distances we assume 1
+    sims = [['1'] * n for _ in range(n)]
     for i in range(n):
         for j in range(i + 1, n):
             try:
