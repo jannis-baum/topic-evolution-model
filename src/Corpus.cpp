@@ -125,17 +125,10 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
         std::unordered_set<const SemanticNode *> topic = { node };
 
         // discover connected nodes with BSF within theta
-        const auto theta = this->theta;
-        node->bfs([e, theta, &topic](const SemanticNode *discovered) mutable {
-            // add discovered to topic if original node can be discovered with
-            // backwards BFS within theta
-            discovered->bfs([e, discovered, &topic](const SemanticNode *back_discovered) mutable {
-                if (back_discovered->word != e) return true;
-                topic.insert(discovered);
-                return false;
-            }, theta);
+        node->bfs([&topic](const SemanticNode *discovered) mutable {
+            topic.insert(discovered);
             return true;
-        }, theta);
+        }, this->theta);
 
         topics.push_back(topic);
     }
