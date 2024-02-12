@@ -11,8 +11,12 @@ or in the [short model description in this repository](./description.md).
 
 ## Usage
 
-- build the model by running `make`
-- an executable will be compiled into `.build.out/out`
+- build the model:
+  ```sh
+  mkdir build && cd build
+  cmake .. && make
+  ```
+- an executable will be compiled into `build/topic_evolution_model`
 - you can run this executable directly or use the provided Python interface in
   [the `script/` directory](./script)
 - check out the [short model description](./description.md) for an explanation

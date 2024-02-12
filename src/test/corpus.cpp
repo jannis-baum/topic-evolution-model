@@ -5,10 +5,10 @@
 #include "../Corpus.hpp"
 
 // helper to create wtonode ref map from value map
-std::unordered_map<word_t, SemanticNode *> makeReferenceWtonode(std::unordered_map<word_t, SemanticNode> &wtonode) {
-    std::unordered_map<word_t, SemanticNode *> ref_wtonode;
+std::unordered_map<word_t, SemanticNode> makeReferenceWtonode(std::unordered_map<word_t, SemanticNode> &wtonode) {
+    std::unordered_map<word_t, SemanticNode> ref_wtonode;
     for (auto &[w, node]: wtonode) {
-        ref_wtonode.emplace(w, &node);
+        ref_wtonode.emplace(w, node);
     }
     return ref_wtonode;
 }
@@ -25,7 +25,7 @@ class MockCorpus2: public Corpus {
 
     public:
         std::unordered_map<word_t, SemanticNode> value_wtonode;
-        std::unordered_map<word_t, SemanticNode *> mock_wtonode;
+        std::unordered_map<word_t, SemanticNode> mock_wtonode;
         int period_count;
 
         MockCorpus2(
@@ -46,17 +46,17 @@ class MockCorpus2: public Corpus {
                 this->value_wtonode.emplace(4, SemanticNode(4, {}));
                 this->mock_wtonode = makeReferenceWtonode(this->value_wtonode);
                 this->topics_by_period.push_back({
-                    Topic({ this->mock_wtonode.at(0), this->mock_wtonode.at(1), this->mock_wtonode.at(2)})
+                    Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2)) })
                     });
                 this->topics_by_period.push_back({
-                    Topic({ this->mock_wtonode.at(0), this->mock_wtonode.at(1), this->mock_wtonode.at(2)}),
-                    Topic({ this->mock_wtonode.at(2), this->mock_wtonode.at(3), this->mock_wtonode.at(4)})
+                    Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(2))}),
+                    Topic({ &(this->mock_wtonode.at(2)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4))})
                 });
             }
 };
 
 class MockCorpus: public Corpus {
-    const inline std::unordered_map<word_t, SemanticNode *> &wtonode_by_period(const int s) const override {
+    const inline std::unordered_map<word_t, SemanticNode> &wtonode_by_period(const int s) const override {
         return this->mock_wtonode;
     }
 
@@ -70,7 +70,7 @@ class MockCorpus: public Corpus {
 
     public:
         std::unordered_map<word_t, SemanticNode> value_wtonode;
-        std::unordered_map<word_t, SemanticNode *> mock_wtonode;
+        std::unordered_map<word_t, SemanticNode> mock_wtonode;
         std::vector<word_t> mock_emerging_words;
         int period_count;
 
@@ -97,9 +97,9 @@ class MockCorpus: public Corpus {
                     this->mock_wtonode = makeReferenceWtonode(this->value_wtonode);
 
                     this->topics_by_period.push_back({
-                        Topic({ this->mock_wtonode.at(0), this->mock_wtonode.at(1) }),
-                        Topic({ this->mock_wtonode.at(0), this->mock_wtonode.at(1), this->mock_wtonode.at(3), this->mock_wtonode.at(5) }),
-                        Topic({ this->mock_wtonode.at(3), this->mock_wtonode.at(4), this->mock_wtonode.at(2) })
+                        Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)) }),
+                        Topic({ &(this->mock_wtonode.at(0)), &(this->mock_wtonode.at(1)), &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(5)) }),
+                        Topic({ &(this->mock_wtonode.at(3)), &(this->mock_wtonode.at(4)), &(this->mock_wtonode.at(2)) })
                     });
                     break;
                 case 3:
@@ -109,10 +109,10 @@ class MockCorpus: public Corpus {
                     this->value_wtonode.emplace(2, SemanticNode(2, {}));
                     this->value_wtonode.emplace(3, SemanticNode(3, {}));
                     this->mock_wtonode = makeReferenceWtonode(this->value_wtonode);
-                    this->mock_wtonode.at(0)->neighbors.push_back({ 1, this->mock_wtonode.at(1) });
-                    this->mock_wtonode.at(1)->neighbors.push_back({ 1, this->mock_wtonode.at(2) });
-                    this->mock_wtonode.at(2)->neighbors.push_back({ 1, this->mock_wtonode.at(3) });
-                    this->mock_wtonode.at(3)->neighbors.push_back({ 1, this->mock_wtonode.at(0) });
+                    this->mock_wtonode.at(0).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(2)) });
+                    this->mock_wtonode.at(2).neighbors.push_back({ 1, &(this->mock_wtonode.at(3)) });
+                    this->mock_wtonode.at(3).neighbors.push_back({ 1, &(this->mock_wtonode.at(0)) });
                     this->mock_emerging_words = { 0 };
                     break;
                 case 2:
@@ -121,10 +121,10 @@ class MockCorpus: public Corpus {
                     this->value_wtonode.emplace(1, SemanticNode(1, {}));
                     this->value_wtonode.emplace(2, SemanticNode(2, {}));
                     this->mock_wtonode = makeReferenceWtonode(this->value_wtonode);
-                    this->mock_wtonode.at(0)->neighbors.push_back({ 1, this->mock_wtonode.at(1) });
-                    this->mock_wtonode.at(1)->neighbors.push_back({ 1, this->mock_wtonode.at(0) });
-                    this->mock_wtonode.at(1)->neighbors.push_back({ 1, this->mock_wtonode.at(2) });
-                    this->mock_wtonode.at(2)->neighbors.push_back({ 1, this->mock_wtonode.at(1) });
+                    this->mock_wtonode.at(0).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(0)) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(2)) });
+                    this->mock_wtonode.at(2).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
                     this->mock_emerging_words = { 0 };
                     break;
                 case 1:
@@ -132,7 +132,7 @@ class MockCorpus: public Corpus {
                     this->value_wtonode.emplace(0, SemanticNode(0, {}));
                     this->value_wtonode.emplace(1, SemanticNode(1, {}));
                     this->mock_wtonode = makeReferenceWtonode(this->value_wtonode);
-                    this->mock_wtonode.at(1)->neighbors.push_back({ 1, this->mock_wtonode.at(0) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(0)) });
                     this->mock_emerging_words = { 1 };
                     break;
                 default:
@@ -140,8 +140,8 @@ class MockCorpus: public Corpus {
                     this->value_wtonode.emplace(0, SemanticNode(0, {}));
                     this->value_wtonode.emplace(1, SemanticNode(1, {}));
                     this->mock_wtonode = makeReferenceWtonode(this->value_wtonode);
-                    this->mock_wtonode.at(0)->neighbors.push_back({ 1, this->mock_wtonode.at(1) });
-                    this->mock_wtonode.at(1)->neighbors.push_back({ 1, this->mock_wtonode.at(0) });
+                    this->mock_wtonode.at(0).neighbors.push_back({ 1, &(this->mock_wtonode.at(1)) });
+                    this->mock_wtonode.at(1).neighbors.push_back({ 1, &(this->mock_wtonode.at(0)) });
                     this->mock_emerging_words = { 0 };
                     break;
             }
@@ -238,13 +238,13 @@ int testCorpus() {
         return topics
             && (*topics).size() == 1
             && (*topics)[0].size() == 2
-            && (*topics)[0].contains(m.mock_wtonode.at(0))
-            && (*topics)[0].contains(m.mock_wtonode.at(2));
+            && (*topics)[0].contains(&(m.mock_wtonode.at(0)))
+            && (*topics)[0].contains(&(m.mock_wtonode.at(2)));
     });
 
     failed += genericTest("Predecessors are found correctly", [](){
         MockCorpus m = MockCorpus(4, 2);
-        Topic topic = {m.mock_wtonode.at(3), m.mock_wtonode.at(4), m.mock_wtonode.at(5)};
+        Topic topic = { &(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5)) };
 
         auto predecessor_opt = m.findPredecessorTopic(topic, 1.0, 1);
         if (!predecessor_opt) return false;
@@ -255,7 +255,7 @@ int testCorpus() {
 
     failed += genericTest("Predecessor are chosen with threshold", [](){
         MockCorpus m = MockCorpus(4, 2);
-        Topic topic = {m.mock_wtonode.at(3), m.mock_wtonode.at(4), m.mock_wtonode.at(5)};
+        Topic topic = { &(m.mock_wtonode.at(3)), &(m.mock_wtonode.at(4)), &(m.mock_wtonode.at(5)) };
         auto predecessor = m.findPredecessorTopic(topic, 0, 1);
         return !predecessor;
     });

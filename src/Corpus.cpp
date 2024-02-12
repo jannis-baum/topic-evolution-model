@@ -23,9 +23,9 @@ Corpus::Corpus(
 , merge_threshold(merge_threshold), evolution_threshold(evolution_threshold) {
     // string to word_t (aka int) mapping
     std::unordered_map<std::string, word_t> strtow = {};
+    std::vector<std::string> all_words = {};
     
     // construct periods
-    int s = 0;
     for (const auto period : structured_corpus) {
         std::vector<Document> documents = {};
         // construct documents
@@ -37,14 +37,25 @@ Corpus::Corpus(
                     int new_index = strtow.size();
                     strtow[word] = new_index;
                     wtostr[new_index] = word;
+                    all_words.push_back(word);
                 }
                 words.push_back(strtow[word]);
             }
             documents.push_back(Document(words, this->wtostr));
         }
-        this->periods.push_back(CorpusPeriod(documents, this->wtostr, delta));
+        this->periods.push_back(CorpusPeriod(documents, this->wtostr));
         // we are sure emerging topics exist since we just added the period
-        this->topics_by_period.push_back(findEmergingTopics(s++).value());
+    }
+    this->distances = wordDistances(all_words);
+
+    for (int s = 0; s < this->periods.size(); s++) {
+        this->periods[s].constructNodes();
+        this->periods[s].addEdges(
+            this->periods[s].findNonFloodWords(this->c, this->alpha),
+            delta,
+            this->distances
+        );
+        this->topics_by_period.push_back(findEmergingTopics(s).value());
     }
 }
 
@@ -109,7 +120,7 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
     // find emerging topics
     for (const auto e: emerging_words) {
         if (!wtonode.contains(e)) continue;
-        const SemanticNode *node = wtonode.at(e);
+        const SemanticNode *node = &(wtonode.at(e));
         // start with node itself
         std::unordered_set<const SemanticNode *> topic = { node };
 

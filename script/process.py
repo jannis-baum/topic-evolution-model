@@ -5,13 +5,13 @@ import pexpect
 
 _te_exec = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-    '.build.out', 'out'
+    'build', 'topic_evolution_model'
 )
 
 def _init_worker(getter, args: list[str]):
     # we assign the process to the _get_output function which is local to each
     # process
-    getter.proc = pexpect.spawn(_te_exec, args, echo=False)
+    getter.proc = pexpect.spawn(_te_exec, args, echo=False, env=os.environ)
 
 def _get_output(corpus: str) -> str:
     _get_output.proc.sendline(corpus + '\0')

@@ -1,8 +1,8 @@
 import re
 
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
+from nltk.corpus import wordnet
 from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk import WordNetLemmatizer, pos_tag
 
 # ------------------------------------------------------------------------------
 # MARK: normalization
@@ -28,13 +28,25 @@ def normalize_quotes(doc: str) -> str:
 def normal_str(doc: str) -> str:
     return lower_alnum(normalize_quotes(doc))
 
-__stopwords = set(stopwords.words('english'))
-__ps = PorterStemmer()
-def normal_tokens(doc: str, clear_stopwords=False, stem=True) -> list[str]:
+__lemma = WordNetLemmatizer()
+
+def normal_tokens(doc: str) -> list[str]:
+    def __get_wordnet_pos(treebank_tag):
+        if treebank_tag.startswith('J'):
+            return wordnet.ADJ
+        elif treebank_tag.startswith('V'):
+            return wordnet.VERB
+        elif treebank_tag.startswith('N'):
+            return wordnet.NOUN
+        elif treebank_tag.startswith('R'):
+            return wordnet.ADV
+        else:
+            return wordnet.NOUN
+
+    token_pos = pos_tag(word_tokenize(normal_str(doc)))
     return [
-        __ps.stem(token) if stem else token
-        for token in word_tokenize(normal_str(doc))
-        if not clear_stopwords or token not in __stopwords
+        __lemma.lemmatize(token, __get_wordnet_pos(pos))
+        for token, pos in token_pos
     ]
 
 # ------------------------------------------------------------------------------
