@@ -16,9 +16,7 @@ std::ostream& operator<<(std::ostream& os, Topic const &topic) {
 std::unordered_set<word_t> topicWords(const Topic &topic) {
     std::unordered_set<word_t> words;
     for (const auto &node: topic) {
-        for (const auto &word: node->allWords()) {
-            words.insert(word);
-        }
+        words.insert(node->word);
     }
     return words;
 }

@@ -36,11 +36,3 @@ void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, dec_t theta)
         }
     }
 }
-
-std::unordered_set<word_t> SemanticNode::allWords() const {
-    std::unordered_set<word_t> words = { this->word };
-    for (const auto &word: this->subwords) {
-        words.insert(word);
-    }
-    return words;
-}
