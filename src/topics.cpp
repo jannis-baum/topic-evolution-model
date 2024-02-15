@@ -24,15 +24,26 @@ std::unordered_set<word_t> topicWords(const Topic &topic) {
 
 dec_t topicAvgDistance(const Topic topic1, const Topic topic2, dec_t **distances) {
     dec_t distance = 0;
-    int count = 0;
     for (const auto &node1: topic1) {
         for (const auto &node2: topic2) {
             const auto d = distances[node1->word][node2->word];
             distance += (d * d);
-            count++;
         }
     }
-    return std::sqrt(distance / (dec_t)count);
+    return std::sqrt(distance / (dec_t)(topic1.size() * topic2.size()));
+}
+
+dec_t topicMoversDistance(const Topic topic1, const Topic topic2, dec_t **distances) {
+    dec_t distance = 0;
+    for (const auto &node1: topic1) {
+        dec_t min_d = 1;
+        for (const auto &node2: topic2) {
+            const auto d = distances[node1->word][node2->word];
+            if (d < min_d) min_d = d;
+        }
+        distance += min_d;
+    }
+    return std::sqrt(distance / (dec_t)topic1.size());
 }
 
 void mergeTopics(const std::pair<TopicIt, TopicIt> merge) {
