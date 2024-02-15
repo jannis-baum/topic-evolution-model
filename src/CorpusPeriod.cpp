@@ -54,7 +54,7 @@ void CorpusPeriod::addEdges(const std::vector<word_t> words, const dec_t delta, 
             if (word1 == word2) continue;
 
             auto distance = distances[word1][word2];
-            if (distance <= threshold) continue;
+            if (distance > threshold) continue;
 
             this->wtonode.at(word1).neighbors.push_back(
                 { distance, &(this->wtonode.at(word2)) }
