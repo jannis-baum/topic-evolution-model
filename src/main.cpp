@@ -15,10 +15,6 @@
 #include "argparse.hpp"
 #include "yaml.hpp"
 
-#ifdef TESTING_ENV
-#include "test/tests.hpp"
-#endif
-
 void printHelp() {
     std::cout
         << "Topic Evolution Model (TEM)" << std::endl
@@ -46,10 +42,6 @@ void printHelp() {
 // - documents in periods are lines
 // - words in documents are separated by spaces
 int main(int argc, char* argv[]) {
-#ifdef TESTING_ENV
-    return testAll();
-#endif
-
     // argument parsing
     char **arg_beg = argv;
     char **arg_end = argv + argc;

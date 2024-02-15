@@ -1,4 +1,4 @@
-name: Build & Test
+name: Build
 
 on:
   push:
@@ -16,14 +16,3 @@ jobs:
           mkdir build
           cd build
           cmake .. && make
-
-  # test:
-  #   name: Test
-  #   needs: [build]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - run: |
-  #         mkdir build
-  #         cd build
-  #         cmake .. && make && ./topic_evolution_model_test

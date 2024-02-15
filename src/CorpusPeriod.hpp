@@ -21,12 +21,8 @@ class CorpusPeriod {
 
     public:
         // maps words to their assigned node
-        // public for testing
         std::unordered_map<word_t, SemanticNode> wtonode;
 
-        CorpusPeriod(
-            const std::vector<std::vector<word_t>> structured_documents,
-            const std::unordered_map<word_t, std::string> &wtostr);
         CorpusPeriod(
             const std::vector<Document> documents,
             const std::unordered_map<word_t, std::string> &wtostr);

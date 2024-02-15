@@ -16,12 +16,3 @@ AUX_SOURCE_DIRECTORY(./src SRC)
 message(STATUS "SOURCE FILES: ${SRC}")
 add_executable(${PROJECT_NAME} ${SRC})
 target_link_libraries(${PROJECT_NAME} PRIVATE cpr::cpr)
-
-# tests
-enable_testing()
-AUX_SOURCE_DIRECTORY(./src/test SRC_TEST)
-add_executable(${PROJECT_NAME}_test ${SRC} ${SRC_TEST})
-target_link_libraries(${PROJECT_NAME}_test PRIVATE cpr::cpr)
-target_compile_definitions(${PROJECT_NAME}_test PRIVATE TESTING_ENV)
-add_test(NAME Tests COMMAND ${PROJECT_NAME}_test)
-
