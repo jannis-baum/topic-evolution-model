@@ -133,7 +133,7 @@ std::optional<std::vector<Topic>> Corpus::findEmergingTopics(const int s) const 
         topics.push_back(topic);
     }
 
-    mergeTopicsByThreshold(topics, this->merge_threshold);
+    mergeTopicsByThreshold(topics, this->merge_threshold, this->distances);
 
     return topics;
 }
@@ -156,12 +156,12 @@ std::optional<const Topic *> Corpus::findPredecessorTopic(const Topic &topic, co
 
     const Topic *predecessor = &prev_topics[0];
     for (auto it = prev_topics.begin(); it < prev_topics.end(); it++) {
-        if (topicDistance(topic, *it) < topicDistance(topic, *predecessor)) {
+        if (topicAvgDistance(topic, *it, this->distances) < topicAvgDistance(topic, *predecessor, this->distances)) {
             predecessor = &(*it);
         }
     }
 
-    if (topicDistance(topic, *predecessor) <= distance_threshold) {
+    if (topicAvgDistance(topic, *predecessor, this->distances) <= distance_threshold) {
         return predecessor;
     }
     return std::nullopt;
