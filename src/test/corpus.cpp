@@ -34,7 +34,7 @@ class MockCorpus2: public Corpus {
                 const dec_t alpha = 0,
                 const dec_t beta = 0,
                 const dec_t gamma = 0,
-                const int theta = 1,
+                const dec_t theta = 1,
                 const dec_t merge_threshold = 1,
                 const dec_t evolution_threshold = 0.01
             ) : Corpus(c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold) {
@@ -81,7 +81,7 @@ class MockCorpus: public Corpus {
             const dec_t alpha = 0,
             const dec_t beta = 0,
             const dec_t gamma = 0,
-            const int theta = 1,
+            const dec_t theta = 1,
             const dec_t merge_threshold = 1,
             const dec_t evolution_threshold = 0.01
         ) : Corpus(c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold) {

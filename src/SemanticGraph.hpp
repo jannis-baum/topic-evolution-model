@@ -18,9 +18,9 @@ class SemanticNode {
         SemanticNode(word_t word, std::vector<std::pair<dec_t, SemanticNode*>> neighbors)
         : word(word), neighbors(neighbors), subwords({}) {};
 
-        // BFS up to max depth theta
+        // BFS up to max weight theta
         // calls `f` with each discovered node and stops if `f` returns false
-        void bfs(std::function<bool(const SemanticNode *)> f, int theta) const;
+        void bfs(std::function<bool(const SemanticNode *)> f, dec_t theta) const;
 
         std::unordered_set<word_t> allWords() const;
 };
