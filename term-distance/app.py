@@ -14,7 +14,7 @@ def hello():
     for i in range(n):
         for j in range(i + 1, n):
             try:
-                sim = str(wv.similarity(words[i], words[j]))
+                sim = str((wv.similarity(words[i], words[j]) - 1) * -0.5)
                 sims[i][j] = sim
                 sims[j][i] = sim
             except:
