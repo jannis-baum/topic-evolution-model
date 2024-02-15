@@ -45,7 +45,7 @@ dec_t topicDistance(const Topic topic1, const Topic topic2) {
     return std::min(diff12.size(), diff21.size()) / (dec_t)intersection.size();
 }
 
-void mergeTopics(std::vector<Topic> &topics, const std::pair<TopicIt, TopicIt> merge) {
+void mergeTopics(const std::pair<TopicIt, TopicIt> merge) {
     for (const auto &node: *merge.second) {
         merge.first->insert(node);
     }
@@ -84,7 +84,7 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
             merged.contains(offset1) || merged.contains(offset2) ||
             remove.contains(offset1) || remove.contains(offset2)
         ) continue;
-        mergeTopics(topics, topics_to_merge);
+        mergeTopics(topics_to_merge);
         merged.insert(offset1);
         remove.insert(offset2);
     }
