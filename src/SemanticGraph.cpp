@@ -27,10 +27,12 @@ void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, dec_t theta)
         if (current.first != this) {
             if (!f(current.first)) return;
         }
+
         for (const auto & [weight, child]: current.first->neighbors) {
-            if (discovered.find(child) != discovered.end()) continue;
+            const auto new_weight = current.second + weight;
+            if (new_weight > theta || discovered.find(child) != discovered.end()) continue;
             discovered.insert(child);
-            todo.push({ child, current.second + weight });
+            todo.push({ child, new_weight });
         }
     }
 }
