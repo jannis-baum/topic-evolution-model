@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include <set>
 
 #include "topics.hpp"
@@ -16,44 +17,42 @@ std::ostream& operator<<(std::ostream& os, Topic const &topic) {
 std::unordered_set<word_t> topicWords(const Topic &topic) {
     std::unordered_set<word_t> words;
     for (const auto &node: topic) {
-        for (const auto &word: node->allWords()) {
-            words.insert(word);
-        }
+        words.insert(node->word);
     }
     return words;
 }
 
-dec_t topicDistance(const Topic topic1, const Topic topic2) {
-    std::unordered_set<word_t> words1 = topicWords(topic1);
-    std::unordered_set<word_t> words2 = topicWords(topic2);
-
-    std::unordered_set<word_t> intersection = {};
-    std::unordered_set<word_t> diff12 = {};
-    for (const auto &w: words1) {
-        if (words2.contains(w)) {
-            intersection.insert(w);
-        } else {
-            diff12.insert(w);
+dec_t topicAvgDistance(const Topic topic1, const Topic topic2, dec_t **distances) {
+    dec_t distance = 0;
+    for (const auto &node1: topic1) {
+        for (const auto &node2: topic2) {
+            const auto d = distances[node1->word][node2->word];
+            distance += (d * d);
         }
     }
-
-    std::unordered_set<word_t> diff21 = {};
-    for (const auto &w: words2) {
-        if (!words1.contains(w)) {
-            diff21.insert(w);
-        }
-    }
-
-    return std::min(diff12.size(), diff21.size()) / (dec_t)intersection.size();
+    return std::sqrt(distance / (dec_t)(topic1.size() * topic2.size()));
 }
 
-void mergeTopics(std::vector<Topic> &topics, const std::pair<TopicIt, TopicIt> merge) {
+dec_t topicMoversDistance(const Topic topic1, const Topic topic2, dec_t **distances) {
+    dec_t distance = 0;
+    for (const auto &node1: topic1) {
+        dec_t min_d = 1;
+        for (const auto &node2: topic2) {
+            const auto d = distances[node1->word][node2->word];
+            if (d < min_d) min_d = d;
+        }
+        distance += min_d;
+    }
+    return std::sqrt(distance / (dec_t)topic1.size());
+}
+
+void mergeTopics(const std::pair<TopicIt, TopicIt> merge) {
     for (const auto &node: *merge.second) {
         merge.first->insert(node);
     }
 }
 
-void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
+void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold, dec_t **word_distances) {
     typedef std::pair<std::pair<TopicIt, TopicIt>, dec_t> TopicsAndDistance;
     // [((topic1, topic2), distance)]
     // only for topic1 != topic2, distance > threshold and with asymmetrically
@@ -61,7 +60,7 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
     std::vector<TopicsAndDistance> distances;
     for (auto topic1 = topics.begin(); topic1 < topics.end(); topic1++) {
         for (auto topic2 = topic1 + 1; topic2 < topics.end(); topic2++) {
-            const auto distance = topicDistance(*topic1, *topic2);
+            const auto distance = topicAvgDistance(*topic1, *topic2, word_distances);
             if (distance > threshold) continue;
             distances.push_back({ { topic1, topic2 }, distance });
         }
@@ -86,7 +85,7 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
             merged.contains(offset1) || merged.contains(offset2) ||
             remove.contains(offset1) || remove.contains(offset2)
         ) continue;
-        mergeTopics(topics, topics_to_merge);
+        mergeTopics(topics_to_merge);
         merged.insert(offset1);
         remove.insert(offset2);
     }
@@ -97,5 +96,5 @@ void mergeTopicsByThreshold(std::vector<Topic> &topics, const dec_t threshold) {
     }
 
     // recurse for nested merging
-    mergeTopicsByThreshold(topics, threshold);
+    mergeTopicsByThreshold(topics, threshold, word_distances);
 }
