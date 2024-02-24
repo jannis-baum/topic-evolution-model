@@ -1,8 +1,21 @@
 from flask import Flask, request
 import gensim.downloader as api
+import numpy as np
 
 app = Flask(__name__)
 wv = api.load('word2vec-google-news-300')
+
+def meaningfulness(word: str):
+    return max(0, -np.exp(-1.07 * np.linalg.norm(wv[word]) + 0.91) + 1)
+
+def cos_sim_01(word1: str, word2: str):
+    return (wv.similarity(word1, word2) + 1) * 0.5
+
+def distance(word1: str, word2: str):
+    return abs(1 - np.sqrt(
+        cos_sim_01(word1, word2) *
+        np.sqrt(meaningfulness(word1) * meaningfulness(word2))
+    ))
 
 @app.route('/similarity', methods=['POST'])
 def hello():
@@ -16,8 +29,7 @@ def hello():
         sims[i][i] = '0'
         for j in range(i + 1, n):
             try:
-                # mapped to distance 0...1
-                sim = str((wv.similarity(words[i], words[j]) - 1) * -0.5)
+                sim = str(distance(words[i], words[j]))
                 sims[i][j] = sim
                 sims[j][i] = sim
             except:
