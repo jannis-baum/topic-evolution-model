@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 
 from model import TopicEvolution
-from training import metrics
+from process import TEM
 
 def graph(te: TopicEvolution) -> graphviz.Digraph:
     g = graphviz.Digraph()
@@ -45,7 +45,8 @@ def graph(te: TopicEvolution) -> graphviz.Digraph:
     return g
 
 def plot_metrics(corpora: list[str], split: int, params: npt.NDArray[np.float64]):
-    m = metrics(corpora, params)
+    model = TEM.from_param_list(params, metrics=True)
+    m = model.get_metrics(corpora)
     bins = np.linspace(0, 1, 20)
     _, axs = plt.subplots(2, 2)
     for i in range(4):

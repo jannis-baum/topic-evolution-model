@@ -1,6 +1,8 @@
 from multiprocessing import Pool
 import os
 
+import numpy as np
+import numpy.typing as npt
 import pexpect
 
 _te_exec = os.path.join(
@@ -21,6 +23,15 @@ def _get_output(corpus: str) -> str:
     return out.decode()
 
 class TEM:
+    @classmethod
+    def from_param_list(cls, params: npt.NDArray[np.float64], metrics: bool = False):
+        return cls(metrics=metrics,
+            c=params[0],
+            alpha=params[1], beta=params[2], gamma=params[3], delta=params[4],
+            theta=params[5],
+            merge_threshold=params[6], evolution_threshold=params[7]
+        )
+
     def __init__(
         self,
         metrics: bool = False,
@@ -51,3 +62,6 @@ class TEM:
     # create corpora with nlp.get_structured_corpus
     def get_outputs(self, corpora: list[str]) -> list[str]:
         return self.pool.map(_get_output, corpora)
+
+    def get_metrics(self, corpora: list[str]) -> npt.NDArray[np.float64]:
+        return np.array([eval(metrics) for metrics in self.get_outputs(corpora)])
