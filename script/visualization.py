@@ -1,6 +1,10 @@
 import graphviz
+from matplotlib import pyplot as plt
+import numpy as np
+import numpy.typing as npt
 
 from model import TopicEvolution
+from training import metrics
 
 def graph(te: TopicEvolution) -> graphviz.Digraph:
     g = graphviz.Digraph()
@@ -39,3 +43,16 @@ def graph(te: TopicEvolution) -> graphviz.Digraph:
         previous_topics = current_topics
 
     return g
+
+def plot_metrics(corpora: list[str], split: int, params: npt.NDArray[np.float64]):
+    m = metrics(corpora, params)
+    bins = np.linspace(0, 1, 20)
+    _, axs = plt.subplots(2, 2)
+    for i in range(4):
+        ax = axs.flat[i]
+        ax.hist(m[split:, i], bins, alpha=0.5, label='Humans')
+        ax.hist(m[:split, i], bins, alpha=0.5, label='Machines')
+        ax.set_title(f'Metric {i + 1}')
+        ax.label_outer()
+    plt.legend(loc='upper right')
+    plt.show()
