@@ -75,19 +75,25 @@ int main(int argc, char* argv[]) {
     const dec_t evolution_threshold = getDecArg("--evolution_threshold");
 
     const auto metrics = hasArg(arg_beg, arg_end, "--metrics");
+
     const auto processCorpus = [
         delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold, metrics
     ](std::basic_istream<char> &block_stream) {
         // vector (periods) of vectors (documents) of vectors (words) of strings
         std::vector<std::vector<std::vector<std::string>>> structured_corpus = {{}};
 
+        // used to ignore leading empty lines
+        bool leading = true;
+
         // read lines
         for (std::string line; std::getline(block_stream, line);) {
             // empty line -> next period starts
             if (line.empty()) {
+                if (leading) continue;
                 structured_corpus.push_back({});
                 continue;
             }
+            leading = false;
 
             // currently adding documents to last period
             auto *current_period = &structured_corpus.back();
