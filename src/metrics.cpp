@@ -58,7 +58,7 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         ? (dec_t)NAN
         : most_topics_it->second;
     
-    return {
+    std::vector<dec_t> metrics = {
         // METRIC 1: abs(1 - n_ids/n_nodes)
         // i.e. how uncommon are "undiverse" are the topics?
         abs(1 - (dec_t)topic_count_by_id.size() / (dec_t)topic_count),
@@ -78,4 +78,6 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         // METRIC 7: avg topic health
         total_health / (dec_t)topic_count
     };
+    for (auto &metric : metrics) if (std::isnan(metric)) metric = 0;
+    return metrics;
 }
