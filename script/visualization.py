@@ -47,13 +47,19 @@ def graph(te: TopicEvolution) -> graphviz.Digraph:
 def plot_metrics(corpora: list[str], split: int, params: npt.NDArray[np.float64]):
     model = TEM.from_param_list(params, metrics=True)
     m = model.get_metrics(corpora)
-    bins = np.linspace(0, 1, 20)
-    _, axs = plt.subplots(2, 2)
-    for i in range(4):
+    n_metrics = m.shape[1]
+
+    _, axs = plt.subplots(int(np.ceil(n_metrics / 3)), 3)
+    plt.tight_layout()
+
+    for i in range(n_metrics):
+        bins = np.linspace(np.min(m[:, i]), np.max(m[:, i]), 20)
+
         ax = axs.flat[i]
         ax.hist(m[split:, i], bins, alpha=0.5, label='Humans')
         ax.hist(m[:split, i], bins, alpha=0.5, label='Machines')
+
         ax.set_title(f'Metric {i + 1}')
-        ax.label_outer()
-    plt.legend(loc='upper right')
+        if i == 0: plt.legend(loc='upper left')
+
     plt.show()
