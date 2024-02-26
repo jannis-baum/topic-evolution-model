@@ -61,7 +61,7 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         (dec_t)most_topics / (dec_t)topic_count,
         // METRIC 3: n_{periods with incoming} / (n_periods - 1)
         // i.e. how (relatively) many periods have a connection to their predecessor?
-        (dec_t)connected_periods / (dec_t)evolution.size(),
+        (dec_t)connected_periods / (dec_t)(evolution.size() - 1),
         // METRIC 4: n_{longest connected periods} / (n_periods)
         // i.e. how (relatively) long is the longest chain of connected periods?
         (dec_t)longest_pathl / (dec_t)evolution.size(),
