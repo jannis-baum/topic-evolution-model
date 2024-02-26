@@ -9,6 +9,7 @@
 const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
     std::unordered_map<int, int> topic_count_by_id;
     int topic_count = 0;
+    int word_count = 0;
 
     std::unordered_set<int> prev_topic_ids = {};
     int connected_periods = 0;
@@ -21,6 +22,7 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
 
         for (const auto &topic: period) {
             topic_count += 1;
+            word_count += std::get<0>(topic).size();
             const auto id = std::get<1>(topic);
             topic_ids.insert(id);
             if (topic_count_by_id.contains(id)) {
@@ -66,6 +68,8 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         // i.e. how (relatively) long is the longest chain of connected periods?
         (dec_t)longest_pathl / (dec_t)evolution.size(),
         // METRIC 5: n_topics / n_periods
-        (dec_t)topic_count / (dec_t)evolution.size()
+        (dec_t)topic_count / (dec_t)evolution.size(),
+        // METRIC 6: n_words / n_topics
+        (dec_t)word_count / (dec_t)topic_count
     };
 }
