@@ -8,8 +8,10 @@
 
 const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
     std::unordered_map<int, int> topic_count_by_id;
+
     int topic_count = 0;
     int word_count = 0;
+    dec_t total_health = 0;
 
     std::unordered_set<int> prev_topic_ids = {};
     int connected_periods = 0;
@@ -23,6 +25,8 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         for (const auto &topic: period) {
             topic_count += 1;
             word_count += std::get<0>(topic).size();
+            total_health += std::get<2>(topic);
+
             const auto id = std::get<1>(topic);
             topic_ids.insert(id);
             if (topic_count_by_id.contains(id)) {
@@ -70,6 +74,8 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         // METRIC 5: n_topics / n_periods
         (dec_t)topic_count / (dec_t)evolution.size(),
         // METRIC 6: n_words / n_topics
-        (dec_t)word_count / (dec_t)topic_count
+        (dec_t)word_count / (dec_t)topic_count,
+        // METRIC 7: avg topic health
+        total_health / (dec_t)topic_count
     };
 }
