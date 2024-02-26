@@ -31,7 +31,7 @@ class TEM:
         delta: float = 1,
         merge_threshold: float = 100,
         evolution_threshold: float = 100,
-        theta: int = 2,
+        theta: float = 2,
     ):
         args = [
             '--c', str(c),
