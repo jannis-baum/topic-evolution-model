@@ -9,4 +9,4 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
-CMD python -m gunicorn -b 0.0.0.0 app:app
+CMD ./run.sh
