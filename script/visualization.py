@@ -1,6 +1,10 @@
 import graphviz
+from matplotlib import pyplot as plt
+import numpy as np
+import numpy.typing as npt
 
 from model import TopicEvolution
+from process import TEM
 
 def graph(te: TopicEvolution) -> graphviz.Digraph:
     g = graphviz.Digraph()
@@ -39,3 +43,23 @@ def graph(te: TopicEvolution) -> graphviz.Digraph:
         previous_topics = current_topics
 
     return g
+
+def plot_metrics(corpora: list[str], split: int, params: npt.NDArray[np.float64]):
+    model = TEM.from_param_list(params, metrics=True)
+    m = model.get_metrics(corpora)
+    n_metrics = m.shape[1]
+
+    _, axs = plt.subplots(int(np.ceil(n_metrics / 3)), 3)
+    plt.tight_layout()
+
+    for i in range(n_metrics):
+        bins = np.linspace(np.min(m[:, i]), np.max(m[:, i]), 20)
+
+        ax = axs.flat[i]
+        ax.hist(m[split:, i], bins, alpha=0.5, label='Humans')
+        ax.hist(m[:split, i], bins, alpha=0.5, label='Machines')
+
+        ax.set_title(f'Metric {i + 1}')
+        if i == 0: plt.legend(loc='upper left')
+
+    plt.show()
