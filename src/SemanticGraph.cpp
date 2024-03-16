@@ -12,7 +12,7 @@ void SemanticNode::bfs(std::function<bool(const SemanticNode *)> f, dec_t theta)
     // nodes to check & the total weight of the path there
     std::queue<std::pair<const SemanticNode *, dec_t>> todo;
     todo.push({ this, 0 });
-    std::pair<const SemanticNode *, dec_t> &current = todo.front();
+    std::pair<const SemanticNode *, dec_t> current = todo.front();
     // assign front to `current`, pop front and return true if there are more
     // elements in queue
     std::function<bool()> popFront = [&todo, &current]() mutable {
