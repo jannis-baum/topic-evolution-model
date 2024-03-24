@@ -56,6 +56,11 @@ dec_t **wordDistances(const std::vector<std::string> words) {
         cpr::Header{{"Content-Type", "text/plain"}}
     );
 
+    if (r.status_code != 200) {
+        std::cerr << "fatal: Distance server error" << std::endl << r.text;
+        std::abort();
+    }
+
     // allocate distance matrix
     dec_t **distances = new dec_t*[words.size()];
     int row = 0;
