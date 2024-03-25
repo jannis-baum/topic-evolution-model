@@ -17,7 +17,7 @@ def _init_worker(getter, args: list[str]):
 
 def _get_output(corpus: str) -> str:
     _get_output.proc.sendline(corpus + '\0')
-    _get_output.proc.expect('\0')
+    _get_output.proc.expect('\0', timeout=300)
 
     out: bytes = _get_output.proc.before # type: ignore
     return out.decode()
