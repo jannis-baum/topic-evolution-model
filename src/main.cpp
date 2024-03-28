@@ -34,6 +34,7 @@ void printHelp() {
         << "Optional arguments:" << std::endl
         << "    --help, -h    print this message and exit." << std::endl
         << "    --metrics     output TE metrics instead of graph" << std::endl
+        << "    --silent      silent errors that are otherwise printed to stderr" << std::endl
         << "    --keep_alive  process multiple corpora separated by null" << std::endl
         << std::endl;
 }
@@ -76,9 +77,12 @@ int main(int argc, char* argv[]) {
     const dec_t evolution_threshold = getDecArg("--evolution_threshold");
 
     const auto metrics = hasArg(arg_beg, arg_end, "--metrics");
+    const auto silent = hasArg(arg_beg, arg_end, "--silent");
 
     const auto processCorpus = [
-        delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold, metrics
+        delta, c, alpha, beta, gamma,
+        theta, merge_threshold, evolution_threshold,
+        metrics, silent
     ](std::basic_istream<char> &block_stream) {
         // vector (periods) of vectors (documents) of vectors (words) of strings
         std::vector<std::vector<std::vector<std::string>>> structured_corpus = {{}};
@@ -126,7 +130,7 @@ int main(int argc, char* argv[]) {
                 std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
             }
         } catch (const TEException &e) {
-            std::cerr << "failed to process corpus: " << e.what() << std::endl;
+            if (!silent) std::cerr << "failed to process corpus: " << e.what() << std::endl;
             std::cout << "None" << std::endl;
         }
     };
