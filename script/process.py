@@ -15,7 +15,9 @@ def _init_worker(getter, args: list[str]):
     # process
     getter.proc = pexpect.spawn(_te_exec, args, echo=False, env=os.environ)
 
-def _get_output(corpus: str) -> str:
+def _get_output(corpus: str | None) -> str:
+    if corpus is None: return 'None\n'
+
     _get_output.proc.sendline(corpus + '\0')
     _get_output.proc.expect('\0', timeout=300)
 
@@ -61,8 +63,16 @@ class TEM:
 
     # get model outputs for structured corpora
     # create corpora with nlp.get_structured_corpus
-    def get_outputs(self, corpora: list[str]) -> list[str]:
+    def get_outputs(self, corpora: list[str | None]) -> list[str]:
         return self.pool.map(_get_output, corpora)
 
-    def get_metrics(self, corpora: list[str]) -> npt.NDArray[np.float64]:
-        return np.array([eval(metrics) for metrics in self.get_outputs(corpora)])
+    def get_metrics(self, corpora: list[str | None]) -> npt.NDArray[np.float64]:
+        def _eval_metrics(output):
+            try:
+                metrics = eval(output)
+                if type(metrics) is not list: raise Exception
+            except:
+                # magic 7 is number of metrics
+                return np.full(7, np.nan)
+            return metrics
+        return np.array([_eval_metrics(output) for output in self.get_outputs(corpora)])

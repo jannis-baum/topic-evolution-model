@@ -58,6 +58,7 @@ const std::vector<dec_t> getMetrics(const TopicEvolution evolution) {
         ? (dec_t)NAN
         : most_topics_it->second;
     
+    // number of metrics has to match magic number defined in script/process.py!
     std::vector<dec_t> metrics = {
         // METRIC 1: abs(1 - n_ids/n_nodes)
         // i.e. how uncommon are "undiverse" are the topics?
