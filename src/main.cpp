@@ -14,6 +14,7 @@
 #include "types.hpp"
 #include "argparse.hpp"
 #include "yaml.hpp"
+#include "TEException.hpp"
 
 void printHelp() {
     std::cout
@@ -109,19 +110,24 @@ int main(int argc, char* argv[]) {
             current_period->push_back(words);
         }
 
-        Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold);
-        const auto evolution = corpus.getTopicEvolution();
+        try {
+            Corpus corpus(structured_corpus, delta, c, alpha, beta, gamma, theta, merge_threshold, evolution_threshold);
+            const auto evolution = corpus.getTopicEvolution();
 
-        if (metrics) {
-            std::cout << "[";
-            const auto metrics = getMetrics(evolution);
-            for (int i = 0; i < metrics.size(); i++) {
-                if (i) std::cout << ", ";
-                std::cout << metrics[i];
+            if (metrics) {
+                std::cout << "[";
+                const auto metrics = getMetrics(evolution);
+                for (int i = 0; i < metrics.size(); i++) {
+                    if (i) std::cout << ", ";
+                    std::cout << metrics[i];
+                }
+                std::cout << "]" << std::endl;
+            } else {
+                std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
             }
-            std::cout << "]" << std::endl;
-        } else {
-            std::cout << dumpTopicEvolution(evolution, corpus.wtostr);
+        } catch (const TEException &e) {
+            std::cerr << "failed to process corpus: " << e.what() << std::endl;
+            std::cout << "None" << std::endl;
         }
     };
 
