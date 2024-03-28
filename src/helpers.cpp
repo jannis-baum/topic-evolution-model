@@ -9,6 +9,7 @@
 #include <cpr/cpr.h>
 
 #include "helpers.hpp"
+#include "TEException.hpp"
 
 dec_t mstdThreshold(std::vector<dec_t> values, dec_t param) {
     size_t count = values.size();
@@ -39,10 +40,7 @@ dec_t **wordDistances(const std::vector<std::string> words) {
 
     // retrieve endpoint URI from environment TEM_WORD_DISTANCE_ENDPOINT
     char *endpoint = std::getenv("TEM_WORD_DISTANCE_ENDPOINT");
-    if (endpoint == NULL) {
-        std::cerr << "fatal: $TEM_WORD_DISTANCE_ENDPOINT not defined" << std::endl;
-        std::abort();
-    }
+    if (endpoint == NULL) throw TEException("$TEM_WORD_DISTANCE_ENDPOINT not defined");
 
     // create request body: words split by newlines
     std::stringstream body;
@@ -55,11 +53,7 @@ dec_t **wordDistances(const std::vector<std::string> words) {
         cpr::Body{body.str()},
         cpr::Header{{"Content-Type", "text/plain"}}
     );
-
-    if (r.status_code != 200) {
-        std::cerr << "fatal: Distance server error" << std::endl << r.text;
-        std::abort();
-    }
+    if (r.status_code != 200) throw TEException("Distance server error");
 
     // allocate distance matrix
     dec_t **distances = new dec_t*[words.size()];
