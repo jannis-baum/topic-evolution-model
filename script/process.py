@@ -53,7 +53,8 @@ class TEM:
             '--theta', str(theta),
             '--merge_threshold', str(merge_threshold),
             '--evolution_threshold', str(evolution_threshold),
-            '--keep_alive'
+            '--keep_alive',
+            '--silent'
         ]
         if metrics: args.append('--metrics')
         self.pool = Pool(initializer=_init_worker, initargs=(_get_output, args))
