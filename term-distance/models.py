@@ -1,12 +1,13 @@
 import os
 
 import gensim.downloader as api
+from gensim.models import KeyedVectors
 
 lang2model = {
     'en': 'word2vec-google-news-300'
 }
 
-def get_model():
+def get_model() -> KeyedVectors:
     language = os.getenv('TEM_LANG', 'en')
     if language not in lang2model:
         raise LookupError(f'fatal: model for language "{language}" not defined.')
