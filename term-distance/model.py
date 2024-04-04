@@ -11,21 +11,33 @@ _lang2model = {
         'params': (-1.07, 0.91)
     },
     'de': {
-        'data': ('word2vec-german', 'https://cloud.devmount.de/d2bc5672c523b086/german.model'),
+        'data': ('word2vec-german', 'https://int-emb-word2vec-de-wiki.s3.eu-central-1.amazonaws.com/vectors.txt', 'https://int-emb-word2vec-de-wiki.s3.eu-central-1.amazonaws.com/vocab.txt'),
         'params': (-1.07, 0.91)
     }
 }
 
-def _ensure_download(name, url) -> str:
+def _load_model(name: str, url: str, vocab_url: str | None = None, download_only = False):
     directory = os.path.join(BASE_DIR, name)
     os.makedirs(directory, exist_ok=True)
-    path = os.path.join(directory, f'{name}.{url.split(".")[-1]}')
-    if not os.path.exists(path):
-        print(f'Downloading {name} from {url}')
-        download = path + '.download'
-        urlretrieve(url, download, reporthook=_progress)
-        os.rename(download, path)
-    return path
+
+    def _download(name: str, url: str) -> str:
+        path = os.path.join(directory, f'{name}.{url.split(".")[-1]}')
+        if not os.path.exists(path):
+            print(f'Downloading {name} from {url}')
+            download = path + '.download'
+            urlretrieve(url, download, reporthook=_progress)
+            os.rename(download, path)
+        return path
+
+    path_model = _download(name, url)
+
+    if vocab_url:
+        path_vocab = _download(f'{name}-vocab', vocab_url)
+        if download_only: return
+        return KeyedVectors.load_word2vec_format(path_model, fvocab=path_vocab, binary=False)
+
+    if download_only: return
+    return KeyedVectors.load_word2vec_format(path_model, binary=True)
 
 class DistanceModel:
     _wv: KeyedVectors
@@ -38,10 +50,9 @@ class DistanceModel:
             raise LookupError(f'fatal: model for language "{language}" not defined.')
 
         model = _lang2model[language]
-        path = _ensure_download(*model['data'])
 
         (self._a, self._b) = model['params']
-        self._wv = KeyedVectors.load_word2vec_format(path, binary=True)
+        self._wv = _load_model(*model['data'])
 
     def _meaningfulness(self, word: str):
         return max(0, -np.exp(self._a * np.linalg.norm(self._wv[word]) + self._b) + 1)
@@ -57,4 +68,4 @@ class DistanceModel:
 
 if __name__ == '__main__':
     for model in _lang2model.values():
-        _ensure_download(*model['data'])
+        _load_model(*model['data'], download_only=True)
