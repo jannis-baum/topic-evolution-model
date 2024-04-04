@@ -1,3 +1,4 @@
+import os
 import re
 
 from nltk.tokenize import sent_tokenize
@@ -27,7 +28,8 @@ def normalize_quotes(doc: str) -> str:
 def normal_str(doc: str) -> str:
     return lower_alnum(normalize_quotes(doc))
 
-__lemma = spacy.load('en_core_web_md')
+__lang2model = { 'en': 'en_core_web_md', 'de': 'de_core_news_md' }
+__lemma = spacy.load(__lang2model[os.getenv('TEM_LANG', 'en')])
 def normal_tokens(doc: str) -> list[str]:
     return [token.lemma_ for token in __lemma(normal_str(doc))]
 
