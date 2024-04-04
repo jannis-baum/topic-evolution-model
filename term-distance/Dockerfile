@@ -3,7 +3,7 @@ FROM python:3.8-slim-bullseye
 WORKDIR /app
 
 RUN pip install gensim>=4.3.2
-COPY ./models.py .
+COPY ./model.py .
 RUN --mount=type=cache,target=/root/gensim-data python models.py
 
 COPY requirements.txt .

@@ -3,6 +3,7 @@ from urllib.request import urlretrieve
 
 from gensim.downloader import BASE_DIR, _progress
 from gensim.models import KeyedVectors
+import numpy as np
 
 _lang2model = {
     'en': ('word2vec-google-news-300', 'https://github.com/RaRe-Technologies/gensim-data/releases/download/word2vec-google-news-300/word2vec-google-news-300.gz'),
@@ -20,12 +21,27 @@ def _ensure_download(name, url) -> str:
         os.rename(download, path)
     return path
 
-def get_model() -> KeyedVectors:
-    language = os.getenv('TEM_LANG', 'en')
-    if language not in _lang2model:
-        raise LookupError(f'fatal: model for language "{language}" not defined.')
-    path = _ensure_download(*_lang2model[language])
-    return KeyedVectors.load_word2vec_format(path, binary=True)
+class DistanceModel:
+    _wv: KeyedVectors
+
+    def __init__(self):
+        language = os.getenv('TEM_LANG', 'en')
+        if language not in _lang2model:
+            raise LookupError(f'fatal: model for language "{language}" not defined.')
+        path = _ensure_download(*_lang2model[language])
+        self._wv = KeyedVectors.load_word2vec_format(path, binary=True)
+
+    def _meaningfulness(self, word: str):
+        return max(0, -np.exp(-1.07 * np.linalg.norm(self._wv[word]) + 0.91) + 1)
+
+    def _cos_sim_01(self, word1: str, word2: str):
+        return (self._wv.similarity(word1, word2) + 1) * 0.5
+
+    def distance(self, word1: str, word2: str):
+        return abs(1 - np.sqrt(
+            self._cos_sim_01(word1, word2) *
+            np.sqrt(self._meaningfulness(word1) * self._meaningfulness(word2))
+        ))
 
 if __name__ == '__main__':
     for model_data in _lang2model.values():
