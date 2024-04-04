@@ -1,11 +1,10 @@
 from flask import Flask, request
-import gensim.downloader as api
 import numpy as np
 
-from models import lang2model
+from models import get_model
 
 app = Flask(__name__)
-wv = api.load(lang2model['en'])
+wv = get_model()
 
 def meaningfulness(word: str):
     return max(0, -np.exp(-1.07 * np.linalg.norm(wv[word]) + 0.91) + 1)
