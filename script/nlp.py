@@ -1,8 +1,7 @@
 import re
 
-from nltk.corpus import wordnet
-from nltk.tokenize import word_tokenize, sent_tokenize
-from nltk import WordNetLemmatizer, pos_tag
+from nltk.tokenize import sent_tokenize
+import spacy
 
 # ------------------------------------------------------------------------------
 # MARK: normalization
@@ -28,26 +27,9 @@ def normalize_quotes(doc: str) -> str:
 def normal_str(doc: str) -> str:
     return lower_alnum(normalize_quotes(doc))
 
-__lemma = WordNetLemmatizer()
-
+__lemma = spacy.load('en_core_web_md')
 def normal_tokens(doc: str) -> list[str]:
-    def __get_wordnet_pos(treebank_tag):
-        if treebank_tag.startswith('J'):
-            return wordnet.ADJ
-        elif treebank_tag.startswith('V'):
-            return wordnet.VERB
-        elif treebank_tag.startswith('N'):
-            return wordnet.NOUN
-        elif treebank_tag.startswith('R'):
-            return wordnet.ADV
-        else:
-            return wordnet.NOUN
-
-    token_pos = pos_tag(word_tokenize(normal_str(doc)))
-    return [
-        __lemma.lemmatize(token, __get_wordnet_pos(pos))
-        for token, pos in token_pos
-    ]
+    return [token.lemma_ for token in __lemma(normal_str(doc))]
 
 # ------------------------------------------------------------------------------
 # MARK: TEM prep

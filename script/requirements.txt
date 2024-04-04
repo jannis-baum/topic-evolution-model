@@ -3,3 +3,6 @@ nltk>=3.6.7
 numpy>=1.23.5
 pexpect>=4.8.0
 pyyaml>=6.0
+spacy>=3.7.4
+spacy-legacy>=3.0.12
+spacy-loggers>=1.0.5
