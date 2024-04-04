@@ -30,6 +30,7 @@ def _load_model(name: str, url: str, vocab_url: str | None = None, download_only
             download = path + '.download'
             urlretrieve(url, download, reporthook=_progress)
             os.rename(download, path)
+            print()
         return path
 
     path_model = _download(name, url)
