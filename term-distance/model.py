@@ -5,6 +5,8 @@ from gensim.downloader import BASE_DIR, _progress
 from gensim.models import KeyedVectors
 import numpy as np
 
+# language -> data: (name, binary-url) | (name, txt-vector-url, txt-vocab-url)
+#             params: (meaningfulness-scalar, meaningfulness-translator)
 _lang2model = {
     'en': {
         'data': ('word2vec-google-news-300', 'https://github.com/RaRe-Technologies/gensim-data/releases/download/word2vec-google-news-300/word2vec-google-news-300.gz'),
@@ -16,6 +18,7 @@ _lang2model = {
     }
 }
 
+# gets *_lang2model[data] and downloads/loads the model
 def _load_model(name: str, url: str, vocab_url: str | None = None, download_only = False):
     directory = os.path.join(BASE_DIR, name)
     os.makedirs(directory, exist_ok=True)
