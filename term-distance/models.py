@@ -6,6 +6,7 @@ from gensim.models import KeyedVectors
 
 _lang2model = {
     'en': ('word2vec-google-news-300', 'https://github.com/RaRe-Technologies/gensim-data/releases/download/word2vec-google-news-300/word2vec-google-news-300.gz'),
+    'de': ('word2vec-german', 'https://cloud.devmount.de/d2bc5672c523b086/german.model')
 }
 
 def _ensure_download(name, url) -> str:
