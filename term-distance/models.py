@@ -15,7 +15,9 @@ def _ensure_download(name, url) -> str:
     path = os.path.join(directory, f'{name}.{url.split(".")[-1]}')
     if not os.path.exists(path):
         print(f'Downloading {name} from {url}')
-        urlretrieve(url, path, reporthook=_progress)
+        download = path + '.download'
+        urlretrieve(url, download, reporthook=_progress)
+        os.rename(download, path)
     return path
 
 def get_model() -> KeyedVectors:
