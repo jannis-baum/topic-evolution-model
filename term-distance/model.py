@@ -14,7 +14,7 @@ _lang2model = {
     },
     'de': {
         'data': ('word2vec-german', 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.de.vec'),
-        'params': (-1.07, 0.91)
+        'params': (-0.73, 1.48)
     }
 }
 
