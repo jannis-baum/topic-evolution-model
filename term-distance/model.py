@@ -5,7 +5,7 @@ from gensim.downloader import BASE_DIR, _progress
 from gensim.models import KeyedVectors
 import numpy as np
 
-# language -> data: (name, binary-url) | (name, txt-vector-url, txt-vocab-url)
+# language -> data: (name, url)
 #             params: (meaningfulness-scalar, meaningfulness-translator)
 _lang2model = {
     'en': {
@@ -13,35 +13,29 @@ _lang2model = {
         'params': (-1.07, 0.91)
     },
     'de': {
-        'data': ('word2vec-german', 'https://int-emb-word2vec-de-wiki.s3.eu-central-1.amazonaws.com/vectors.txt', 'https://int-emb-word2vec-de-wiki.s3.eu-central-1.amazonaws.com/vocab.txt'),
+        'data': ('word2vec-german', 'https://dl.fbaipublicfiles.com/fasttext/vectors-wiki/wiki.de.vec'),
         'params': (-1.07, 0.91)
     }
 }
 
 # gets *_lang2model[data] and downloads/loads the model
-def _load_model(name: str, url: str, vocab_url: str | None = None, download_only = False):
+def _load_model(name: str, url: str, download_only = False):
     directory = os.path.join(BASE_DIR, name)
     os.makedirs(directory, exist_ok=True)
 
-    def _download(name: str, url: str) -> str:
-        path = os.path.join(directory, f'{name}.{url.split(".")[-1]}')
-        if not os.path.exists(path):
-            print(f'Downloading {name} from {url}')
-            download = path + '.download'
-            urlretrieve(url, download, reporthook=_progress)
-            os.rename(download, path)
-            print()
-        return path
-
-    path_model = _download(name, url)
-
-    if vocab_url:
-        path_vocab = _download(f'{name}-vocab', vocab_url)
-        if download_only: return
-        return KeyedVectors.load_word2vec_format(path_model, fvocab=path_vocab, binary=False)
+    path = os.path.join(directory, f'{name}.{url.split(".")[-1]}')
+    if not os.path.exists(path):
+        print(f'Downloading {name} from {url}')
+        download = path + '.download'
+        urlretrieve(url, download, reporthook=_progress)
+        os.rename(download, path)
+        print()
 
     if download_only: return
-    return KeyedVectors.load_word2vec_format(path_model, binary=True)
+    try:
+        return KeyedVectors.load_word2vec_format(path, binary=True)
+    except:
+        return KeyedVectors.load_word2vec_format(path, binary=False)
 
 class DistanceModel:
     _wv: KeyedVectors
