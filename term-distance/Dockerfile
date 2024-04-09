@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN pip install gensim>=4.3.2
 COPY ./model.py .
-RUN --mount=type=cache,target=/root/gensim-data python models.py
+RUN --mount=type=cache,target=/root/gensim-data python model.py
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
