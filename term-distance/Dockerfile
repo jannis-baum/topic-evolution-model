@@ -1,10 +1,18 @@
-FROM python:3.8-slim-bullseye
+ARG BASE_IMAGE=python:3.8-slim-bullseye
 
-WORKDIR /app
+FROM ${BASE_IMAGE} AS downloader
 
 RUN pip install gensim>=4.3.2
 COPY ./model.py .
-RUN --mount=type=cache,target=/root/gensim-data python model.py
+RUN python model.py
+
+
+
+FROM ${BASE_IMAGE} AS runner
+
+COPY --from=downloader /root/gensim-data /root/gensim-data
+
+WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
